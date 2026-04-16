@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sommly</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root{
+  --bg:#F4F1EC;--sur:#FFF;--sur2:#FAF8F5;
+  --bd:#E2DDD6;--bds:#C8C1B8;
+  --tx:#1A1714;--txm:#7A7268;--txf:#B0A89E;
+  --ac:#2B4A3F;--acl:#E8F0ED;
+  --dg:#A0321C;--dgl:#FCEEE9;
+  --wn:#8B6914;--wnl:#FBF4E3;
+  --su:#2B4A3F;--sul:#E8F0ED;
+  --in:#1C3F6E;--inl:#E8EFF8;
+  --gd:#C4963A;--r:12px;--rs:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--tx);font-size:14px;line-height:1.5;min-height:100vh;}
+.shell{display:flex;min-height:100vh;}
+
+/* Sidebar */
+.sidebar{width:224px;flex-shrink:0;background:var(--ac);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;}
+.logo-area{padding:26px 22px 18px;border-bottom:1px solid rgba(255,255,255,.1);}
+.logo{font-family:'DM Serif Display',serif;font-size:22px;color:#fff;}
+.venue-pill{margin-top:8px;display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);border-radius:20px;padding:4px 10px 4px 6px;font-size:11px;color:rgba(255,255,255,.85);}
+.vdot{width:7px;height:7px;border-radius:50%;background:#6ECBA6;}
+nav{padding:16px 10px;flex:1;}
+.nl{font-size:10px;font-weight:600;letter-spacing:.1em;color:rgba(255,255,255,.35);text-transform:uppercase;padding:0 12px;margin:14px 0 5px;}
+.ni{display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:var(--rs);color:rgba(255,255,255,.6);font-size:13px;cursor:pointer;transition:background .12s,color .12s;margin-bottom:2px;user-select:none;}
+.ni:hover{background:rgba(255,255,255,.08);color:#fff;}
+.ni.active{background:rgba(255,255,255,.15);color:#fff;font-weight:500;}
+.ni-ico{width:16px;text-align:center;flex-shrink:0;}
+.nb{margin-left:auto;background:var(--gd);color:#fff;font-size:10px;font-weight:600;padding:1px 7px;border-radius:10px;}
+.sb-foot{padding:14px;border-top:1px solid rgba(255,255,255,.1);}
+.period-sel{width:100%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:var(--rs);color:rgba(255,255,255,.85);font-family:'Outfit',sans-serif;font-size:12px;padding:7px 10px;cursor:pointer;outline:none;}
+
+/* Views */
+.main{flex:1;overflow:auto;}
+.view{display:none;padding:28px 32px;}
+.view.active{display:block;}
+
+/* Typography */
+.ph{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:20px;}
+.pt{font-family:'DM Serif Display',serif;font-size:24px;font-weight:400;}
+.ps{font-size:13px;color:var(--txm);margin-top:3px;}
+.hact{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.btn{padding:7px 15px;border-radius:var(--rs);font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .13s;}
+.btn-o{background:var(--sur);border:1px solid var(--bds);color:var(--txm);}
+.btn-o:hover{border-color:var(--ac);color:var(--ac);}
+.btn-p{background:var(--ac);color:#fff;}
+.lbadge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;}
+.lb-live{background:var(--sul);color:var(--su);}
+.lb-demo{background:var(--inl);color:var(--in);}
+.lb-err{background:var(--dgl);color:var(--dg);}
+.ldot{width:6px;height:6px;border-radius:50%;animation:pulse 2s infinite;}
+.lb-live .ldot{background:var(--su);}
+.lb-demo .ldot{background:var(--in);}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+.sbar{display:flex;align-items:center;justify-content:space-between;background:var(--sur2);border:1px solid var(--bd);border-radius:var(--rs);padding:8px 14px;margin-bottom:18px;font-size:12px;color:var(--txm);}
+
+/* Panels & Grid */
+.grid{display:grid;gap:14px;margin-bottom:14px;}
+.g2{grid-template-columns:1fr 1fr;}
+.g3{grid-template-columns:1fr 1fr 1fr;}
+.g21{grid-template-columns:2fr 1fr;}
+.g5{grid-template-columns:repeat(5,1fr);}
+.panel{background:var(--sur);border:1px solid var(--bd);border-radius:var(--r);padding:18px;}
+.phead{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:6px;}
+.ptit{font-size:13px;font-weight:600;color:var(--tx);}
+.ptag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;text-transform:uppercase;letter-spacing:.04em;}
+.tg-d{background:var(--dgl);color:var(--dg);}
+.tg-w{background:var(--wnl);color:var(--wn);}
+.tg-g{background:var(--sul);color:var(--su);}
+.tg-i{background:var(--inl);color:var(--in);}
+
+/* KPI */
+.kpi{background:var(--sur);border:1px solid var(--bd);border-radius:var(--r);padding:14px;}
+.kpi.kd{border-left:3px solid var(--dg);}
+.kpi.kw{border-left:3px solid var(--gd);}
+.kpi.kg{border-left:3px solid var(--ac);}
+.klbl{font-size:10px;color:var(--txm);text-transform:uppercase;letter-spacing:.06em;font-weight:500;margin-bottom:6px;}
+.kval{font-family:'DM Mono',monospace;font-size:21px;font-weight:500;line-height:1;}
+.ksub{font-size:11px;color:var(--txf);margin-top:4px;}
+.kdlt{font-size:11px;font-weight:500;margin-top:4px;}
+.kdlt.bad{color:var(--dg);}
+.kdlt.ok{color:var(--su);}
+.kdlt.neu{color:var(--txm);}
+
+/* Health */
+.hbanner{background:var(--sur);border:1px solid var(--bd);border-radius:var(--r);padding:18px 22px;margin-bottom:16px;display:flex;align-items:center;gap:22px;flex-wrap:wrap;}
+.hring{flex-shrink:0;position:relative;width:76px;height:76px;}
+.hring svg{transform:rotate(-90deg);}
+.hrlbl{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.hrnum{font-family:'DM Mono',monospace;font-size:19px;font-weight:500;line-height:1;}
+.hrunit{font-size:10px;color:var(--txm);margin-top:1px;}
+.hfacs{flex:1;display:flex;gap:18px;min-width:240px;}
+.hfac{flex:1;}
+.hfl{font-size:11px;color:var(--txm);margin-bottom:3px;display:flex;justify-content:space-between;}
+.hbar{height:5px;background:var(--bg);border-radius:3px;overflow:hidden;}
+.hfill{height:100%;border-radius:3px;transition:width .7s ease;}
+.hverd{margin-left:auto;text-align:right;flex-shrink:0;}
+.vbadge{display:inline-block;padding:4px 11px;border-radius:20px;font-size:12px;font-weight:500;}
+
+/* Tables */
+.tbl{width:100%;border-collapse:collapse;}
+.tbl th{font-size:10px;font-weight:600;color:var(--txf);text-transform:uppercase;letter-spacing:.06em;text-align:left;padding:0 8px 8px;border-bottom:1px solid var(--bd);white-space:nowrap;}
+.tbl td{padding:9px 8px;border-bottom:1px solid var(--bg);font-size:13px;vertical-align:middle;}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tr:hover td{background:var(--sur2);}
+.tn{font-weight:500;}
+.tc{font-size:11px;color:var(--txf);}
+.fbadge{display:inline-block;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:600;}
+.fbtg{background:var(--inl);color:var(--in);}
+.fbottle{background:var(--wnl);color:var(--wn);}
+.chip{display:inline-flex;font-family:'DM Mono',monospace;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500;white-space:nowrap;}
+.chi-c{background:var(--dgl);color:var(--dg);}
+.chi-w{background:var(--wnl);color:var(--wn);}
+.chi-g{background:var(--sul);color:var(--su);}
+.chi-n{background:var(--bg);color:var(--txm);}
+
+/* Inline components */
+.mrow{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--bg);}
+.mrow:last-child{border-bottom:none;}
+.mbar{width:76px;height:5px;background:var(--bg);border-radius:3px;overflow:hidden;flex-shrink:0;}
+.mfill{height:100%;border-radius:3px;}
+.mono{font-family:'DM Mono',monospace;font-size:12px;}
+.rerow{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--bg);}
+.rerow:last-child{border-bottom:none;}
+.rebar{width:76px;height:4px;background:var(--bg);border-radius:2px;overflow:hidden;flex-shrink:0;}
+.refill{height:100%;border-radius:2px;}
+.drow{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--bg);font-size:13px;}
+.drow:last-child{border-bottom:none;}
+.arow{display:flex;gap:9px;padding:7px 0;border-bottom:1px solid var(--bg);font-size:12px;}
+.arow:last-child{border-bottom:none;}
+.adot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:3px;}
+.catrow{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--bg);}
+.catrow:last-child{border-bottom:none;}
+.catdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.note{display:flex;gap:8px;background:var(--acl);border-radius:var(--rs);padding:9px 11px;font-size:12px;color:var(--ac);margin-top:10px;align-items:flex-start;line-height:1.5;}
+
+/* Pour cost */
+.pgrid{display:grid;grid-template-columns:1fr 64px 64px 58px;gap:4px;align-items:center;}
+.pgrid-hd{font-size:10px;color:var(--txf);text-transform:uppercase;letter-spacing:.06em;padding-bottom:7px;border-bottom:1px solid var(--bd);}
+.prow{padding:7px 0;border-bottom:1px solid var(--bg);}
+.prow:last-child{border-bottom:none;}
+.pos-bad{color:var(--dg);}
+.pos-ok{color:var(--su);}
+
+/* Chart */
+.chwrap{position:relative;height:190px;}
+
+/* Email */
+.eprev{background:var(--sur2);border:1px solid var(--bd);border-radius:var(--rs);padding:12px;font-size:12px;color:var(--txm);}
+.erow{display:flex;justify-content:space-between;padding:3px 0;}
+.eu{color:var(--dg);}
+.ed{color:var(--su);}
+
+/* Loading/error */
+.screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;gap:14px;text-align:center;padding:40px;}
+.spinner{width:28px;height:28px;border:2px solid var(--bd);border-top-color:var(--ac);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.scr-t{font-family:'DM Serif Display',serif;font-size:20px;font-weight:400;}
+.scr-s{font-size:13px;color:var(--txm);max-width:440px;line-height:1.6;}
+.err-box{background:var(--dgl);border:1px solid #e8b4a8;border-radius:var(--r);padding:14px 18px;max-width:520px;text-align:left;width:100%;}
+.err-box strong{color:var(--dg);}
+.err-box code{font-family:'DM Mono',monospace;font-size:11px;display:block;margin-top:6px;color:var(--dg);white-space:pre-wrap;word-break:break-all;}
+
+/* Action form */
+.aform{display:none;background:var(--sur2);border:1px solid var(--bd);border-radius:var(--rs);padding:12px;margin-bottom:10px;}
+.aform input{width:100%;border:1px solid var(--bds);border-radius:var(--rs);padding:8px 10px;font-family:'Outfit',sans-serif;font-size:13px;margin-bottom:7px;outline:none;background:var(--sur);color:var(--tx);}
+.aform input:focus{border-color:var(--ac);}
+.formrow{display:flex;gap:7px;}
+.sbtn{background:var(--ac);color:#fff;border:none;border-radius:var(--rs);padding:7px 14px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;cursor:pointer;}
+.cbtn{background:var(--sur);border:1px solid var(--bds);color:var(--txm);border-radius:var(--rs);padding:7px 14px;font-family:'Outfit',sans-serif;font-size:13px;cursor:pointer;}
+
+/* Inventory filters */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.filters input,.fsel{border:1px solid var(--bds);border-radius:var(--rs);padding:7px 10px;font-family:'Outfit',sans-serif;font-size:13px;background:var(--sur);color:var(--tx);outline:none;}
+.filters input:focus,.fsel:focus{border-color:var(--ac);}
+.tscroll{overflow-x:auto;}
+
+/* Email grid */
+.email-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+.stit{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--txf);margin-bottom:8px;}
+
+@media(max-width:1100px){
+  .g5{grid-template-columns:repeat(3,1fr);}
+  .g21{grid-template-columns:1fr;}
+  .g3{grid-template-columns:1fr 1fr;}
+  .email-grid{grid-template-columns:1fr;}
+  .hfacs{flex-wrap:wrap;}
+}
+@media(max-width:700px){
+  .sidebar{width:56px;}
+  .ni span:not(.ni-ico){display:none;}
+  .nb,.nl,.sb-foot,.logo-area .venue-pill{display:none;}
+  .logo-area{padding:16px 12px;}
+  nav{padding:10px 4px;}
+  .ni{justify-content:center;padding:10px;}
+  .view{padding:16px;}
+  .g2,.g3,.g5{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- ═══ SIDEBAR ═══ -->
+<aside class="sidebar">
+  <div class="logo-area">
+    <div class="logo">sommly</div>
+    <div class="venue-pill"><span class="vdot"></span><span id="sideVenue">—</span></div>
+  </div>
+  <nav>
+    <div class="nl">Overview</div>
+    <div class="ni active" data-view="dashboard"><span class="ni-ico">◈</span><span>Dashboard</span></div>
+    <div class="ni" data-view="inventory"><span class="ni-ico">⬡</span><span>Cellar Inventory</span><span class="nb" id="nb-inv">—</span></div>
+    <div class="nl">Intelligence</div>
+    <div class="ni" data-view="deadstock"><span class="ni-ico">△</span><span>Dead Stock</span><span class="nb" id="nb-ds">—</span></div>
+    <div class="ni" data-view="margins"><span class="ni-ico">◎</span><span>Margin Analysis</span></div>
+    <div class="ni" data-view="reorder"><span class="ni-ico">↻</span><span>Reorder Watch</span><span class="nb" id="nb-ro">—</span></div>
+    <div class="ni" data-view="pour"><span class="ni-ico">⌇</span><span>Pour Cost</span></div>
+    <div class="ni" data-view="suppliers"><span class="ni-ico">↗</span><span>Supplier Prices</span></div>
+    <div class="nl">Venue</div>
+    <div class="ni" data-view="benchmarking"><span class="ni-ico">⊞</span><span>Benchmarking</span></div>
+    <div class="ni" data-view="weekly"><span class="ni-ico">✉</span><span>Weekly Report</span></div>
+    <div class="ni" data-view="actionlog"><span class="ni-ico">✎</span><span>Action Log</span></div>
+  </nav>
+  <div class="sb-foot">
+    <select class="period-sel"><option>Tydzień bieżący</option><option>Miesiąc bieżący</option></select>
+  </div>
+</aside>
+
+<!-- ═══ MAIN ═══ -->
+<main class="main">
+
+<!-- Loading -->
+<div class="view active" id="view-loading">
+  <div class="screen">
+    <div class="spinner"></div>
+    <div class="scr-t">Wczytywanie danych</div>
+    <div class="scr-s" id="loadMsg">Łączenie z Google Sheets...</div>
+  </div>
+</div>
+
+<!-- Error -->
+<div class="view" id="view-error">
+  <div class="screen">
+    <div class="scr-t">Błąd połączenia</div>
+    <div class="err-box" id="errBox"><strong>Nie można wczytać danych.</strong><code id="errMsg"></code></div>
+    <div class="scr-s">Sprawdź: (1) URL parametr <code>?api=</code> jest poprawny, (2) Web App wdrożony z dostępem "Anyone", (3) skrypt nie ma błędów w Apps Script → Executions.</div>
+    <button class="btn btn-o" onclick="location.reload()">↻ Spróbuj ponownie</button>
+  </div>
+</div>
+
+<!-- ── DASHBOARD ── -->
+<div class="view" id="view-dashboard">
+  <div class="ph">
+    <div><div class="pt" id="dashTitle">Cellar Intelligence</div><div class="ps" id="dashSub">—</div></div>
+    <div class="hact">
+      <span class="lbadge lb-demo" id="liveBadge"><span class="ldot"></span>DEMO</span>
+      <button class="btn btn-o" id="refreshBtn" onclick="reload()">↻ Odśwież</button>
+    </div>
+  </div>
+  <div class="sbar"><span>Źródło: <strong id="srcLbl">—</strong></span><span id="updLbl">—</span></div>
+
+  <div class="hbanner">
+    <div class="hring">
+      <svg width="76" height="76" viewBox="0 0 76 76">
+        <circle cx="38" cy="38" r="32" fill="none" stroke="var(--bd)" stroke-width="6"/>
+        <circle id="hRing" cx="38" cy="38" r="32" fill="none" stroke="#2B4A3F" stroke-width="6"
+          stroke-dasharray="201.1" stroke-dashoffset="201.1" stroke-linecap="round"
+          style="transition:stroke-dashoffset .8s ease,stroke .4s"/>
+      </svg>
+      <div class="hrlbl"><span class="hrnum" id="hNum">—</span><span class="hrunit">/100</span></div>
+    </div>
+    <div class="hfacs">
+      <div class="hfac">
+        <div class="hfl"><span>Marża</span><span class="mono" id="hf1">—</span></div>
+        <div class="hbar"><div class="hfill" id="hf1b" style="width:0%;background:#2B4A3F"></div></div>
+        <div style="font-size:10px;color:var(--txf);margin-top:3px">Waga 40%</div>
+      </div>
+      <div class="hfac">
+        <div class="hfl"><span>Dead stock</span><span class="mono" id="hf2">—</span></div>
+        <div class="hbar"><div class="hfill" id="hf2b" style="width:0%;background:#C4963A"></div></div>
+        <div style="font-size:10px;color:var(--txf);margin-top:3px">Waga 30%</div>
+      </div>
+      <div class="hfac">
+        <div class="hfl"><span>Zamówienia</span><span class="mono" id="hf3">—</span></div>
+        <div class="hbar"><div class="hfill" id="hf3b" style="width:0%;background:#1C3F6E"></div></div>
+        <div style="font-size:10px;color:var(--txf);margin-top:3px">Waga 30%</div>
+      </div>
+    </div>
+    <div class="hverd">
+      <div class="vbadge" id="vbadge" style="background:var(--wnl);color:var(--wn)">—</div>
+      <div style="font-size:11px;color:var(--txf);margin-top:6px">Vs śr. Wrocław: <strong>+4 pkt</strong></div>
+    </div>
+  </div>
+
+  <div class="grid g5" style="margin-bottom:14px">
+    <div class="kpi kd"><div class="klbl">Dead Stock</div><div class="kval"><span id="kDs">—</span> <span style="font-size:13px">zł</span></div><div class="ksub"><span id="kDsC">—</span> SKU</div><div class="kdlt bad" id="kDsDlt">—</div></div>
+    <div class="kpi kw"><div class="klbl">Śr. marża</div><div class="kval"><span id="kMg">—</span><span style="font-size:13px">%</span></div><div class="ksub">Cel: <span id="kMgT">68</span>% · <span id="kMgG">—</span></div><div class="kdlt" id="kMgSt">—</div></div>
+    <div class="kpi kg"><div class="klbl">Pokrycie mag.</div><div class="kval"><span id="kCov">—</span> <span style="font-size:13px">dni</span></div><div class="ksub" id="kCovS">—</div><div class="kdlt neu">→ stabilne</div></div>
+    <div class="kpi kw"><div class="klbl">Wartość piwnicy</div><div class="kval"><span id="kCel">—</span> <span style="font-size:13px">zł</span></div><div class="ksub" id="kCelS">—</div></div>
+    <div class="kpi" id="kRoCard"><div class="klbl">Zam. pilne</div><div class="kval" id="kRo">—</div><div class="ksub">SKU do zamówienia</div><div class="kdlt bad" id="kRoDlt">—</div></div>
+  </div>
+
+  <div class="grid g21">
+    <div class="panel">
+      <div class="phead"><div class="ptit">Dead Stock — top pozycje</div><span class="ptag tg-d" id="dashDsTag">—</span></div>
+      <table class="tbl"><thead><tr><th>Produkt</th><th>Format</th><th>Wartość</th><th>Bez ruchu</th><th>Marża</th><th>Zalecana akcja</th></tr></thead>
+      <tbody id="dashDsBody"></tbody></table>
+      <div class="note"><span>◈</span><span id="dashDsNote">—</span></div>
+    </div>
+    <div class="panel">
+      <div class="phead"><div class="ptit">Reorder pilne</div><span class="ptag tg-d" id="dashRoTag">—</span></div>
+      <div id="dashRoList"></div>
+    </div>
+  </div>
+
+  <div class="grid g21">
+    <div class="panel">
+      <div class="phead"><div class="ptit">Trend marży brutto</div><span class="ptag tg-w">Cel: <span id="trendTarget">68</span>%</span></div>
+      <div class="chwrap"><canvas id="mgChart" role="img" aria-label="Trend marży">Trend.</canvas></div>
+    </div>
+    <div class="panel">
+      <div class="phead"><div class="ptit">Kategorie piwnicy</div></div>
+      <div id="dashCats"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── INVENTORY ── -->
+<div class="view" id="view-inventory">
+  <div class="ph">
+    <div><div class="pt">Cellar Inventory</div><div class="ps" id="invSub">—</div></div>
+    <div class="hact"><span class="ptag tg-i" id="invCount">—</span></div>
+  </div>
+  <div class="filters">
+    <input id="invQ" type="text" placeholder="Szukaj produktu..." oninput="vInventory()" style="flex:1;min-width:140px">
+    <select class="fsel" id="invCat" onchange="vInventory()">
+      <option value="">Wszystkie kategorie</option>
+      <option>Wino czerwone</option><option>Wina białe</option><option>Musujące</option>
+      <option>Destylaty & likiery</option><option>Cocktail</option><option>Bezalkoholowe</option><option>Inne</option>
+    </select>
+    <select class="fsel" id="invFmt" onchange="vInventory()">
+      <option value="">BTG + Butelka</option><option>BTG</option><option>Butelka</option>
+    </select>
+    <select class="fsel" id="invSort" onchange="vInventory()">
+      <option value="name">Sortuj: nazwa</option>
+      <option value="mg">Marża ↓</option><option value="qty">Stan ↓</option>
+      <option value="val">Wartość ↓</option><option value="sales">Sprzedaż ↓</option>
+    </select>
+  </div>
+  <div class="panel" style="padding:0"><div class="tscroll">
+    <table class="tbl" style="min-width:860px">
+      <thead><tr>
+        <th style="padding-left:16px">Produkt</th><th>Kategoria</th><th>Format</th>
+        <th>C.zakupu</th><th>C.sprzedaży</th><th>Marża</th>
+        <th>Stan</th><th>7 dni</th><th>Dni zapasu</th><th>Dostawca</th>
+      </tr></thead>
+      <tbody id="invBody"></tbody>
+    </table>
+  </div></div>
+</div>
+
+<!-- ── DEAD STOCK ── -->
+<div class="view" id="view-deadstock">
+  <div class="ph">
+    <div><div class="pt">Dead Stock</div><div class="ps">Produkty bez ruchu lub z niską rotacją</div></div>
+    <div class="hact"><span class="ptag tg-d" id="dsTag">—</span></div>
+  </div>
+  <div class="grid g2" style="margin-bottom:14px">
+    <div class="kpi kd"><div class="klbl">Łączna wartość</div><div class="kval"><span id="dsTotV">—</span> zł</div><div class="ksub" id="dsTotS">—</div></div>
+    <div class="kpi kw"><div class="klbl">BTG vs Butelka</div><div class="kval" id="dsSplit">—</div><div class="ksub" id="dsSplitV">—</div></div>
+  </div>
+  <div class="filters">
+    <select class="fsel" id="dsCat" onchange="vDeadstock()"><option value="">Wszystkie kategorie</option>
+      <option>Wino czerwone</option><option>Wina białe</option><option>Musujące</option>
+      <option>Destylaty & likiery</option><option>Cocktail</option><option>Bezalkoholowe</option></select>
+    <select class="fsel" id="dsFmt" onchange="vDeadstock()"><option value="">BTG + Butelka</option><option>BTG</option><option>Butelka</option></select>
+  </div>
+  <div class="panel">
+    <table class="tbl"><thead><tr><th>Produkt</th><th>Kategoria</th><th>Format</th><th>Wartość</th><th>Bez ruchu</th><th>Marża</th><th>Zalecana akcja</th></tr></thead>
+    <tbody id="dsBody"></tbody></table>
+  </div>
+  <div class="note" style="margin-top:12px"><span>◈</span><span id="dsNote">—</span></div>
+</div>
+
+<!-- ── MARGINS ── -->
+<div class="view" id="view-margins">
+  <div class="ph">
+    <div><div class="pt">Margin Analysis</div><div class="ps">Marże brutto po SKU i kategorii</div></div>
+    <div class="hact"><span class="ptag tg-g" id="mgTargetTag">Cel: 68%</span></div>
+  </div>
+  <div class="grid g2" style="margin-bottom:14px">
+    <div class="kpi kw"><div class="klbl">Śr. marża (nieważona)</div><div class="kval"><span id="mgAvg">—</span>%</div><div class="ksub" id="mgAvgS">—</div></div>
+    <div class="kpi kg"><div class="klbl">Najwyższa marża</div><div class="kval" id="mgBest">—</div><div class="ksub" id="mgBestN">—</div></div>
+  </div>
+  <div class="filters">
+    <select class="fsel" id="mgCat" onchange="vMargins()"><option value="">Wszystkie kategorie</option>
+      <option>Wino czerwone</option><option>Wina białe</option><option>Musujące</option>
+      <option>Destylaty & likiery</option><option>Cocktail</option><option>Bezalkoholowe</option></select>
+  </div>
+  <div class="grid g2">
+    <div class="panel">
+      <div class="phead"><div class="ptit">Ranking marż</div></div>
+      <div id="mgList"></div>
+    </div>
+    <div class="panel">
+      <div class="phead"><div class="ptit">Poniżej celu</div><span class="ptag tg-d" id="mgLowTag">—</span></div>
+      <div id="mgLow"></div>
+      <div class="note" style="margin-top:10px"><span>◎</span><span id="mgNote">—</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── REORDER ── -->
+<div class="view" id="view-reorder">
+  <div class="ph">
+    <div><div class="pt">Reorder Watch</div><div class="ps">Zamówienia według pilności</div></div>
+    <div class="hact"><span class="ptag tg-d" id="roUrgTag">—</span></div>
+  </div>
+  <div class="grid g2" style="margin-bottom:14px">
+    <div class="kpi kd"><div class="klbl">Pilne (≤10 dni)</div><div class="kval" id="roUC">—</div><div class="ksub">Wymaga działania dziś</div></div>
+    <div class="kpi kw"><div class="klbl">Wkrótce (11–21 dni)</div><div class="kval" id="roSC">—</div><div class="ksub">Planuj zamówienie</div></div>
+  </div>
+  <div class="grid g2">
+    <div class="panel"><div class="phead"><div class="ptit">Pilne</div><span class="ptag tg-d" id="roUrgTag2">—</span></div><div id="roUrg"></div></div>
+    <div class="panel"><div class="phead"><div class="ptit">Wkrótce</div><span class="ptag tg-w" id="roSoonTag">—</span></div><div id="roSoon"></div></div>
+  </div>
+  <div class="panel" style="margin-top:14px">
+    <div class="phead"><div class="ptit">Wszystkie SKU — status zapasu</div></div>
+    <table class="tbl"><thead><tr><th>Produkt</th><th>Kategoria</th><th>Stan</th><th>Sprzedaż/tydz.</th><th>Dni zapasu</th><th>Min. poziom</th><th>Status</th></tr></thead>
+    <tbody id="roAll"></tbody></table>
+  </div>
+</div>
+
+<!-- ── POUR COST ── -->
+<div class="view" id="view-pour">
+  <div class="ph">
+    <div><div class="pt">Pour Cost</div><div class="ps">Wariancja kosztu serwisu</div></div>
+    <div class="hact"><span class="ptag tg-w" id="pourDevTag">—</span></div>
+  </div>
+  <div class="grid g2" style="margin-bottom:14px">
+    <div class="kpi kd"><div class="klbl">Łączna wariancja</div><div class="kval" id="pourTot">—</div><div class="ksub">Suma odchyleń</div></div>
+    <div class="kpi kw"><div class="klbl">Największe odchylenie</div><div class="kval" id="pourMax">—</div><div class="ksub" id="pourMaxN">—</div></div>
+  </div>
+  <div class="panel">
+    <div class="phead"><div class="ptit">Szczegóły pour cost</div></div>
+    <div class="pgrid pgrid-hd"><span>Produkt</span><span style="text-align:right">Teor.</span><span style="text-align:right">Fakt.</span><span style="text-align:right">Delta</span></div>
+    <div id="pourList"></div>
+    <div class="note" style="margin-top:12px"><span>⌇</span><span>Uzupełnij zakładkę <strong>pour_cost</strong> w Google Sheets: kolumny name, sub, theoretical, actual. Script odczyta automatycznie przy następnym wywołaniu API.</span></div>
+  </div>
+</div>
+
+<!-- ── SUPPLIERS ── -->
+<div class="view" id="view-suppliers">
+  <div class="ph">
+    <div><div class="pt">Supplier Prices</div><div class="ps">Zmiany cen zakupu vs. poprzedni tydzień</div></div>
+    <div class="hact"><span class="ptag tg-d" id="supChgTag">—</span></div>
+  </div>
+  <div class="grid g2" style="margin-bottom:14px">
+    <div class="kpi kd"><div class="klbl">Wzrosty cen</div><div class="kval" id="supUp">—</div><div class="ksub">SKU droższych niż tydzień temu</div></div>
+    <div class="kpi kg"><div class="klbl">Spadki cen</div><div class="kval" id="supDown">—</div><div class="ksub">SKU tańszych niż tydzień temu</div></div>
+  </div>
+  <div class="grid g2">
+    <div class="panel">
+      <div class="phead"><div class="ptit">Zmiany cen</div></div>
+      <div id="supDrift"></div>
+      <div class="note" style="margin-top:10px"><span>↗</span><span id="supNote">Zmiany wykrywane automatycznie — widoczne po tygodniu od pierwszego uruchomienia weeklyUpdate().</span></div>
+    </div>
+    <div class="panel">
+      <div class="phead"><div class="ptit">Aktualne ceny zakupu</div></div>
+      <table class="tbl"><thead><tr><th>Produkt</th><th>Dostawca</th><th>C.zakupu</th><th>Marża</th></tr></thead>
+      <tbody id="supAll"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- ── BENCHMARKING ── -->
+<div class="view" id="view-benchmarking">
+  <div class="ph"><div><div class="pt">Benchmarking</div><div class="ps">Porównanie z lokalami Wrocław</div></div></div>
+  <div class="screen" style="min-height:40vh">
+    <div style="font-size:48px">⊞</div>
+    <div class="scr-t">Dostępne od 5 aktywnych lokali</div>
+    <div class="scr-s">Dane są już zbierane. Gdy Sommly osiągnie 5+ klientów w Wrocławiu, ta zakładka wyświetli anonimowe porównanie marży, dead stock i rotacji.</div>
+    <div style="font-size:13px;color:var(--txm)">Twój wynik zdrowia: <strong id="benchScore">—</strong>/100</div>
+  </div>
+</div>
+
+<!-- ── WEEKLY ── -->
+<div class="view" id="view-weekly">
+  <div class="ph">
+    <div><div class="pt">Weekly Report</div><div class="ps">Podgląd tygodniowego e-maila</div></div>
+    <div class="hact">
+      <span style="font-size:12px;color:var(--txm)">Wysyłka: poniedziałek 07:00</span>
+      <button class="btn btn-p" onclick="alert('Wysyłka przez Apps Script trigger: weeklyUpdate()\nMożesz też uruchomić ją ręcznie ze skryptu.')">Wyślij teraz</button>
+    </div>
+  </div>
+  <div class="email-grid">
+    <div><div class="stit">Top 5 ruch w górę</div><div class="eprev" id="wkUp">—</div></div>
+    <div><div class="stit">Top 5 ruch w dół</div><div class="eprev" id="wkDown">—</div></div>
+    <div><div class="stit">Alerty tygodnia</div><div class="eprev" id="wkAlerts">—</div></div>
+  </div>
+  <div class="panel" style="margin-top:14px">
+    <div class="phead"><div class="ptit">Treść e-mail</div></div>
+    <pre id="wkPre" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--txm);white-space:pre-wrap;line-height:1.7;background:var(--sur2);padding:14px;border-radius:var(--rs)">—</pre>
+  </div>
+</div>
+
+<!-- ── ACTION LOG ── -->
+<div class="view" id="view-actionlog">
+  <div class="ph">
+    <div><div class="pt">Action Log</div><div class="ps">Historia działań na dead stock</div></div>
+    <div class="hact"><button class="btn btn-p" onclick="toggleAF()">+ Dodaj wpis</button></div>
+  </div>
+  <div class="aform" id="aForm">
+    <input id="afSku" type="text" placeholder="Nazwa SKU">
+    <input id="afAct" type="text" placeholder="Co zrobiono? (np. Promocja happy hour, zwrot do dostawcy…)">
+    <div class="formrow"><button class="sbtn" onclick="submitAL()">Zapisz</button><button class="cbtn" onclick="toggleAF()">Anuluj</button></div>
+  </div>
+  <div class="panel">
+    <div class="phead"><div class="ptit">Wszystkie wpisy</div><span class="ptag tg-i" id="alCount">—</span></div>
+    <div id="alList"></div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+// ═══ CONFIG ═══
+const P       = new URLSearchParams(location.search);
+const U_VENUE = P.get('venue') || null;
+const U_API   = P.get('api')   || null;
+const DEMO_M  = P.get('demo') === '1' || !U_API;
+
+// ═══ STATE ═══
+let D    = null;   // full dataset from API
+let INV  = [];     // derived inventory items
+let apiUrl = null;
+let mgChart = null;
+let curView = 'loading';
+
+// ═══ UTILS ═══
+const fmt    = n  => Number(n||0).toLocaleString('pl-PL',{maximumFractionDigits:0});
+const fmtD   = n  => (Math.round((n||0)*10)/10).toFixed(1);
+const T      = (id,v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
+const H      = (id,v) => { const el=document.getElementById(id); if(el) el.innerHTML=v; };
+const fmtBadge = f => f==='BTG'?'<span class="fbadge fbtg">BTG</span>':'<span class="fbadge fbottle">Butelka</span>';
+const dayChip  = d => {
+  if (d>=999) return '<span class="chip chi-c">Brak ruchu</span>';
+  if (d<=6)   return `<span class="chip chi-c">${d} dni</span>`;
+  if (d<=10)  return `<span class="chip chi-w">${d} dni</span>`;
+  if (d<=21)  return `<span class="chip chi-g">${d} dni</span>`;
+  return `<span class="chip chi-n">${d} dni</span>`;
+};
+const mgColor = m => m>=68?'var(--su)':m>=50?'var(--wn)':'var(--dg)';
+
+function verdict(s) {
+  if (s>=80) return ['🟢 Dobry stan',  'var(--sul)','var(--su)'];
+  if (s>=60) return ['⚠ Wymaga uwagi','var(--wnl)','var(--wn)'];
+  return           ['🔴 Wymagane działanie','var(--dgl)','var(--dg)'];
+}
+
+// ═══ DERIVE INVENTORY ═══
+// Works whether the API sends pre-calculated fields OR only raw fields.
+// Always recalculates locally so stale audit sheets never cause empty views.
+function derive(inv) {
+  return (inv||[]).map(r => {
+    const buy   = Number(r.purchase_price || r.buy  || 0);
+    const sell  = Number(r.sell_price     || r.sell || 0);
+    const qty   = Number(r.stock_qty      || r.qty  || 0);
+    const sales = Number(r.weekly_sales   || r.sales|| 0);
+    const minL  = Number(r.reorder_level  || r.min_level || 1);
+    const mg    = sell>0 ? Math.round((sell-buy)/sell*1000)/10 : 0;
+    const val   = Math.round(buy*qty);
+    const daily = sales/7;
+    const days  = daily>0 ? Math.round(qty/daily) : 999;
+    const dead  = sales===0 || days>21;
+    const urg   = days<=10;
+    const reord = qty<=minL || days<=10;
+    return {
+      name:     String(r.name||''),
+      category: String(r.category||'Inne'),
+      format:   String(r.format||'Butelka'),
+      buy, sell_price:sell, qty, sales, min_level:minL,
+      supplier: String(r.supplier||'—'),
+      notes:    String(r.notes||''),
+      // accept pre-calculated or compute fresh
+      margin_pct:   r.margin_pct!=null  ? Number(r.margin_pct)  : mg,
+      stock_value:  r.stock_value!=null ? Number(r.stock_value) : val,
+      days_cover:   r.days_cover!=null  ? Number(r.days_cover)  : days,
+      is_dead:      r.is_dead!=null     ? !!r.is_dead            : dead,
+      needs_reorder:r.needs_reorder!=null?!!r.needs_reorder     : reord,
+      is_urgent:    r.is_urgent!=null   ? !!r.is_urgent          : urg,
+      rec_action:   String(r.rec_action || recAct(String(r.format||''), String(r.category||''), mg)),
+    };
+  });
+}
+
+function recAct(fmt, cat, mg) {
+  const c = cat.toLowerCase();
+  if (fmt==='BTG') {
+    if (c.includes('białe')||c.includes('musuj')) return 'Pairing z menu — rekomendacja kelnera';
+    if (c.includes('czerwone')) return 'Happy hour — rekomendacja przy daniach';
+    return 'Rekomendacja kelnera';
+  }
+  if (c.includes('destylat')||c.includes('likier')) return 'Digestif promocja lub cocktail menu';
+  return mg<40 ? 'Rozważ zwrot do dystrybutora' : 'Promocja tygodniowa lub zwrot';
+}
+
+// ═══ ROUTER ═══
+function showView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n => n.classList.remove('active'));
+  const vEl = document.getElementById('view-'+id);
+  if (!vEl) { showView('dashboard'); return; }
+  vEl.classList.add('active');
+  document.querySelector(`.ni[data-view="${id}"]`)?.classList.add('active');
+  curView = id;
+  if (!D) return;
+  const renders = {
+    inventory:    vInventory,
+    deadstock:    vDeadstock,
+    margins:      vMargins,
+    reorder:      vReorder,
+    pour:         vPour,
+    suppliers:    vSuppliers,
+    benchmarking: vBenchmarking,
+    weekly:       vWeekly,
+    actionlog:    vActionLog,
+  };
+  if (renders[id]) renders[id]();
+}
+
+document.querySelectorAll('.ni[data-view]').forEach(el =>
+  el.addEventListener('click', () => showView(el.dataset.view)));
+
+// ═══ RENDER DASHBOARD ═══
+function renderDashboard() {
+  const k = D.kpi || {};
+  const h = D.health || {};
+  const venue = U_VENUE || D.venue || 'Restauracja';
+
+  document.title = 'Sommly — ' + venue;
+  T('sideVenue', venue);
+  T('dashTitle', 'Cellar Intelligence');
+  T('dashSub', venue + ' · ' + new Date(D.last_updated||Date.now()).toLocaleString('pl-PL',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}));
+  T('updLbl', 'Ostatnia aktualizacja: ' + new Date(D.last_updated||Date.now()).toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'}));
+
+  const target = Number(k.margin_target||68);
+  T('kMgT', target); T('trendTarget', target);
+
+  // Health ring
+  const comp = Number(h.composite||0);
+  T('hNum', comp);
+  const ring = document.getElementById('hRing');
+  ring.style.strokeDashoffset = 201.1 - comp/100*201.1;
+  ring.style.stroke = comp>=80?'#2B4A3F':comp>=60?'#C4963A':'#A0321C';
+  const sf = (lid,bid,s,col) => { T(lid,s+'/100'); const b=document.getElementById(bid); b.style.width=s+'%'; b.style.background=col; };
+  sf('hf1','hf1b', Number(h.margin_score||0),    '#2B4A3F');
+  sf('hf2','hf2b', Number(h.dead_stock_score||0), '#C4963A');
+  sf('hf3','hf3b', Number(h.reorder_score||0),    '#1C3F6E');
+  const [vl,vbg,vc] = verdict(comp);
+  const vb = document.getElementById('vbadge'); vb.textContent=vl; vb.style.background=vbg; vb.style.color=vc;
+
+  // KPIs
+  T('kDs',  fmt(k.dead_stock_value||0));
+  T('kDsC', k.dead_stock_skus||0);
+  T('kMg',  k.avg_margin||0);
+  const gap = (k.avg_margin||0) - target;
+  T('kMgG', 'delta: '+(gap>=0?'+':'')+fmtD(gap)+'pp');
+  const mgSt = document.getElementById('kMgSt');
+  if ((k.avg_margin||0)>=target) { mgSt.textContent='✓ Cel osiągnięty'; mgSt.className='kdlt ok'; }
+  else { mgSt.textContent='↓ Poniżej celu'; mgSt.className='kdlt bad'; }
+  T('kCov',  k.stock_coverage_days||0);
+  T('kCovS', INV.filter(i=>i.days_cover<=7).length+' SKU poniżej 7 dni');
+  T('kCel',  fmt(k.cellar_value||0));
+  T('kCelS', (INV.length)+' SKU łącznie');
+  T('kRo',   k.urgent_reorders||0);
+  const rc=document.getElementById('kRoCard');
+  rc.className='kpi '+((k.urgent_reorders||0)>=5?'kd':(k.urgent_reorders||0)>=2?'kw':'kg');
+
+  // Nav badges
+  T('nb-inv', INV.length);
+  T('nb-ds',  k.dead_stock_skus||0);
+  T('nb-ro',  k.urgent_reorders||0);
+
+  // Dead stock top 5
+  const dead = INV.filter(i=>i.is_dead).sort((a,b)=>b.stock_value-a.stock_value);
+  T('dashDsTag', dead.length+' SKU · '+fmt(dead.reduce((s,i)=>s+i.stock_value,0))+' zł');
+  H('dashDsBody', dead.slice(0,5).map(i=>`
+    <tr><td><div class="tn">${i.name}</div><div class="tc">${i.category}</div></td>
+    <td>${fmtBadge(i.format)}</td>
+    <td class="mono">${fmt(i.stock_value)} zł</td>
+    <td>${dayChip(i.days_cover)}</td>
+    <td class="mono" style="color:${mgColor(i.margin_pct)}">${i.margin_pct}%</td>
+    <td style="font-size:11px;color:var(--txm)">${i.rec_action}</td></tr>`).join('')
+    || '<tr><td colspan="6" style="text-align:center;color:var(--txf);padding:20px">Brak dead stock ✓</td></tr>');
+  const btgV = dead.filter(i=>i.format==='BTG').reduce((s,i)=>s+i.stock_value,0);
+  const botV = dead.filter(i=>i.format!=='BTG').reduce((s,i)=>s+i.stock_value,0);
+  T('dashDsNote', `BTG: ${fmt(btgV)} zł — aktywacja przez personel. Butelka: ${fmt(botV)} zł — promocja lub zwrot.`);
+
+  // Reorder
+  const urg = INV.filter(i=>i.is_urgent).sort((a,b)=>a.days_cover-b.days_cover);
+  T('dashRoTag', urg.length+' pilne');
+  H('dashRoList', urg.slice(0,5).map(i=>{
+    const p=Math.min(100,Math.round((14-Math.min(i.days_cover,14))/14*100));
+    const c=i.days_cover<=6?'var(--dg)':i.days_cover<=10?'var(--gd)':'var(--su)';
+    return `<div class="rerow">
+      <div><div style="font-size:13px;font-weight:500">${i.name}</div><div class="tc">${i.format} · ${i.qty} szt.</div></div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+        ${dayChip(i.days_cover)}
+        <div class="rebar"><div class="refill" style="width:${p}%;background:${c}"></div></div>
+      </div></div>`;
+  }).join('') || '<div style="font-size:13px;color:var(--txf);padding:12px 0">Brak pilnych zamówień ✓</div>');
+
+  // Categories
+  const cats = D.categories||[];
+  const catTot = cats.reduce((s,c)=>s+(c.value||0),0);
+  H('dashCats', cats.map(c=>`
+    <div class="catrow"><div class="catdot" style="background:${c.color||'#888'}"></div>
+    <div style="flex:1;font-size:13px">${c.name}</div>
+    <div class="mono" style="color:var(--txm)">${fmt(c.value)} zł</div>
+    <div class="mono" style="font-weight:500;min-width:32px;text-align:right">${catTot?Math.round((c.value||0)/catTot*100):0}%</div></div>`).join(''));
+
+  // Chart
+  const trend = (D.margin_trend||[]).filter(v=>!isNaN(v)&&v>0);
+  const tData = trend.length ? trend : Array(8).fill(k.avg_margin||0);
+  const labels = tData.map((_,i)=>'Tyg '+(i+1));
+  if (mgChart) mgChart.destroy();
+  mgChart = new Chart(document.getElementById('mgChart').getContext('2d'),{
+    type:'line',
+    data:{labels,datasets:[
+      {label:'Marża',data:tData,borderColor:'#2B4A3F',backgroundColor:'rgba(43,74,63,.07)',fill:true,tension:.4,borderWidth:2,pointBackgroundColor:'#2B4A3F',pointRadius:4,pointBorderColor:'#fff',pointBorderWidth:2},
+      {label:'Cel '+target+'%',data:tData.map(()=>target),borderColor:'#C4963A',borderDash:[5,4],borderWidth:1.5,pointRadius:0,fill:false}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{backgroundColor:'#1A1714',titleColor:'#FAF8F5',bodyColor:'#B0A89E',padding:10,callbacks:{label:c=>c.dataset.label+': '+c.parsed.y+'%'}}},
+      scales:{x:{grid:{color:'rgba(0,0,0,.04)'},ticks:{font:{family:'Outfit',size:11},color:'#7A7268'}},
+              y:{min:Math.max(0,Math.min(...tData)-10),max:Math.min(100,Math.max(...tData,target)+10),
+                 grid:{color:'rgba(0,0,0,.04)'},ticks:{font:{family:'DM Mono',size:11},color:'#7A7268',callback:v=>v+'%'}}}}
+  });
+}
+
+// ═══ VIEW — INVENTORY ═══
+function vInventory() {
+  const q   = (document.getElementById('invQ')?.value||'').toLowerCase();
+  const cat = document.getElementById('invCat')?.value||'';
+  const fmtF= document.getElementById('invFmt')?.value||'';
+  const srt = document.getElementById('invSort')?.value||'name';
+  let rows = INV.filter(i=>
+    (!q   || i.name.toLowerCase().includes(q)) &&
+    (!cat || i.category===cat) &&
+    (!fmtF|| i.format===fmtF)
+  );
+  if (srt==='mg')    rows.sort((a,b)=>b.margin_pct-a.margin_pct);
+  else if(srt==='qty')  rows.sort((a,b)=>b.qty-a.qty);
+  else if(srt==='val')  rows.sort((a,b)=>b.stock_value-a.stock_value);
+  else if(srt==='sales')rows.sort((a,b)=>b.sales-a.sales);
+  else rows.sort((a,b)=>a.name.localeCompare(b.name,'pl'));
+  T('invCount', rows.length+' SKU');
+  T('invSub', rows.length+' produktów · filtr: '+(cat||'wszystkie')+(fmtF?' · '+fmtF:''));
+  H('invBody', rows.map(i=>`
+    <tr><td style="padding-left:16px"><div class="tn">${i.name}</div>${i.notes?`<div class="tc">${i.notes}</div>`:''}</td>
+    <td><div class="tc">${i.category}</div></td>
+    <td>${fmtBadge(i.format)}</td>
+    <td class="mono">${i.buy} zł</td>
+    <td class="mono">${i.sell_price} zł</td>
+    <td class="mono" style="font-weight:500;color:${mgColor(i.margin_pct)}">${i.margin_pct}%</td>
+    <td class="mono">${i.qty}</td>
+    <td class="mono">${i.sales}</td>
+    <td>${dayChip(i.days_cover)}</td>
+    <td style="font-size:12px;color:var(--txm)">${i.supplier}</td></tr>`).join('')
+    || '<tr><td colspan="10" style="text-align:center;color:var(--txf);padding:24px">Brak wyników dla wybranych filtrów</td></tr>');
+}
+
+// ═══ VIEW — DEAD STOCK ═══
+function vDeadstock() {
+  const cat = document.getElementById('dsCat')?.value||'';
+  const fmtF= document.getElementById('dsFmt')?.value||'';
+  const rows = INV.filter(i=>i.is_dead&&(!cat||i.category===cat)&&(!fmtF||i.format===fmtF))
+                  .sort((a,b)=>b.stock_value-a.stock_value);
+  const totV = rows.reduce((s,i)=>s+i.stock_value,0);
+  const btg  = rows.filter(i=>i.format==='BTG');
+  const bot  = rows.filter(i=>i.format!=='BTG');
+  T('dsTag',    rows.length+' SKU');
+  T('dsTotV',   fmt(totV));
+  T('dsTotS',   rows.length+' SKU — zablokowany kapitał');
+  T('dsSplit',  btg.length+' BTG / '+bot.length+' Butelka');
+  T('dsSplitV', fmt(btg.reduce((s,i)=>s+i.stock_value,0))+' zł / '+fmt(bot.reduce((s,i)=>s+i.stock_value,0))+' zł');
+  H('dsBody', rows.map(i=>`
+    <tr><td><div class="tn">${i.name}</div></td>
+    <td><div class="tc">${i.category}</div></td>
+    <td>${fmtBadge(i.format)}</td>
+    <td class="mono">${fmt(i.stock_value)} zł</td>
+    <td>${dayChip(i.days_cover)}</td>
+    <td class="mono" style="color:${mgColor(i.margin_pct)}">${i.margin_pct}%</td>
+    <td style="font-size:11px;color:var(--txm)">${i.rec_action}</td></tr>`).join('')
+    || '<tr><td colspan="7" style="text-align:center;color:var(--txf);padding:24px">Brak dead stock ✓</td></tr>');
+  T('dsNote', `${rows.length} SKU · ${fmt(totV)} zł. BTG (${fmt(btg.reduce((s,i)=>s+i.stock_value,0))} zł): aktywacja przez personel i pairing. Butelka (${fmt(bot.reduce((s,i)=>s+i.stock_value,0))} zł): promocja lub zwrot do dostawcy.`);
+}
+
+// ═══ VIEW — MARGINS ═══
+function vMargins() {
+  const cat = document.getElementById('mgCat')?.value||'';
+  const target = Number(D.kpi?.margin_target||68);
+  T('mgTargetTag', 'Cel: '+target+'%');
+  const rows = INV.filter(i=>i.sell_price>0&&(!cat||i.category===cat)).sort((a,b)=>b.margin_pct-a.margin_pct);
+  const avg  = rows.length ? Math.round(rows.reduce((s,i)=>s+i.margin_pct,0)/rows.length*10)/10 : 0;
+  T('mgAvg', avg); T('mgAvgS', rows.length+' SKU z ceną sprzedaży');
+  if (rows[0]) { T('mgBest', rows[0].margin_pct+'%'); T('mgBestN', rows[0].name+' · '+rows[0].format); }
+  const cols=['#2B4A3F','#2B4A3F','#2B4A3F','#C4963A','#C4963A','#C4963A','#8B6914'];
+  H('mgList', rows.map((i,n)=>`
+    <div class="mrow"><div style="flex:1"><div style="font-weight:500;font-size:13px">${i.name}</div><div class="tc">${i.category} · ${i.format}</div></div>
+    <div class="mbar"><div class="mfill" style="width:${Math.min(i.margin_pct,100)}%;background:${cols[n]||'#888'}"></div></div>
+    <div class="mono" style="font-weight:500;min-width:40px;text-align:right;color:${mgColor(i.margin_pct)}">${i.margin_pct}%</div></div>`).join(''));
+  const low = INV.filter(i=>i.sell_price>0&&i.margin_pct<target&&(!cat||i.category===cat)).sort((a,b)=>a.margin_pct-b.margin_pct);
+  T('mgLowTag', low.length+' poniżej celu');
+  H('mgLow', low.map(i=>`
+    <div class="mrow"><div style="flex:1"><div style="font-weight:500;font-size:13px">${i.name}</div><div class="tc">${i.category}</div></div>
+    <div class="mono" style="color:var(--dg);font-weight:500">${i.margin_pct}%</div>
+    <div style="font-size:11px;color:var(--txm);margin-left:6px">cel:${target}%</div></div>`).join('')
+    || '<div style="font-size:13px;color:var(--txf);padding:12px 0">Wszystkie marże powyżej celu ✓</div>');
+  T('mgNote', low.length>0 ? low.length+' SKU poniżej celu '+target+'%. Rozważ korektę ceny sprzedaży lub renegocjację z dostawcą.' : 'Wszystkie marże powyżej celu — dobry wynik!');
+}
+
+// ═══ VIEW — REORDER ═══
+function vReorder() {
+  const urg  = INV.filter(i=>i.days_cover<=10).sort((a,b)=>a.days_cover-b.days_cover);
+  const soon = INV.filter(i=>i.days_cover>10&&i.days_cover<=21).sort((a,b)=>a.days_cover-b.days_cover);
+  T('roUC',urg.length); T('roSC',soon.length);
+  T('roUrgTag',urg.length+' pilne'); T('roUrgTag2',urg.length+' pilne'); T('roSoonTag',soon.length+' wkrótce');
+  const mkR = i => {
+    const p=Math.min(100,Math.round((21-Math.min(i.days_cover,21))/21*100));
+    const c=i.days_cover<=6?'var(--dg)':i.days_cover<=10?'var(--gd)':'var(--su)';
+    return `<div class="rerow">
+      <div><div style="font-size:13px;font-weight:500">${i.name}</div><div class="tc">${i.format} · ${i.qty} szt. · min ${i.min_level}</div></div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+        ${dayChip(i.days_cover)}
+        <div class="rebar"><div class="refill" style="width:${p}%;background:${c}"></div></div>
+      </div></div>`;
+  };
+  H('roUrg',  urg.map(mkR).join('')  || '<div style="color:var(--txf);font-size:13px;padding:12px 0">Brak pilnych zamówień ✓</div>');
+  H('roSoon', soon.map(mkR).join('') || '<div style="color:var(--txf);font-size:13px;padding:12px 0">Brak wkrótce ✓</div>');
+  const stChip = i => i.days_cover<=6?'<span class="chip chi-c">Krytyczny</span>':i.days_cover<=10?'<span class="chip chi-w">Pilny</span>':i.days_cover<=21?'<span class="chip chi-g">Wkrótce</span>':'<span class="chip chi-n">OK</span>';
+  H('roAll', [...INV].sort((a,b)=>a.days_cover-b.days_cover).map(i=>`
+    <tr><td class="tn">${i.name}</td><td class="tc">${i.category}</td>
+    <td class="mono">${i.qty}</td><td class="mono">${i.sales}/tydz.</td>
+    <td>${dayChip(i.days_cover)}</td><td class="mono">${i.min_level}</td>
+    <td>${stChip(i)}</td></tr>`).join(''));
+}
+
+// ═══ VIEW — POUR COST ═══
+function vPour() {
+  const pc = D.pour_cost||[];
+  let tot=0,maxV=0,maxN='',dev=0;
+  H('pourList', pc.length ? pc.map(p=>{
+    const th=Number(p.theoretical||0), ac=Number(p.actual||0);
+    const d=ac-th; if(Math.abs(d)>1)dev++;
+    tot+=d; if(Math.abs(d)>Math.abs(maxV)){maxV=d;maxN=String(p.name||'');}
+    const cls=d>1?'pos-bad':d<-1?'pos-ok':'';
+    return `<div class="prow pgrid">
+      <div><div style="font-weight:500">${p.name}</div><div class="tc">${p.sub||''}</div></div>
+      <div class="mono" style="text-align:right">${th} zł</div>
+      <div class="mono" style="text-align:right">${ac} zł</div>
+      <div class="mono ${cls}" style="text-align:right">${d?(d>0?'+':'')+d+' zł':'—'}</div></div>`;
+  }).join('') : '<div style="padding:24px;text-align:center;color:var(--txf);font-size:13px">Brak danych. Uzupełnij zakładkę <strong>pour_cost</strong> w Google Sheets (kolumny: name, sub, theoretical, actual).</div>');
+  T('pourDevTag', dev+' odchyleń');
+  T('pourTot', (tot>=0?'+':'')+Math.round(tot)+' zł');
+  T('pourMax', (maxV>=0?'+':'')+Math.round(maxV)+' zł');
+  T('pourMaxN', maxN||'—');
+}
+
+// ═══ VIEW — SUPPLIERS ═══
+function vSuppliers() {
+  const drift = D.price_drift||[];
+  const ups   = drift.filter(d=>(d.new_price||0)>(d.old_price||0));
+  const downs = drift.filter(d=>(d.new_price||0)<(d.old_price||0));
+  T('supUp',ups.length); T('supDown',downs.length);
+  T('supChgTag', drift.filter(d=>d.new_price!==d.old_price).length+' zmian');
+  H('supDrift', drift.length ? drift.map(d=>{
+    const pct=d.old_price?((d.new_price-d.old_price)/d.old_price*100).toFixed(1):'0';
+    const up2=Number(d.new_price)>Number(d.old_price);
+    return `<div class="drow">
+      <div><div style="font-weight:500;font-size:13px">${d.name}</div><div class="tc">${d.supplier}</div></div>
+      <div style="text-align:right">
+        <div style="font-family:'DM Mono',monospace;font-weight:500;font-size:12px;color:${up2?'var(--dg)':'var(--su)'}">${up2?'↑':'↓'} ${up2?'+':''}${pct}%</div>
+        <div class="tc">${d.old_price} → ${d.new_price} zł/bt</div></div></div>`;
+  }).join('') : '<div style="font-size:13px;color:var(--txf);padding:16px 0">Brak zmian cen w ostatnim tygodniu.<br>Dane pojawią się po pierwszym uruchomieniu <strong>weeklyUpdate()</strong> z Apps Script.</div>');
+  H('supAll', [...INV].sort((a,b)=>a.name.localeCompare(b.name,'pl')).map(i=>`
+    <tr><td class="tn">${i.name}</td><td class="tc">${i.supplier}</td>
+    <td class="mono">${i.buy} zł</td>
+    <td class="mono" style="color:${mgColor(i.margin_pct)}">${i.margin_pct}%</td></tr>`).join(''));
+  T('supNote', ups.length ? ups.map(d=>{const p=d.old_price?((d.new_price-d.old_price)/d.old_price*100).toFixed(1):'?';return `${d.name} +${p}%`;}).join(' · ')+' — sprawdź wpływ na marżę.' : 'Brak wzrostów cen w ostatnim tygodniu.');
+}
+
+// ═══ VIEW — BENCHMARKING ═══
+function vBenchmarking() {
+  T('benchScore', D.health?.composite||'—');
+}
+
+// ═══ VIEW — WEEKLY ═══
+function vWeekly() {
+  const m = D.weekly_movers||{up:[],down:[]};
+  H('wkUp',   (m.up||[]).map(([n,v])=>`<div class="erow eu"><span>${n}</span><span>${v}</span></div>`).join('') || '<div style="color:var(--txf)">Brak danych</div>');
+  H('wkDown', (m.down||[]).map(([n,v])=>`<div class="erow ed"><span>${n}</span><span>${v}</span></div>`).join('') || '<div style="color:var(--txf)">Brak danych</div>');
+  const k=D.kpi||{}; const h=D.health||{}; const [vl]=verdict(h.composite||0); const t=k.margin_target||68;
+  H('wkAlerts',`
+    <div class="erow" style="color:var(--dg)">🔴 ${k.urgent_reorders||0} SKU wymaga zamówienia</div>
+    <div class="erow" style="color:var(--wn);margin-top:4px">🟡 Dead stock: ${fmt(k.dead_stock_value||0)} zł</div>
+    <div class="erow" style="color:${(k.avg_margin||0)>=t?'var(--su)':'var(--wn)'};margin-top:4px">${(k.avg_margin||0)>=t?'🟢':'🟡'} Marża: ${k.avg_margin||0}%</div>
+    <div class="erow" style="color:var(--in);margin-top:4px">ℹ Wynik zdrowia: ${h.composite||0}/100 ${vl}</div>`);
+  const dead=INV.filter(i=>i.is_dead).slice(0,5);
+  const urg =INV.filter(i=>i.is_urgent).slice(0,5);
+  const venue=U_VENUE||D.venue||'Restauracja';
+  const today=new Date().toLocaleDateString('pl-PL',{day:'2-digit',month:'long',year:'numeric'});
+  T('wkPre',
+`Sommly · Raport tygodniowy · ${venue} · ${today}
+
+WYNIK ZDROWIA: ${h.composite||0}/100 ${vl}
+  Marża: ${h.margin_score||0}/100 · Dead stock: ${h.dead_stock_score||0}/100 · Zamówienia: ${h.reorder_score||0}/100
+
+KLUCZOWE WSKAŹNIKI
+  Dead stock:       ${fmt(k.dead_stock_value||0)} zł (${k.dead_stock_skus||0} SKU)
+  Wartość piwnicy:  ${fmt(k.cellar_value||0)} zł
+  Śr. marża:        ${k.avg_margin||0}%${(k.avg_margin||0)>=t?' ✓':'  (cel: '+t+'%)'}
+  Pokrycie mag.:    ${k.stock_coverage_days||0} dni
+  Pilne zamówienia: ${k.urgent_reorders||0} SKU
+${dead.length?'\nDEAD STOCK\n'+dead.map(i=>`  • ${i.name} — ${fmt(i.stock_value)} zł`).join('\n'):''}
+${urg.length?'\nPILNE ZAMÓWIENIA\n'+urg.map(i=>`  • ${i.name} — ${i.days_cover<=99?i.days_cover+' dni':'brak ruchu'}`).join('\n'):''}
+
+Sommly · sommly.pl`);
+}
+
+// ═══ VIEW — ACTION LOG ═══
+function vActionLog() {
+  const al=D.action_log||[];
+  const dc=['#2B4A3F','#8B6914','#1C3F6E','#A0321C'];
+  T('alCount', al.length+' wpisów');
+  H('alList', al.length ? al.map((e,i)=>`
+    <div class="arow"><div class="adot" style="background:${e.color||dc[i%4]}"></div>
+    <div style="flex:1"><strong>${e.sku}</strong> — ${e.action}</div>
+    <div style="color:var(--txf);font-size:11px;flex-shrink:0">${e.date}</div></div>`).join('')
+    : '<div style="font-size:13px;color:var(--txf);padding:16px 0">Brak wpisów.</div>');
+}
+
+function toggleAF(){const f=document.getElementById('aForm');f.style.display=f.style.display==='block'?'none':'block';if(f.style.display==='block')document.getElementById('afSku').focus();}
+async function submitAL(){
+  const sku=document.getElementById('afSku').value.trim();
+  const act=document.getElementById('afAct').value.trim();
+  if(!sku||!act){alert('Wypełnij oba pola.');return;}
+  if(apiUrl){
+    try{await fetch(apiUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sku,action:act,user:'manager'})});await reload();}
+    catch(e){alert('Błąd zapisu: '+e.message);}
+  } else {
+    D.action_log.unshift({date:'dziś',sku,action:act,color:'#2B4A3F'});
+    vActionLog();
+  }
+  document.getElementById('afSku').value='';document.getElementById('afAct').value='';toggleAF();
+}
+
+// ═══ RENDER ALL ═══
+function renderAll(data) {
+  D   = data;
+  INV = derive(D.inventory||[]);
+  if (U_VENUE) D.venue = U_VENUE;
+
+  renderDashboard();
+
+  // Immediately re-render whichever view is currently active
+  const renders = { inventory:vInventory, deadstock:vDeadstock, margins:vMargins,
+                    reorder:vReorder, pour:vPour, suppliers:vSuppliers,
+                    benchmarking:vBenchmarking, weekly:vWeekly, actionlog:vActionLog };
+  if (renders[curView]) renders[curView]();
+
+  T('srcLbl', apiUrl ? 'Google Sheets — dane na żywo' : 'Tryb demo');
+
+  // Hide loading, show correct view
+  document.getElementById('view-loading').classList.remove('active');
+  document.getElementById('view-error').classList.remove('active');
+  showView(curView==='loading'?'dashboard':curView);
+}
+
+// ═══ DATA LOADING — JSONP (solves CORS) ═══
+let jsonpTimer = null;
+
+function loadViaJsonp(url) {
+  return new Promise((resolve, reject) => {
+    // Remove any previous JSONP script/callback
+    const old = document.getElementById('jsonp-script');
+    if (old) old.remove();
+
+    const cbName = 'sommlyCallback';
+    if (jsonpTimer) clearTimeout(jsonpTimer);
+
+    window[cbName] = (data) => {
+      clearTimeout(jsonpTimer);
+      delete window[cbName];
+      const s = document.getElementById('jsonp-script');
+      if (s) s.remove();
+      if (data && data.error) reject(new Error(data.error));
+      else resolve(data);
+    };
+
+    jsonpTimer = setTimeout(() => {
+      delete window[cbName];
+      const s = document.getElementById('jsonp-script');
+      if (s) s.remove();
+      reject(new Error('Timeout — Apps Script nie odpowiedział w 15 sekund.\n\nUpewnij się:\n1. Web App wdrożony z dostępem "Anyone"\n2. URL jest poprawny (kończy się /exec)\n3. Sprawdź Apps Script → Executions → błędy'));
+    }, 15000);
+
+    const sep = url.includes('?') ? '&' : '?';
+    const script = document.createElement('script');
+    script.id = 'jsonp-script';
+    script.src = url + sep + 'callback=sommlyCallback&t=' + Date.now();
+    script.onerror = () => {
+      clearTimeout(jsonpTimer);
+      delete window[cbName];
+      reject(new Error('Nie można załadować skryptu z URL:\n' + url + '\n\nSprawdź czy URL jest poprawny.'));
+    };
+    document.head.appendChild(script);
+  });
+}
+
+function setBadge(label, cls) {
+  const b = document.getElementById('liveBadge');
+  b.className = 'lbadge ' + cls;
+  b.innerHTML = '<span class="ldot"></span>' + label;
+}
+
+async function reload() {
+  const rb = document.getElementById('refreshBtn');
+  if (rb) rb.textContent = '↻ Wczytywanie...';
+
+  if (DEMO_M) {
+    // Demo mode — use built-in data
+    await new Promise(r => setTimeout(r, 300));
+    setBadge('DEMO', 'lb-demo');
+    renderAll(JSON.parse(JSON.stringify(DEMO_DATA)));
+    if (rb) rb.textContent = '↻ Odśwież';
+    return;
+  }
+
+  apiUrl = U_API;
+  T('loadMsg', 'Łączenie z: ' + (U_VENUE||'lokal') + '…');
+
+  try {
+    const data = await loadViaJsonp(U_API);
+    setBadge('LIVE', 'lb-live');
+    renderAll(data);
+  } catch (err) {
+    document.getElementById('view-loading').classList.remove('active');
+    document.getElementById('view-error').classList.add('active');
+    T('errMsg', '\n' + err.message);
+    setBadge('BŁĄD', 'lb-err');
+  }
+  if (rb) rb.textContent = '↻ Odśwież';
+}
+
+// Expose filter callbacks to HTML oninput/onchange
+window.vInventory = vInventory;
+window.vDeadstock = vDeadstock;
+window.vMargins   = vMargins;
+
+// Auto-refresh every 5 min when live
+setInterval(() => { if (apiUrl && !DEMO_M) reload(); }, 5*60*1000);
+
+// ═══ DEMO DATA ═══
+const DEMO_DATA = {
+  venue:'La Maddalena', last_updated:new Date().toISOString(),
+  kpi:{dead_stock_value:4820,avg_margin:62,stock_coverage_days:18,cellar_value:38400,urgent_reorders:3,dead_stock_skus:7,total_skus:13,margin_target:68},
+  health:{margin_score:78,dead_stock_score:58,reorder_score:72,composite:70},
+  categories:[{name:'Wino czerwone',value:16240,color:'#2B4A3F'},{name:'Wina białe',value:8450,color:'#378ADD'},{name:'Musujące',value:6720,color:'#C4963A'},{name:'Destylaty & likiery',value:5140,color:'#8B4513'},{name:'Bezalkoholowe',value:1850,color:'#B0A89E'}],
+  margin_trend:[58,60,61,59,63,62,64,62],
+  pour_cost:[{name:'Barolo DOCG',sub:'Butelka/kieliszek',theoretical:42,actual:51},{name:'Negroni house',sub:'Cocktail',theoretical:18,actual:22},{name:'Grappa Nonino',sub:'Kieliszek',theoretical:28,actual:25},{name:'Champagne Billecart',sub:'Kieliszek',theoretical:65,actual:67}],
+  price_drift:[{name:'Barolo Borgogno 2018',supplier:'Horeca Partner',old_price:218,new_price:236},{name:'Champagne Billecart-S.',supplier:'Wine4You',old_price:290,new_price:305}],
+  action_log:[{date:'10 kwi',sku:'Vermentino di Sardegna',action:'Dodany do menu lunchowego',color:'#2B4A3F'},{date:'8 kwi',sku:'Grappa Nonino',action:'Promocja digestif w piątek',color:'#8B6914'}],
+  weekly_movers:{up:[['Barolo DOCG BTG','+18 kiel.'],['Champagne Billecart','+9 bt.'],['Negroni house','+24 szt.'],['Pinot Grigio Lageder','+12 kiel.'],['Amaro Montenegro','+7 kiel.']],down:[['Barolo Borgogno 2018','0 szt.'],['Grappa Nonino','0 szt.'],['Vermentino Sardegna','2 kiel.']]},
+  inventory:[
+    {name:'Barolo DOCG 2019',category:'Wino czerwone',format:'Butelka',purchase_price:180,sell_price:320,stock_qty:12,weekly_sales:3,reorder_level:3,supplier:'Horeca Partner',notes:''},
+    {name:'Barolo Borgogno 2018',category:'Wino czerwone',format:'Butelka',purchase_price:218,sell_price:580,stock_qty:6,weekly_sales:0,reorder_level:2,supplier:'Horeca Partner',notes:''},
+    {name:'Primitivo Feudi Salentini',category:'Wino czerwone',format:'BTG',purchase_price:38,sell_price:52,stock_qty:18,weekly_sales:2,reorder_level:4,supplier:'Horeca Partner',notes:''},
+    {name:"Nero d'Avola DOC",category:'Wino czerwone',format:'BTG',purchase_price:32,sell_price:46,stock_qty:14,weekly_sales:2,reorder_level:4,supplier:'Dom Wina',notes:''},
+    {name:'Vermentino di Sardegna',category:'Wina białe',format:'BTG',purchase_price:35,sell_price:48,stock_qty:20,weekly_sales:1,reorder_level:4,supplier:'Wineonline',notes:''},
+    {name:'Pinot Grigio Alois Lageder',category:'Wina białe',format:'BTG',purchase_price:42,sell_price:58,stock_qty:8,weekly_sales:6,reorder_level:6,supplier:'Wine4You',notes:''},
+    {name:'Champagne Billecart-S.',category:'Musujące',format:'Butelka',purchase_price:290,sell_price:620,stock_qty:3,weekly_sales:4,reorder_level:4,supplier:'Wine4You',notes:''},
+    {name:'Prosecco Valdobbiadene',category:'Musujące',format:'BTG',purchase_price:28,sell_price:42,stock_qty:24,weekly_sales:1,reorder_level:6,supplier:'Wineonline',notes:''},
+    {name:'Grappa Nonino',category:'Destylaty & likiery',format:'Butelka',purchase_price:145,sell_price:380,stock_qty:5,weekly_sales:0,reorder_level:1,supplier:'Dom Wina',notes:''},
+    {name:'Limoncello Di Capri',category:'Destylaty & likiery',format:'Butelka',purchase_price:68,sell_price:210,stock_qty:7,weekly_sales:1,reorder_level:1,supplier:'Dom Wina',notes:''},
+    {name:'Amaro Montenegro BTG',category:'Destylaty & likiery',format:'BTG',purchase_price:22,sell_price:38,stock_qty:30,weekly_sales:5,reorder_level:8,supplier:'Dom Wina',notes:''},
+    {name:'San Pellegrino 0.75L',category:'Bezalkoholowe',format:'Butelka',purchase_price:4.5,sell_price:18,stock_qty:48,weekly_sales:20,reorder_level:12,supplier:'Horeca Partner',notes:''},
+    {name:'Negroni Gin Monkeyshine',category:'Cocktail',format:'Butelka',purchase_price:95,sell_price:185,stock_qty:4,weekly_sales:6,reorder_level:4,supplier:'Wineonline',notes:''},
+  ],
+};
+
+// Boot
+reload();
+</script>
+</body>
+</html>
