@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sommly</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root{
+  --bg:#F4F1EC;--sur:#FFFFFF;--sur2:#FAF8F5;
+  --bd:#E2DDD6;--bds:#C8C1B8;
+  --tx:#1A1714;--txm:#7A7268;--txf:#B0A89E;
+  --ac:#2B4A3F;--acl:#E8F0ED;
+  --dg:#A0321C;--dgl:#FCEEE9;
+  --wn:#8B6914;--wnl:#FBF4E3;
+  --su:#2B4A3F;--sul:#E8F0ED;
+  --in:#1C3F6E;--inl:#E8EFF8;
+  --gd:#C4963A;
+  --r:12px;--rs:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--tx);font-size:14px;line-height:1.5;min-height:100vh;}
+.shell{display:flex;min-height:100vh;}
+
+/* ── Sidebar ── */
+.sidebar{width:224px;flex-shrink:0;background:var(--ac);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;}
+.logo-area{padding:26px 22px 18px;border-bottom:1px solid rgba(255,255,255,.1);}
+.logo{font-family:'DM Serif Display',serif;font-size:22px;color:#fff;letter-spacing:-.3px;}
+.venue-pill{margin-top:8px;display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);border-radius:20px;padding:4px 10px 4px 6px;font-size:11px;color:rgba(255,255,255,.85);}
+.vdot{width:7px;height:7px;border-radius:50%;background:#6ECBA6;}
+nav{padding:16px 10px;flex:1;}
+.nl{font-size:10px;font-weight:600;letter-spacing:.1em;color:rgba(255,255,255,.35);text-transform:uppercase;padding:0 12px;margin:14px 0 5px;}
+.ni{display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:var(--rs);color:rgba(255,255,255,.6);font-size:13px;cursor:pointer;transition:background .12s,color .12s;margin-bottom:2px;user-select:none;}
+.ni:hover{background:rgba(255,255,255,.08);color:#fff;}
+.ni.active{background:rgba(255,255,255,.15);color:#fff;font-weight:500;}
+.ni-ico{width:16px;text-align:center;flex-shrink:0;}
+.nb{margin-left:auto;background:var(--gd);color:#fff;font-size:10px;font-weight:600;padding:1px 6px;border-radius:10px;min-width:18px;text-align:center;}
+.sb-foot{padding:14px;border-top:1px solid rgba(255,255,255,.1);}
+.period-sel{width:100%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:var(--rs);color:rgba(255,255,255,.85);font-family:'Outfit',sans-serif;font-size:12px;padding:7px 10px;cursor:pointer;outline:none;}
+
+/* ── Main ── */
+.main{flex:1;overflow:auto;display:flex;flex-direction:column;}
+.view{display:none;padding:28px 32px;flex:1;}
+.view.active{display:block;}
+
+/* ── Common UI ── */
+.ph{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:20px;}
+.pt{font-family:'DM Serif Display',serif;font-size:24px;font-weight:400;}
+.ps{font-size:13px;color:var(--txm);margin-top:3px;}
+.hact{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.btn{padding:7px 15px;border-radius:var(--rs);font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .13s;}
+.btn-o{background:var(--sur);border:1px solid var(--bds);color:var(--txm);}
+.btn-o:hover{border-color:var(--ac);color:var(--ac);}
+.btn-p{background:var(--ac);color:#fff;}
+.btn-p:hover{background:#1e3830;}
+.lbadge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;letter-spacing:.04em;}
+.lb-live{background:var(--sul);color:var(--su);}
+.lb-demo{background:var(--inl);color:var(--in);}
+.lb-err{background:var(--dgl);color:var(--dg);}
+.ldot{width:6px;height:6px;border-radius:50%;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.lb-live .ldot{background:var(--su);}
+.lb-demo .ldot{background:var(--in);}
+
+.sbar{display:flex;align-items:center;justify-content:space-between;background:var(--sur2);border:1px solid var(--bd);border-radius:var(--rs);padding:8px 14px;margin-bottom:18px;font-size:12px;color:var(--txm);}
+
+/* Panels */
+.grid{display:grid;gap:14px;margin-bottom:14px;}
+.g2{grid-template-columns:1fr 1fr;}
+.g3{grid-template-columns:1fr 1fr 1fr;}
+.g21{grid-template-columns:2fr 1fr;}
+.g5{grid-template-columns:repeat(5,1fr);}
+.panel{background:var(--sur);border:1px solid var(--bd);border-radius:var(--r);padding:18px;}
+.phead{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:6px;}
+.ptit{font-size:13px;font-weight:600;color:var(--tx);}
+.ptag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;text-transform:uppercase;letter-spacing:.04em;}
+.tg-d{background:var(--dgl);color:var(--dg);}
+.tg-w{background:var(--wnl);color:var(--wn);}
+.tg-g{background:var(--sul);color:var(--su);}
+.tg-i{background:var(--inl);color:var(--in);}
+.pact{font-size:12px;color:var(--ac);cursor:pointer;font-weight:500;}
+
+/* KPI cards */
+.kpi{background:var(--sur);border:1px solid var(--bd);border-radius:var(--r);padding:14px;}
+.kpi.kd{border-left:3px solid var(--dg);}
+.kpi.kw{border-left:3px solid var(--gd);}
+.kpi.kg{border-left:3px solid var(--ac);}
+.klbl{font-size:10px;color:var(--txm);text-transform:uppercase;letter-spacing:.06em;font-weight:500;margin-bottom:6px;}
+.kval{font-family:'DM Mono',monospace;font-size:21px;font-weight:500;line-height:1;}
+.ksub{font-size:11px;color:var(--txf);margin-top:4px;}
+.kdlt{font-size:11px;font-weight:500;margin-top:4px;}
+.kdlt.bad{color:var(--dg);}
+.kdlt.ok{color:var(--su);}
+.kdlt.neu{color:var(--txm);}
+
+/* Health ring */
+.hbanner{background:var(--sur);border:1px solid var(--bd);border-radius:var(--r);padding:18px 22px;margin-bottom:16px;display:flex;align-items:center;gap:22px;flex-wrap:wrap;}
+.hring{flex-shrink:0;position:relative;width:76px;height:76px;}
+.hring svg{transform:rotate(-90deg);}
+.hrlbl{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.hrnum{font-family:'DM Mono',monospace;font-size:19px;font-weight:500;color:var(--ac);line-height:1;}
+.hrunit{font-size:10px;color:var(--txm);margin-top:1px;}
+.hfacs{flex:1;display:flex;gap:18px;min-width:260px;}
+.hfac{flex:1;}
+.hfl{font-size:11px;color:var(--txm);margin-bottom:3px;display:flex;justify-content:space-between;}
+.hbar{height:5px;background:var(--bg);border-radius:3px;overflow:hidden;}
+.hfill{height:100%;border-radius:3px;transition:width .6s ease;}
+.hverd{margin-left:auto;text-align:right;flex-shrink:0;}
+.vbadge{display:inline-block;padding:4px 11px;border-radius:20px;font-size:12px;font-weight:500;}
+
+/* Tables */
+.tbl{width:100%;border-collapse:collapse;}
+.tbl th{font-size:10px;font-weight:600;color:var(--txf);text-transform:uppercase;letter-spacing:.06em;text-align:left;padding:0 8px 8px;border-bottom:1px solid var(--bd);}
+.tbl td{padding:9px 8px;border-bottom:1px solid var(--bg);font-size:13px;vertical-align:middle;}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tr:hover td{background:var(--sur2);}
+.tn{font-weight:500;}
+.tc{font-size:11px;color:var(--txf);}
+.fbadge{display:inline-block;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:600;}
+.fbtg{background:var(--inl);color:var(--in);}
+.fbottle{background:var(--wnl);color:var(--wn);}
+.chip{display:inline-flex;align-items:center;font-family:'DM Mono',monospace;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500;}
+.chi-c{background:var(--dgl);color:var(--dg);}
+.chi-w{background:var(--wnl);color:var(--wn);}
+.chi-g{background:var(--sul);color:var(--su);}
+
+/* Inline rows */
+.mrow{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--bg);}
+.mrow:last-child{border-bottom:none;}
+.mbar-bg{width:76px;height:5px;background:var(--bg);border-radius:3px;overflow:hidden;flex-shrink:0;}
+.mbar-fill{height:100%;border-radius:3px;}
+.mono{font-family:'DM Mono',monospace;font-size:12px;}
+
+.rerow{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--bg);}
+.rerow:last-child{border-bottom:none;}
+.reb{width:76px;height:4px;background:var(--bg);border-radius:2px;overflow:hidden;flex-shrink:0;}
+.ref{height:100%;border-radius:2px;}
+
+.drow{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--bg);font-size:13px;}
+.drow:last-child{border-bottom:none;}
+
+.arow{display:flex;gap:9px;padding:7px 0;border-bottom:1px solid var(--bg);font-size:12px;}
+.arow:last-child{border-bottom:none;}
+.adot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:3px;}
+
+.catrow{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--bg);}
+.catrow:last-child{border-bottom:none;}
+.catdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+
+.note{display:flex;gap:8px;background:var(--acl);border-radius:var(--rs);padding:9px 11px;font-size:12px;color:var(--ac);margin-top:10px;align-items:flex-start;}
+
+/* Pour cost grid */
+.pgrid{display:grid;grid-template-columns:1fr 60px 60px 55px;gap:4px;align-items:center;}
+.pgrid-hd{font-size:10px;color:var(--txf);text-transform:uppercase;letter-spacing:.06em;padding-bottom:7px;border-bottom:1px solid var(--bd);}
+.prow{padding:7px 0;border-bottom:1px solid var(--bg);font-size:13px;}
+.prow:last-child{border-bottom:none;}
+.pos-bad{color:var(--dg);}
+.pos-ok{color:var(--su);}
+
+/* Chart */
+.chwrap{position:relative;height:200px;}
+
+/* Email preview */
+.eprev{background:var(--sur2);border:1px solid var(--bd);border-radius:var(--rs);padding:12px;font-size:12px;color:var(--txm);}
+.erow{display:flex;justify-content:space-between;padding:3px 0;}
+.eu{color:var(--dg);}
+.ed{color:var(--su);}
+
+/* Loading/error screens */
+.screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;gap:14px;text-align:center;padding:40px;}
+.spinner{width:28px;height:28px;border:2px solid var(--bd);border-top-color:var(--ac);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.scr-t{font-family:'DM Serif Display',serif;font-size:20px;font-weight:400;}
+.scr-s{font-size:13px;color:var(--txm);max-width:380px;line-height:1.6;}
+.err-box{background:var(--dgl);border:1px solid #e8b4a8;border-radius:var(--r);padding:14px 18px;max-width:480px;text-align:left;}
+.err-box code{font-family:'DM Mono',monospace;font-size:11px;display:block;margin-top:6px;color:var(--dg);white-space:pre-wrap;word-break:break-all;}
+
+/* Add action form */
+.aform{display:none;background:var(--sur2);border:1px solid var(--bd);border-radius:var(--rs);padding:12px;margin-bottom:10px;}
+.aform input{width:100%;border:1px solid var(--bds);border-radius:var(--rs);padding:8px 10px;font-family:'Outfit',sans-serif;font-size:13px;margin-bottom:7px;outline:none;background:var(--sur);}
+.aform input:focus{border-color:var(--ac);}
+.formrow{display:flex;gap:7px;}
+.sbtn{background:var(--ac);color:#fff;border:none;border-radius:var(--rs);padding:7px 14px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;cursor:pointer;}
+.cbtn{background:var(--sur);border:1px solid var(--bds);color:var(--txm);border-radius:var(--rs);padding:7px 14px;font-family:'Outfit',sans-serif;font-size:13px;cursor:pointer;}
+
+/* Inventory full table */
+.inv-filters{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px;}
+.inv-filters input{border:1px solid var(--bds);border-radius:var(--rs);padding:7px 12px;font-family:'Outfit',sans-serif;font-size:13px;outline:none;background:var(--sur);color:var(--tx);}
+.inv-filters input:focus{border-color:var(--ac);}
+.fsel{border:1px solid var(--bds);border-radius:var(--rs);padding:7px 10px;font-family:'Outfit',sans-serif;font-size:13px;background:var(--sur);color:var(--tx);outline:none;}
+.tscroll{overflow-x:auto;}
+
+/* Weekly email */
+.email-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+
+/* Section title inside view */
+.stit{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--txf);margin:18px 0 8px;}
+
+@media(max-width:1100px){
+  .g5{grid-template-columns:repeat(3,1fr);}
+  .g21{grid-template-columns:1fr;}
+  .g3{grid-template-columns:1fr 1fr;}
+  .email-grid{grid-template-columns:1fr 1fr;}
+  .hfacs{flex-wrap:wrap;}
+}
+@media(max-width:700px){
+  .sidebar{width:56px;}
+  .ni span:not(.ni-ico){display:none;}
+  .nb{display:none;}
+  .logo-area,.nl,.sb-foot{display:none;}
+  nav{padding:10px 4px;}
+  .ni{justify-content:center;padding:10px;}
+  .view{padding:16px;}
+  .g2,.g3,.g5{grid-template-columns:1fr;}
+  .email-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<!--
+  SOMMLY — Deployment-ready dashboard
+  ─────────────────────────────────────────────────────────────
+  URL params:
+    ?venue=La+Maddalena   override venue display name
+    ?api=https://...      Apps Script Web App URL (live mode)
+    ?demo=1               force demo mode
+
+  All nav items are functional — each renders its own view
+  filtered from the live inventory data pulled from Google Sheets.
+  ─────────────────────────────────────────────────────────────
+-->
+
+<div class="shell">
+
+<!-- ═══ SIDEBAR ═══ -->
+<aside class="sidebar">
+  <div class="logo-area">
+    <div class="logo">sommly</div>
+    <div class="venue-pill"><span class="vdot"></span><span id="sideVenue">—</span></div>
+  </div>
+  <nav>
+    <div class="nl">Overview</div>
+    <div class="ni active" data-view="dashboard"><span class="ni-ico">◈</span><span>Dashboard</span></div>
+    <div class="ni" data-view="inventory"><span class="ni-ico">⬡</span><span>Cellar Inventory</span><span class="nb" id="nb-inv">—</span></div>
+
+    <div class="nl">Intelligence</div>
+    <div class="ni" data-view="deadstock"><span class="ni-ico">△</span><span>Dead Stock</span><span class="nb" id="nb-ds">—</span></div>
+    <div class="ni" data-view="margins"><span class="ni-ico">◎</span><span>Margin Analysis</span></div>
+    <div class="ni" data-view="reorder"><span class="ni-ico">↻</span><span>Reorder Watch</span><span class="nb" id="nb-ro">—</span></div>
+    <div class="ni" data-view="pour"><span class="ni-ico">⌇</span><span>Pour Cost</span></div>
+    <div class="ni" data-view="suppliers"><span class="ni-ico">↗</span><span>Supplier Prices</span></div>
+
+    <div class="nl">Venue</div>
+    <div class="ni" data-view="benchmarking"><span class="ni-ico">⊞</span><span>Benchmarking</span></div>
+    <div class="ni" data-view="weekly"><span class="ni-ico">✉</span><span>Weekly Report</span></div>
+    <div class="ni" data-view="actionlog"><span class="ni-ico">✎</span><span>Action Log</span></div>
+  </nav>
+  <div class="sb-foot">
+    <select class="period-sel" id="periodSel">
+      <option>Tydzień bieżący</option>
+      <option>Tydzień poprzedni</option>
+      <option>Miesiąc bieżący</option>
+    </select>
+  </div>
+</aside>
+
+<!-- ═══ VIEWS ═══ -->
+<main class="main">
+
+<!-- Loading -->
+<div class="view active" id="view-loading">
+  <div class="screen">
+    <div class="spinner"></div>
+    <div class="scr-t">Wczytywanie danych</div>
+    <div class="scr-s" id="loadMsg">Łączenie z Google Sheets...</div>
+  </div>
+</div>
+
+<!-- Error -->
+<div class="view" id="view-error">
+  <div class="screen">
+    <div class="scr-t">Błąd połączenia</div>
+    <div class="err-box"><span style="font-weight:500;color:var(--dg)">Nie można wczytać danych.</span><code id="errMsg"></code></div>
+    <div class="scr-s">Sprawdź URL Apps Script Web App — upewnij się, że dostęp = "Anyone".</div>
+    <button class="btn btn-o" onclick="location.reload()">↻ Spróbuj ponownie</button>
+  </div>
+</div>
+
+<!-- ── DASHBOARD ── -->
+<div class="view" id="view-dashboard">
+  <div class="ph">
+    <div><div class="pt">Cellar Intelligence</div><div class="ps" id="dashSub">—</div></div>
+    <div class="hact">
+      <span class="lbadge lb-demo" id="liveBadge"><span class="ldot"></span>DEMO</span>
+      <button class="btn btn-o" id="refreshBtn" onclick="loadData()">↻ Odśwież</button>
+    </div>
+  </div>
+  <div class="sbar"><span>Źródło: <strong id="dataSourceLbl">—</strong></span><span id="lastUpdLbl">—</span></div>
+
+  <!-- Health -->
+  <div class="hbanner">
+    <div class="hring">
+      <svg width="76" height="76" viewBox="0 0 76 76">
+        <circle cx="38" cy="38" r="32" fill="none" stroke="var(--bd)" stroke-width="6"/>
+        <circle id="hRing" cx="38" cy="38" r="32" fill="none" stroke="#2B4A3F" stroke-width="6"
+          stroke-dasharray="201.1" stroke-dashoffset="201.1" stroke-linecap="round"
+          style="transition:stroke-dashoffset .8s ease,stroke .4s"/>
+      </svg>
+      <div class="hrlbl"><span class="hrnum" id="hNum">—</span><span class="hrunit">/100</span></div>
+    </div>
+    <div class="hfacs">
+      <div class="hfac">
+        <div class="hfl"><span>Zdrowie marży</span><span class="mono" id="hf1l">—</span></div>
+        <div class="hbar"><div class="hfill" id="hf1b" style="width:0%;background:#2B4A3F"></div></div>
+        <div style="font-size:10px;color:var(--txf);margin-top:3px">Waga 40%</div>
+      </div>
+      <div class="hfac">
+        <div class="hfl"><span>Dead stock</span><span class="mono" id="hf2l">—</span></div>
+        <div class="hbar"><div class="hfill" id="hf2b" style="width:0%;background:#C4963A"></div></div>
+        <div style="font-size:10px;color:var(--txf);margin-top:3px">Waga 30%</div>
+      </div>
+      <div class="hfac">
+        <div class="hfl"><span>Zamówienia</span><span class="mono" id="hf3l">—</span></div>
+        <div class="hbar"><div class="hfill" id="hf3b" style="width:0%;background:#1C3F6E"></div></div>
+        <div style="font-size:10px;color:var(--txf);margin-top:3px">Waga 30%</div>
+      </div>
+    </div>
+    <div class="hverd">
+      <div class="vbadge" id="vbadge">—</div>
+      <div style="font-size:11px;color:var(--txf);margin-top:5px">Vs. śr. Wrocław: <strong>+4 pkt</strong></div>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="grid g5" style="margin-bottom:14px">
+    <div class="kpi kd"><div class="klbl">Dead Stock</div><div class="kval"><span id="kDs">—</span> <span style="font-size:13px">zł</span></div><div class="ksub"><span id="kDsC">—</span> SKU</div><div class="kdlt bad" id="kDsDlt">—</div></div>
+    <div class="kpi kw"><div class="klbl">Śr. marża</div><div class="kval"><span id="kMg">—</span><span style="font-size:13px">%</span></div><div class="ksub">Cel: 68% · <span id="kMgG">—</span></div><div class="kdlt" id="kMgSt">—</div></div>
+    <div class="kpi kg"><div class="klbl">Pokrycie mag.</div><div class="kval"><span id="kCov">—</span> <span style="font-size:13px">dni</span></div><div class="ksub" id="kCovS">—</div><div class="kdlt neu">→ stabilne</div></div>
+    <div class="kpi kw"><div class="klbl">Wartość piwnicy</div><div class="kval"><span id="kCel">—</span> <span style="font-size:13px">zł</span></div><div class="ksub" id="kCelS">—</div><div class="kdlt ok" id="kCelDlt">—</div></div>
+    <div class="kpi" id="kRoCard"><div class="klbl">Zam. pilne</div><div class="kval" id="kRo">—</div><div class="ksub">SKU wymagają zamówienia</div><div class="kdlt bad" id="kRoDlt">—</div></div>
+  </div>
+
+  <!-- Dead stock summary + reorder -->
+  <div class="grid g21">
+    <div class="panel">
+      <div class="phead"><div class="ptit">Dead Stock — top pozycje</div><span class="ptag tg-d" id="dashDsTag">—</span></div>
+      <table class="tbl"><thead><tr><th>Produkt</th><th>Format</th><th>Wartość</th><th>Bez ruchu</th><th>Akcja</th></tr></thead>
+      <tbody id="dashDsBody"></tbody></table>
+      <div class="note" style="margin-top:10px"><span>◈</span><span id="dashDsNote">—</span></div>
+    </div>
+    <div class="panel">
+      <div class="phead"><div class="ptit">Reorder — pilne</div><span class="ptag tg-d" id="dashRoTag">—</span></div>
+      <div id="dashRoList"></div>
+    </div>
+  </div>
+
+  <!-- Margins + chart -->
+  <div class="grid g21">
+    <div class="panel">
+      <div class="phead"><div class="ptit">Trend marży brutto — 8 tygodni</div><span class="ptag tg-w">Cel: 68%</span></div>
+      <div class="chwrap"><canvas id="marginChart" role="img" aria-label="Trend marży brutto">Trend marży.</canvas></div>
+    </div>
+    <div class="panel">
+      <div class="phead"><div class="ptit">Kategorie piwnicy</div></div>
+      <div id="dashCatList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── CELLAR INVENTORY ── -->
+<div class="view" id="view-inventory">
+  <div class="ph">
+    <div><div class="pt">Cellar Inventory</div><div class="ps" id="invSub">Wszystkie produkty w piwnicy</div></div>
+    <div class="hact"><span class="ptag tg-i" id="invCount">— SKU</span></div>
+  </div>
+  <div class="inv-filters">
+    <input type="text" id="invSearch" placeholder="Szukaj produktu..." oninput="renderInventory()" style="flex:1;min-width:160px">
+    <select class="fsel" id="invCat" onchange="renderInventory()">
+      <option value="">Wszystkie kategorie</option>
+      <option>Wino czerwone</option><option>Wina białe</option><option>Musujące</option>
+      <option>Destylaty & likiery</option><option>Cocktail</option><option>Bezalkoholowe</option><option>Inne</option>
+    </select>
+    <select class="fsel" id="invFmt" onchange="renderInventory()">
+      <option value="">Wszystkie formaty</option>
+      <option>BTG</option><option>Butelka</option>
+    </select>
+    <select class="fsel" id="invSort" onchange="renderInventory()">
+      <option value="name">Sortuj: nazwa</option>
+      <option value="margin_desc">Marża ↓</option>
+      <option value="stock_desc">Stan ↓</option>
+      <option value="value_desc">Wartość ↓</option>
+      <option value="sales_desc">Sprzedaż ↓</option>
+    </select>
+  </div>
+  <div class="panel" style="padding:0">
+    <div class="tscroll">
+      <table class="tbl" style="min-width:900px">
+        <thead><tr>
+          <th style="padding-left:16px">Produkt</th><th>Kategoria</th><th>Format</th>
+          <th>C. zakupu</th><th>C. sprzedaży</th><th>Marża</th>
+          <th>Stan (szt.)</th><th>Sprzedaż/tydz.</th><th>Dni zapasu</th><th>Dostawca</th>
+        </tr></thead>
+        <tbody id="invBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ── DEAD STOCK ── -->
+<div class="view" id="view-deadstock">
+  <div class="ph">
+    <div><div class="pt">Dead Stock</div><div class="ps">Produkty bez ruchu lub z niską rotacją</div></div>
+    <div class="hact"><span class="ptag tg-d" id="dsFull-tag">—</span></div>
+  </div>
+  <div class="grid g2" style="margin-bottom:14px">
+    <div class="kpi kd"><div class="klbl">Łączna wartość</div><div class="kval"><span id="dsTotVal">—</span> zł</div><div class="ksub" id="dsTotSku">—</div></div>
+    <div class="kpi kw"><div class="klbl">Podział BTG / Butelka</div><div class="kval" id="dsSplit">—</div><div class="ksub" id="dsSplitV">—</div></div>
+  </div>
+  <div class="panel">
+    <div class="phead"><div class="ptit">Wszystkie pozycje dead stock</div>
+      <div style="display:flex;gap:8px">
+        <select class="fsel" id="dsCatFilter" onchange="renderDeadStockFull()" style="font-size:12px;padding:4px 8px">
+          <option value="">Wszystkie kategorie</option>
+          <option>Wino czerwone</option><option>Wina białe</option><option>Musujące</option>
+          <option>Destylaty & likiery</option><option>Cocktail</option><option>Bezalkoholowe</option>
+        </select>
+        <select class="fsel" id="dsFmtFilter" onchange="renderDeadStockFull()" style="font-size:12px;padding:4px 8px">
+          <option value="">BTG + Butelka</option><option>BTG</option><option>Butelka</option>
+        </select>
+      </div>
+    </div>
+    <table class="tbl"><thead><tr>
+      <th>Produkt</th><th>Kategoria</th><th>Format</th><th>Wartość</th><th>Dni bez ruchu</th><th>Marża</th><th>Zalecane działanie</th>
+    </tr></thead><tbody id="dsFullBody"></tbody></table>
+  </div>
+  <div class="note" style="margin-top:12px"><span>◈</span><span id="dsFullNote">—</span></div>
+</div>
+
+<!-- ── MARGIN ANALYSIS ── -->
+<div class="view" id="view-margins">
+  <div class="ph">
+    <div><div class="pt">Margin Analysis</div><div class="ps">Analiza marży brutto po SKU i kategorii</div></div>
+    <div class="hact"><span class="ptag tg-g" id="mgTarget">Cel: 68%</span></div>
+  </div>
+  <div class="grid g2" style="margin-bottom:14px">
+    <div class="kpi kw"><div class="klbl">Śr. marża ważona</div><div class="kval"><span id="mgAvg">—</span>%</div><div class="ksub" id="mgAvgSub">—</div></div>
+    <div class="kpi kg"><div class="klbl">Najlepsza marża</div><div class="kval" id="mgBest">—</div><div class="ksub" id="mgBestName">—</div></div>
+  </div>
+  <div class="grid g2">
+    <div class="panel">
+      <div class="phead"><div class="ptit">Marże według SKU</div>
+        <select class="fsel" id="mgCatFilter" onchange="renderMarginsFull()" style="font-size:12px;padding:4px 8px">
+          <option value="">Wszystkie</option>
+          <option>Wino czerwone</option><option>Wina białe</option><option>Musujące</option>
+          <option>Destylaty & likiery</option><option>Cocktail</option><option>Bezalkoholowe</option>
+        </select>
+      </div>
+      <div id="mgSkuList"></div>
+    </div>
+    <div class="panel">
+      <div class="phead"><div class="ptit">Marże poniżej celu</div><span class="ptag tg-d" id="mgLowTag">—</span></div>
+      <div id="mgLowList"></div>
+      <div class="note" style="margin-top:10px"><span>◎</span><span id="mgNote">—</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── REORDER WATCH ── -->
+<div class="view" id="view-reorder">
+  <div class="ph">
+    <div><div class="pt">Reorder Watch</div><div class="ps">Zamówienia według pilności</div></div>
+    <div class="hact"><span class="ptag tg-d" id="roUrgTag">—</span></div>
+  </div>
+  <div class="grid g2" style="margin-bottom:14px">
+    <div class="kpi kd"><div class="klbl">Pilne (≤10 dni)</div><div class="kval" id="roUrgCount">—</div><div class="ksub">Wymaga działania dziś</div></div>
+    <div class="kpi kw"><div class="klbl">Wkrótce (10–21 dni)</div><div class="kval" id="roSoonCount">—</div><div class="ksub">Planuj zamówienie</div></div>
+  </div>
+  <div class="grid g2">
+    <div class="panel">
+      <div class="phead"><div class="ptit">Pilne — do 10 dni zapasu</div><span class="ptag tg-d" id="roUrgTag2">—</span></div>
+      <div id="roUrgList"></div>
+    </div>
+    <div class="panel">
+      <div class="phead"><div class="ptit">Wkrótce — 10–21 dni zapasu</div><span class="ptag tg-w" id="roSoonTag">—</span></div>
+      <div id="roSoonList"></div>
+    </div>
+  </div>
+  <div class="panel" style="margin-top:14px">
+    <div class="phead"><div class="ptit">Wszystkie produkty — stan zapasu</div></div>
+    <table class="tbl"><thead><tr>
+      <th>Produkt</th><th>Kategoria</th><th>Stan (szt.)</th><th>Tygodniowa sprzedaż</th><th>Dni zapasu</th><th>Min. poziom</th><th>Status</th>
+    </tr></thead><tbody id="roAllBody"></tbody></table>
+  </div>
+</div>
+
+<!-- ── POUR COST ── -->
+<div class="view" id="view-pour">
+  <div class="ph">
+    <div><div class="pt">Pour Cost</div><div class="ps">Wariancja kosztu serwisu — teoretyczny vs. faktyczny</div></div>
+    <div class="hact"><span class="ptag tg-w" id="pourDevTag">—</span></div>
+  </div>
+  <div class="grid g2" style="margin-bottom:14px">
+    <div class="kpi kd"><div class="klbl">Łączna wariancja</div><div class="kval" id="pourTotVar">—</div><div class="ksub">Suma odchyleń w tygodniu</div></div>
+    <div class="kpi kw"><div class="klbl">Największe odchylenie</div><div class="kval" id="pourMaxVar">—</div><div class="ksub" id="pourMaxName">—</div></div>
+  </div>
+  <div class="panel">
+    <div class="phead"><div class="ptit">Wszystkie pozycje — pour cost</div><span class="ptag tg-w" id="pourTag2">—</span></div>
+    <div class="pgrid pgrid-hd" style="margin-bottom:0">
+      <span>Produkt</span><span style="text-align:right">Teor. (zł)</span><span style="text-align:right">Fakt. (zł)</span><span style="text-align:right">Delta</span>
+    </div>
+    <div id="pourList"></div>
+    <div class="note" style="margin-top:12px"><span>⌇</span>
+      <span>Pour cost jest obliczany z: cena zakupu (INVENTORY) / standardowa miara serwisu. Odchylenia powyżej ±3 zł wymagają weryfikacji kalibracji. Uzupełnij kolumnę "Faktyczny koszt" w zakładce POUR_COST w Sheets, aby aktywować pełne śledzenie.</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── SUPPLIER PRICES ── -->
+<div class="view" id="view-suppliers">
+  <div class="ph">
+    <div><div class="pt">Supplier Prices</div><div class="ps">Zmiany cen zakupu vs. poprzedni tydzień</div></div>
+    <div class="hact"><span class="ptag tg-d" id="supChgTag">—</span></div>
+  </div>
+  <div class="grid g2" style="margin-bottom:14px">
+    <div class="kpi kd"><div class="klbl">Wzrosty cen</div><div class="kval" id="supUpCount">—</div><div class="ksub">produktów droższych niż tydzień temu</div></div>
+    <div class="kpi kg"><div class="klbl">Spadki cen</div><div class="kval" id="supDownCount">—</div><div class="ksub">produktów tańszych niż tydzień temu</div></div>
+  </div>
+  <div class="grid g2">
+    <div class="panel">
+      <div class="phead"><div class="ptit">Zmiany cen — szczegóły</div></div>
+      <div id="supDriftList"></div>
+      <div class="note" style="margin-top:10px"><span>↗</span><span id="supNote">Zmiany cen są wykrywane automatycznie przez porównanie z tygodniowym snapshotem. Pierwsze dane pojawią się po tygodniu od uruchomienia skryptu.</span></div>
+    </div>
+    <div class="panel">
+      <div class="phead"><div class="ptit">Aktualne ceny zakupu — wszystkie SKU</div></div>
+      <table class="tbl"><thead><tr><th>Produkt</th><th>Dostawca</th><th>C. zakupu (zł)</th><th>Marża</th></tr></thead>
+      <tbody id="supAllBody"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- ── BENCHMARKING ── -->
+<div class="view" id="view-benchmarking">
+  <div class="ph">
+    <div><div class="pt">Benchmarking</div><div class="ps">Porównanie z innymi lokalami Wrocław</div></div>
+    <div class="hact"><span class="ptag tg-i">Dostępne od 5+ lokali</span></div>
+  </div>
+  <div class="screen" style="min-height:40vh">
+    <div style="font-size:40px">⊞</div>
+    <div class="scr-t">Benchmarking będzie dostępny po osiągnięciu 5 aktywnych lokali</div>
+    <div class="scr-s">Twoje dane są już zbierane. Gdy Sommly osiągnie 5+ aktywnych klientów w Wrocławiu, ta zakładka wyświetli anonimowe porównanie marży, dead stock i rotacji z innymi lokalami tej samej kategorii.</div>
+    <div style="font-size:12px;color:var(--txm);margin-top:8px">Twój wynik zdrowia: <strong id="benchYourScore">—</strong>/100</div>
+  </div>
+</div>
+
+<!-- ── WEEKLY REPORT ── -->
+<div class="view" id="view-weekly">
+  <div class="ph">
+    <div><div class="pt">Weekly Report</div><div class="ps">Podsumowanie tygodniowe — podgląd e-mail</div></div>
+    <div class="hact">
+      <span style="font-size:12px;color:var(--txm)">Wysyłka: poniedziałek 07:00</span>
+      <button class="btn btn-p" onclick="alert('Raport zostanie wysłany przez trigger Apps Script w poniedziałek o 07:00.\n\nAby wysłać testowo — otwórz Apps Script i uruchom funkcję sendWeeklyEmail().')">Wyślij teraz</button>
+    </div>
+  </div>
+  <div class="email-grid">
+    <div><div class="stit">Top 5 ruch w górę</div><div class="eprev" id="wkUp">—</div></div>
+    <div><div class="stit">Top 5 ruch w dół</div><div class="eprev" id="wkDown">—</div></div>
+    <div><div class="stit">Alerty tygodnia</div><div class="eprev" id="wkAlerts">—</div></div>
+  </div>
+  <div class="panel" style="margin-top:14px">
+    <div class="phead"><div class="ptit">Treść e-mail — podgląd</div></div>
+    <pre id="wkEmailPre" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--txm);white-space:pre-wrap;line-height:1.7;background:var(--sur2);padding:14px;border-radius:var(--rs)">—</pre>
+  </div>
+</div>
+
+<!-- ── ACTION LOG ── -->
+<div class="view" id="view-actionlog">
+  <div class="ph">
+    <div><div class="pt">Action Log</div><div class="ps">Historia działań na dead stock</div></div>
+    <div class="hact"><button class="btn btn-p" onclick="toggleAF()">+ Dodaj wpis</button></div>
+  </div>
+  <div class="aform" id="aForm">
+    <input type="text" id="afSku" placeholder="Nazwa SKU (np. Barolo Borgogno 2018)">
+    <input type="text" id="afAct" placeholder="Co zrobiono? (np. Promocja happy hour w piątek, wyniki…)">
+    <div class="formrow">
+      <button class="sbtn" onclick="submitAL()">Zapisz</button>
+      <button class="cbtn" onclick="toggleAF()">Anuluj</button>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="phead"><div class="ptit">Wszystkie wpisy</div><span class="ptag tg-i" id="alCount">— wpisów</span></div>
+    <div id="alList"></div>
+  </div>
+  <div class="note" style="margin-top:12px"><span>✎</span>
+    <span>Każdy wpis jest zapisywany do zakładki <strong>action_log</strong> w Google Sheets przez endpoint POST. Dane historyczne są kluczowe przy rozmowie o odnowieniu subskrypcji — pokazują konkretne efekty działań.</span>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════════════════
+const P = new URLSearchParams(location.search);
+const URL_VENUE  = P.get('venue');
+const URL_API    = P.get('api');
+const FORCE_DEMO = P.get('demo') === '1';
+
+// ═══════════════════════════════════════════════════════════
+// DEMO DATA  (full inventory for filtering)
+// ═══════════════════════════════════════════════════════════
+const DEMO = {
+  venue:'La Maddalena', last_updated: new Date().toISOString(),
+  kpi:{dead_stock_value:4820,avg_margin:62,stock_coverage_days:18,cellar_value:38400,urgent_reorders:3,dead_stock_skus:7},
+  health:{margin_score:78,dead_stock_score:58,reorder_score:72},
+  categories:[
+    {name:'Wino czerwone',value:16240,color:'#2B4A3F'},
+    {name:'Wina białe',value:8450,color:'#378ADD'},
+    {name:'Musujące',value:6720,color:'#C4963A'},
+    {name:'Destylaty & likiery',value:5140,color:'#8B4513'},
+    {name:'Bezalkoholowe',value:1850,color:'#B0A89E'},
+  ],
+  margin_trend:[58,60,61,59,63,62,64,62],
+  pour_cost:[
+    {name:'Barolo DOCG',sub:'Butelka/kieliszek',theoretical:42,actual:51},
+    {name:'Negroni house',sub:'Cocktail',theoretical:18,actual:22},
+    {name:'Grappa Nonino',sub:'Kieliszek',theoretical:28,actual:25},
+    {name:'Champagne Billecart',sub:'Kieliszek',theoretical:65,actual:67},
+    {name:'Pinot Grigio Lageder',sub:'BTG',theoretical:19,actual:19},
+  ],
+  price_drift:[
+    {name:'Barolo Borgogno 2018',supplier:'Horeca Partner',old_price:218,new_price:236},
+    {name:'Champagne Billecart-S.',supplier:'Wine4You',old_price:290,new_price:305},
+    {name:'Grappa Nonino',supplier:'Dom Wina',old_price:145,new_price:150},
+    {name:'Prosecco Valdobbiadene',supplier:'Wineonline',old_price:98,new_price:96},
+  ],
+  action_log:[
+    {date:'10 kwi',sku:'Vermentino di Sardegna',action:'Dodany do menu lunchowego (pairing z rybą)',color:'#2B4A3F'},
+    {date:'8 kwi',sku:'Grappa Nonino',action:'Promocja digestif w piątek/sobotę aktywna',color:'#8B6914'},
+    {date:'5 kwi',sku:'Barolo Borgogno',action:'Zgłoszenie zwrotu do Horeca Partner w toku',color:'#1C3F6E'},
+    {date:'3 kwi',sku:"Nero d'Avola",action:'Happy hour czwartek, 15 kieliszków sprzedanych',color:'#2B4A3F'},
+  ],
+  weekly_movers:{
+    up:[['Barolo DOCG BTG','+18 kiel.'],['Champagne Billecart','+9 bt.'],['Negroni house','+24 szt.'],['Pinot Grigio Lageder','+12 kiel.'],['Amaro Montenegro','+7 kiel.']],
+    down:[['Barolo Borgogno 2018','0 szt.'],['Grappa Nonino','0 szt.'],['Vermentino Sardegna','2 kiel.'],['Primitivo Feudi','3 kiel.'],['Limoncello Di Capri','1 szt.']]
+  },
+  // Full inventory — the source of truth for every filtered view
+  inventory:[
+    {name:'Barolo DOCG 2019',category:'Wino czerwone',format:'Butelka',purchase_price:180,sell_price:320,stock_qty:12,weekly_sales:3,reorder_level:3,supplier:'Horeca Partner'},
+    {name:'Barolo Borgogno 2018',category:'Wino czerwone',format:'Butelka',purchase_price:218,sell_price:580,stock_qty:6,weekly_sales:0,reorder_level:2,supplier:'Horeca Partner'},
+    {name:'Primitivo Feudi Salentini',category:'Wino czerwone',format:'BTG',purchase_price:38,sell_price:52,stock_qty:18,weekly_sales:2,reorder_level:4,supplier:'Horeca Partner'},
+    {name:"Nero d'Avola DOC",category:'Wino czerwone',format:'BTG',purchase_price:32,sell_price:46,stock_qty:14,weekly_sales:2,reorder_level:4,supplier:'Dom Wina'},
+    {name:'Vermentino di Sardegna',category:'Wina białe',format:'BTG',purchase_price:35,sell_price:48,stock_qty:20,weekly_sales:1,reorder_level:4,supplier:'Wineonline'},
+    {name:'Pinot Grigio Alois Lageder',category:'Wina białe',format:'BTG',purchase_price:42,sell_price:58,stock_qty:8,weekly_sales:6,reorder_level:6,supplier:'Wine4You'},
+    {name:'Champagne Billecart-S.',category:'Musujące',format:'Butelka',purchase_price:290,sell_price:620,stock_qty:3,weekly_sales:4,reorder_level:4,supplier:'Wine4You'},
+    {name:'Prosecco Valdobbiadene',category:'Musujące',format:'BTG',purchase_price:28,sell_price:42,stock_qty:24,weekly_sales:1,reorder_level:6,supplier:'Wineonline'},
+    {name:'Grappa Nonino',category:'Destylaty & likiery',format:'Butelka',purchase_price:145,sell_price:380,stock_qty:5,weekly_sales:0,reorder_level:1,supplier:'Dom Wina'},
+    {name:'Limoncello Di Capri',category:'Destylaty & likiery',format:'Butelka',purchase_price:68,sell_price:210,stock_qty:7,weekly_sales:1,reorder_level:1,supplier:'Dom Wina'},
+    {name:'Amaro Montenegro BTG',category:'Destylaty & likiery',format:'BTG',purchase_price:22,sell_price:38,stock_qty:30,weekly_sales:5,reorder_level:8,supplier:'Dom Wina'},
+    {name:'Negroni Gin Monkeyshine',category:'Cocktail',format:'Butelka',purchase_price:95,sell_price:0,stock_qty:4,weekly_sales:6,reorder_level:4,supplier:'Wineonline'},
+    {name:'San Pellegrino 0.75L',category:'Bezalkoholowe',format:'Butelka',purchase_price:4.5,sell_price:18,stock_qty:48,weekly_sales:20,reorder_level:12,supplier:'Horeca Partner'},
+  ],
+};
+
+// ═══════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════
+let D = null;          // current dataset
+let apiUrl = null;
+let marginChart = null;
+let currentView = 'dashboard';
+
+// ═══════════════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════════════
+const fmt = n => Math.round(n).toLocaleString('pl-PL');
+const fmtD = n => n.toFixed(1);
+
+function calcDerived(inv) {
+  // Derive margin, stockValue, daysToStockout per SKU from raw inventory
+  return inv.map(r => {
+    const mg = r.sell_price > 0
+      ? Math.round((r.sell_price - r.purchase_price) / r.sell_price * 1000) / 10
+      : 0;
+    const val = Math.round(r.purchase_price * r.stock_qty);
+    const daily = r.weekly_sales / 7;
+    const days = daily > 0 ? Math.round(r.stock_qty / daily) : 999;
+    const dead = r.weekly_sales === 0 || days > 21;
+    const urgent = days <= 10;
+    const reorder = r.stock_qty <= r.reorder_level || days <= 10;
+    return {...r, mg, val, days, dead, urgent, reorder};
+  });
+}
+
+function calcHealth(kpi) {
+  const ds = Math.max(0, Math.round(100 - (kpi.dead_stock_value / Math.max(kpi.cellar_value,1)) * 200));
+  const mg = Math.round(Math.max(0, Math.min(100, (kpi.avg_margin - 30) / 38 * 100)));
+  const ro = Math.round(Math.max(0, Math.min(100, 100 - kpi.urgent_reorders * 10)));
+  return {ds, mg, ro, total: Math.round(mg*.4 + ds*.3 + ro*.3)};
+}
+
+function verdict(s) {
+  if (s>=80) return ['🟢 Dobry stan','var(--sul)','var(--su)'];
+  if (s>=60) return ['⚠ Wymaga uwagi','var(--wnl)','var(--wn)'];
+  return ['🔴 Wymaga działania','var(--dgl)','var(--dg)'];
+}
+
+function chipClass(days) {
+  return days<=6?'chi-c':days<=10?'chi-w':'chi-g';
+}
+
+function fmtDays(d) {
+  return d===999?'Brak ruchu':d+' dni';
+}
+
+function recAction(r) {
+  if (r.format==='BTG') {
+    if (r.category.includes('białe')||r.category.includes('Musuj')) return 'Pairing z menu · rekomendacja kelnera';
+    if (r.category.includes('czerwone')) return 'Happy hour · rekomendacja przy mięsnych daniach';
+    return 'Rekomendacja kelnera';
+  }
+  if (r.category.includes('Destylat')||r.category.includes('Likier')) return 'Digestif promocja lub cocktail menu';
+  if (r.mg < 40) return 'Rozważ zwrot do dystrybutora';
+  return 'Promocja tygodniowa lub zwrot';
+}
+
+// ═══════════════════════════════════════════════════════════
+// NAV ROUTER
+// ═══════════════════════════════════════════════════════════
+function showView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n => n.classList.remove('active'));
+  document.getElementById('view-' + id).classList.add('active');
+  document.querySelector(`.ni[data-view="${id}"]`)?.classList.add('active');
+  currentView = id;
+
+  // Render view-specific content
+  if (!D) return;
+  const inv = calcDerived(D.inventory || []);
+  if (id==='inventory')     renderInventory(inv);
+  if (id==='deadstock')     renderDeadStockFull(inv);
+  if (id==='margins')       renderMarginsFull(inv);
+  if (id==='reorder')       renderReorderFull(inv);
+  if (id==='pour')          renderPourFull();
+  if (id==='suppliers')     renderSuppliersFull(inv);
+  if (id==='weekly')        renderWeekly(inv);
+  if (id==='actionlog')     renderAL();
+  if (id==='benchmarking')  document.getElementById('benchYourScore').textContent = calcHealth(D.kpi).total;
+}
+
+document.querySelectorAll('.ni[data-view]').forEach(el => {
+  el.addEventListener('click', () => showView(el.dataset.view));
+});
+
+// ═══════════════════════════════════════════════════════════
+// RENDER — DASHBOARD
+// ═══════════════════════════════════════════════════════════
+function renderDashboard() {
+  const k = D.kpi;
+  const venue = URL_VENUE || D.venue || 'Restauracja';
+  document.title = 'Sommly — ' + venue;
+  document.getElementById('sideVenue').textContent = venue;
+  const ts = new Date(D.last_updated).toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('dashSub').textContent = venue + ' · ' + new Date(D.last_updated).toLocaleDateString('pl-PL',{day:'2-digit',month:'short'}) + ' ' + ts;
+  document.getElementById('lastUpdLbl').textContent = 'Ostatnia aktualizacja: ' + ts;
+
+  // Health
+  const h = calcHealth(k);
+  document.getElementById('hNum').textContent = h.total;
+  const offset = 201.1 - h.total/100*201.1;
+  const ring = document.getElementById('hRing');
+  ring.style.strokeDashoffset = offset;
+  ring.style.stroke = h.total>=80?'#2B4A3F':h.total>=60?'#C4963A':'#A0321C';
+  const sf = (lid,bid,score,col) => {
+    document.getElementById(lid).textContent = score+'/100';
+    const b = document.getElementById(bid); b.style.width=score+'%'; b.style.background=col;
+  };
+  sf('hf1l','hf1b',h.mg,'#2B4A3F'); sf('hf2l','hf2b',h.ds,'#C4963A'); sf('hf3l','hf3b',h.ro,'#1C3F6E');
+  const [vl,vbg,vc] = verdict(h.total);
+  const vb = document.getElementById('vbadge'); vb.textContent=vl; vb.style.background=vbg; vb.style.color=vc;
+
+  // KPIs
+  const gap = k.avg_margin - 68;
+  T('kDs',fmt(k.dead_stock_value)); T('kDsC',k.dead_stock_skus);
+  T('kMg',k.avg_margin); T('kMgG','delta: '+(gap>=0?'+':'')+gap+'pp');
+  const mgSt = document.getElementById('kMgSt');
+  if (k.avg_margin>=68){mgSt.textContent='✓ Cel osiągnięty';mgSt.className='kdlt ok';}
+  else{mgSt.textContent='↓ Poniżej celu';mgSt.className='kdlt bad';}
+  T('kCov',k.stock_coverage_days);
+  const inv = calcDerived(D.inventory||[]);
+  T('kCovS', inv.filter(r=>r.days<=7).length+' SKU poniżej 7 dni');
+  T('kCel',fmt(k.cellar_value)); T('kCelS',(D.inventory||[]).length+' SKU · '+fmt(k.cellar_value)+' zł');
+  T('kRo',k.urgent_reorders);
+  const rc = document.getElementById('kRoCard');
+  rc.className='kpi '+(k.urgent_reorders>=5?'kd':k.urgent_reorders>=2?'kw':'kg');
+  document.getElementById('nb-ds').textContent = k.dead_stock_skus;
+  document.getElementById('nb-ro').textContent = k.urgent_reorders;
+  document.getElementById('nb-inv').textContent = (D.inventory||[]).length;
+
+  // Dead stock summary (top 5)
+  const dead = inv.filter(r=>r.dead).sort((a,b)=>b.val-a.val).slice(0,5);
+  document.getElementById('dashDsTag').textContent = inv.filter(r=>r.dead).length+' SKU · '+fmt(inv.filter(r=>r.dead).reduce((s,r)=>s+r.val,0))+' zł';
+  document.getElementById('dashDsBody').innerHTML = dead.map(r=>`
+    <tr><td><div class="tn">${r.name}</div><div class="tc">${r.category}</div></td>
+    <td>${r.format==='BTG'?'<span class="fbadge fbtg">BTG</span>':'<span class="fbadge fbottle">Butelka</span>'}</td>
+    <td class="mono">${fmt(r.val)} zł</td>
+    <td><span class="chip ${r.days>45?'chi-c':r.days>20?'chi-w':'chi-g'}">${fmtDays(r.days)}</span></td>
+    <td style="font-size:11px;color:var(--txm)">${recAction(r)}</td></tr>`).join('');
+  const btgV = inv.filter(r=>r.dead&&r.format==='BTG').reduce((s,r)=>s+r.val,0);
+  const botV = inv.filter(r=>r.dead&&r.format!=='BTG').reduce((s,r)=>s+r.val,0);
+  document.getElementById('dashDsNote').innerHTML = `<strong>BTG</strong> (${fmt(btgV)} zł): aktywacja przez personel. <strong>Butelka</strong> (${fmt(botV)} zł): promocja lub zwrot.`;
+
+  // Reorder summary
+  const uro = inv.filter(r=>r.urgent).sort((a,b)=>a.days-b.days);
+  document.getElementById('dashRoTag').textContent = uro.length+' pilne';
+  document.getElementById('dashRoList').innerHTML = uro.slice(0,5).map(r=>{
+    const urg = Math.min(100, Math.round((14-Math.min(r.days,14))/14*100));
+    const col = r.days<=6?'var(--dg)':r.days<=10?'var(--gd)':'var(--su)';
+    return `<div class="rerow">
+      <div><div style="font-weight:500;font-size:13px">${r.name}</div><div style="font-size:11px;color:var(--txf)">${r.format} · ${r.stock_qty} szt.</div></div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+        <span class="chip ${chipClass(r.days)}">${fmtDays(r.days)}</span>
+        <div class="reb"><div class="ref" style="width:${urg}%;background:${col}"></div></div>
+      </div></div>`;
+  }).join('') || '<div style="font-size:13px;color:var(--txf);padding:12px 0">Brak pilnych zamówień ✓</div>';
+
+  // Categories
+  const cats = D.categories||[];
+  const catTotal = cats.reduce((s,c)=>s+c.value,0);
+  document.getElementById('dashCatList').innerHTML = cats.map(c=>`
+    <div class="catrow"><div class="catdot" style="background:${c.color}"></div>
+    <div style="flex:1;font-size:13px">${c.name}</div>
+    <div class="mono" style="color:var(--txm)">${fmt(c.value)} zł</div>
+    <div class="mono" style="font-weight:500;min-width:32px;text-align:right">${Math.round(c.value/catTotal*100)}%</div></div>`).join('');
+
+  // Chart
+  const trend = D.margin_trend||[];
+  const labels = trend.map((_,i)=>'Tyg '+(i+8));
+  if (marginChart) marginChart.destroy();
+  marginChart = new Chart(document.getElementById('marginChart').getContext('2d'),{
+    type:'line',
+    data:{labels,datasets:[
+      {label:'Marża',data:trend,borderColor:'#2B4A3F',backgroundColor:'rgba(43,74,63,.07)',fill:true,tension:.4,borderWidth:2,pointBackgroundColor:'#2B4A3F',pointRadius:4,pointBorderColor:'#fff',pointBorderWidth:2},
+      {label:'Cel 68%',data:trend.map(()=>68),borderColor:'#C4963A',borderDash:[5,4],borderWidth:1.5,pointRadius:0,fill:false}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{backgroundColor:'#1A1714',titleColor:'#FAF8F5',bodyColor:'#B0A89E',padding:10,callbacks:{label:c=>c.dataset.label+': '+c.parsed.y+'%'}}},
+      scales:{x:{grid:{color:'rgba(0,0,0,.04)'},ticks:{font:{family:'Outfit',size:11},color:'#7A7268'}},
+              y:{min:45,max:80,grid:{color:'rgba(0,0,0,.04)'},ticks:{font:{family:'DM Mono',size:11},color:'#7A7268',callback:v=>v+'%'}}}}
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER — INVENTORY
+// ═══════════════════════════════════════════════════════════
+function renderInventory(inv) {
+  if (!inv) inv = calcDerived(D.inventory||[]);
+  const q = document.getElementById('invSearch')?.value?.toLowerCase()||'';
+  const cat = document.getElementById('invCat')?.value||'';
+  const fmt2 = document.getElementById('invFmt')?.value||'';
+  const sort = document.getElementById('invSort')?.value||'name';
+  let rows = inv.filter(r=>
+    (!q || r.name.toLowerCase().includes(q)) &&
+    (!cat || r.category===cat) &&
+    (!fmt2 || r.format===fmt2)
+  );
+  if (sort==='margin_desc') rows.sort((a,b)=>b.mg-a.mg);
+  else if (sort==='stock_desc') rows.sort((a,b)=>b.stock_qty-a.stock_qty);
+  else if (sort==='value_desc') rows.sort((a,b)=>b.val-a.val);
+  else if (sort==='sales_desc') rows.sort((a,b)=>b.weekly_sales-a.weekly_sales);
+  else rows.sort((a,b)=>a.name.localeCompare(b.name,'pl'));
+  document.getElementById('invCount').textContent = rows.length+' SKU';
+  document.getElementById('invSub').textContent = 'Wszystkie produkty w piwnicy · '+rows.length+' wyników';
+  document.getElementById('invBody').innerHTML = rows.map(r=>`
+    <tr>
+      <td style="padding-left:16px"><div class="tn">${r.name}</div>${r.notes?`<div class="tc">${r.notes}</div>`:''}</td>
+      <td><div class="tc">${r.category}</div></td>
+      <td>${r.format==='BTG'?'<span class="fbadge fbtg">BTG</span>':'<span class="fbadge fbottle">Butelka</span>'}</td>
+      <td class="mono">${r.purchase_price} zł</td>
+      <td class="mono">${r.sell_price} zł</td>
+      <td class="mono" style="font-weight:500;color:${r.mg>=68?'var(--su)':r.mg>=50?'var(--wn)':'var(--dg)'}">${r.mg}%</td>
+      <td class="mono">${r.stock_qty}</td>
+      <td class="mono">${r.weekly_sales}</td>
+      <td><span class="chip ${r.days<=6?'chi-c':r.days<=10?'chi-w':'chi-g'}">${fmtDays(r.days)}</span></td>
+      <td style="font-size:12px;color:var(--txm)">${r.supplier}</td>
+    </tr>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER — DEAD STOCK
+// ═══════════════════════════════════════════════════════════
+function renderDeadStockFull(inv) {
+  if (!inv) inv = calcDerived(D.inventory||[]);
+  const cat = document.getElementById('dsCatFilter')?.value||'';
+  const fmt2 = document.getElementById('dsFmtFilter')?.value||'';
+  let rows = inv.filter(r=>r.dead && (!cat||r.category===cat) && (!fmt2||r.format===fmt2))
+               .sort((a,b)=>b.val-a.val);
+  const totVal = rows.reduce((s,r)=>s+r.val,0);
+  const btg = rows.filter(r=>r.format==='BTG');
+  const bot = rows.filter(r=>r.format!=='BTG');
+  T('dsFull-tag', rows.length+' SKU');
+  T('dsTotVal', fmt(totVal)); T('dsTotSku', rows.length+' SKU · zablokowany kapitał');
+  T('dsSplit', btg.length+' BTG / '+bot.length+' Butelka');
+  T('dsSplitV', fmt(btg.reduce((s,r)=>s+r.val,0))+' zł BTG · '+fmt(bot.reduce((s,r)=>s+r.val,0))+' zł Butelka');
+  document.getElementById('dsFullBody').innerHTML = rows.map(r=>`
+    <tr><td><div class="tn">${r.name}</div></td>
+    <td><div class="tc">${r.category}</div></td>
+    <td>${r.format==='BTG'?'<span class="fbadge fbtg">BTG</span>':'<span class="fbadge fbottle">Butelka</span>'}</td>
+    <td class="mono">${fmt(r.val)} zł</td>
+    <td><span class="chip ${r.days>45?'chi-c':r.days>20?'chi-w':'chi-g'}">${fmtDays(r.days)}</span></td>
+    <td class="mono" style="color:${r.mg>=68?'var(--su)':r.mg>=50?'var(--wn)':'var(--dg)'}">${r.mg}%</td>
+    <td style="font-size:11px;color:var(--txm)">${recAction(r)}</td></tr>`).join('')
+    || '<tr><td colspan="7" style="text-align:center;color:var(--txf);padding:24px">Brak pozycji dead stock ✓</td></tr>';
+  T('dsFullNote', `Łącznie ${rows.length} SKU · ${fmt(totVal)} zł zablokowanego kapitału. BTG (${btg.length} SKU · ${fmt(btg.reduce((s,r)=>s+r.val,0))} zł) aktywacja przez personel. Butelki (${bot.length} SKU · ${fmt(bot.reduce((s,r)=>s+r.val,0))} zł) wymagają promocji lub zwrotu.`);
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER — MARGIN ANALYSIS
+// ═══════════════════════════════════════════════════════════
+function renderMarginsFull(inv) {
+  if (!inv) inv = calcDerived(D.inventory||[]);
+  const cat = document.getElementById('mgCatFilter')?.value||'';
+  let rows = inv.filter(r=>r.sell_price>0 && (!cat||r.category===cat))
+               .sort((a,b)=>b.mg-a.mg);
+  const avg = rows.length? Math.round(rows.reduce((s,r)=>s+r.mg,0)/rows.length*10)/10 : 0;
+  T('mgAvg', avg);
+  T('mgAvgSub', rows.length+' SKU · cel: '+D.kpi.avg_margin+'% (ważona)');
+  const best = rows[0];
+  if (best){ T('mgBest', best.mg+'%'); T('mgBestName', best.name+' · '+best.format); }
+  const colors = ['#2B4A3F','#2B4A3F','#2B4A3F','#2B4A3F','#C4963A','#C4963A','#C4963A'];
+  document.getElementById('mgSkuList').innerHTML = rows.map((r,i)=>`
+    <div class="mrow"><div style="flex:1"><div style="font-weight:500;font-size:13px">${r.name}</div><div class="tc">${r.category} · ${r.format}</div></div>
+    <div class="mbar-bg"><div class="mbar-fill" style="width:${Math.min(r.mg,100)}%;background:${colors[i]||'#C4963A'}"></div></div>
+    <div class="mono" style="font-weight:500;min-width:40px;text-align:right;color:${r.mg>=68?'var(--su)':r.mg>=50?'var(--wn)':'var(--dg)'}">${r.mg}%</div></div>`).join('');
+  const low = inv.filter(r=>r.sell_price>0&&r.mg<68&&(!cat||r.category===cat)).sort((a,b)=>a.mg-b.mg);
+  T('mgLowTag', low.length+' poniżej celu');
+  document.getElementById('mgLowList').innerHTML = low.map(r=>`
+    <div class="mrow"><div style="flex:1"><div style="font-weight:500;font-size:13px">${r.name}</div><div class="tc">${r.category}</div></div>
+    <div class="mono" style="color:var(--dg);font-weight:500">${r.mg}%</div>
+    <div style="font-size:11px;color:var(--txm);margin-left:8px">cel:68%</div></div>`).join('')
+    || '<div style="font-size:13px;color:var(--txf);padding:12px 0">Wszystkie marże powyżej celu ✓</div>';
+  T('mgNote', low.length>0 ? `${low.length} SKU poniżej celu 68%. Rozważ korektę cen sprzedaży lub negocjację z dostawcą.` : 'Wszystkie marże powyżej celu — świetny wynik!');
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER — REORDER
+// ═══════════════════════════════════════════════════════════
+function renderReorderFull(inv) {
+  if (!inv) inv = calcDerived(D.inventory||[]);
+  const urg  = inv.filter(r=>r.days<=10).sort((a,b)=>a.days-b.days);
+  const soon = inv.filter(r=>r.days>10&&r.days<=21).sort((a,b)=>a.days-b.days);
+  T('roUrgCount', urg.length); T('roSoonCount', soon.length);
+  T('roUrgTag', urg.length+' pilne'); T('roUrgTag2', urg.length+' pilne'); T('roSoonTag', soon.length+' wkrótce');
+  const mkItem = r => {
+    const urg2 = Math.min(100, Math.round((21-Math.min(r.days,21))/21*100));
+    const col = r.days<=6?'var(--dg)':r.days<=10?'var(--gd)':'var(--su)';
+    return `<div class="rerow">
+      <div><div style="font-weight:500;font-size:13px">${r.name}</div><div style="font-size:11px;color:var(--txf)">${r.format} · ${r.stock_qty} szt. · min ${r.reorder_level} szt.</div></div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+        <span class="chip ${chipClass(r.days)}">${fmtDays(r.days)}</span>
+        <div class="reb"><div class="ref" style="width:${urg2}%;background:${col}"></div></div>
+      </div></div>`;
+  };
+  document.getElementById('roUrgList').innerHTML = urg.map(mkItem).join('') || '<div style="font-size:13px;color:var(--txf);padding:12px 0">Brak pilnych zamówień ✓</div>';
+  document.getElementById('roSoonList').innerHTML = soon.map(mkItem).join('') || '<div style="font-size:13px;color:var(--txf);padding:12px 0">Brak zamówień wkrótce ✓</div>';
+  document.getElementById('roAllBody').innerHTML = inv.sort((a,b)=>a.days-b.days).map(r=>{
+    const status = r.days<=6?'<span class="chip chi-c">Krytyczny</span>':r.days<=10?'<span class="chip chi-w">Pilny</span>':r.days<=21?'<span class="chip chi-g">Wkrótce</span>':'<span class="chip chi-g" style="background:var(--bg);color:var(--txm)">OK</span>';
+    return `<tr><td class="tn">${r.name}</td><td class="tc">${r.category}</td>
+      <td class="mono">${r.stock_qty}</td><td class="mono">${r.weekly_sales}/tydz.</td>
+      <td class="mono">${fmtDays(r.days)}</td><td class="mono">${r.reorder_level}</td>
+      <td>${status}</td></tr>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER — POUR COST
+// ═══════════════════════════════════════════════════════════
+function renderPourFull() {
+  const pc = D.pour_cost||[];
+  let totVar=0, maxVar=0, maxName='';
+  let devCount=0;
+  document.getElementById('pourList').innerHTML = pc.map(p=>{
+    const delta = (p.actual||0) - (p.theoretical||0);
+    if (Math.abs(delta)>1) devCount++;
+    totVar += delta;
+    if (Math.abs(delta)>Math.abs(maxVar)){maxVar=delta;maxName=p.name;}
+    const cls=delta>1?'pos-bad':delta<-1?'pos-ok':'';
+    const sign=delta>0?'+':'';
+    return `<div class="prow pgrid">
+      <div><div style="font-weight:500">${p.name}</div><div style="font-size:11px;color:var(--txf)">${p.sub||''}</div></div>
+      <div class="mono" style="text-align:right">${p.theoretical||'—'} zł</div>
+      <div class="mono" style="text-align:right">${p.actual||'—'} zł</div>
+      <div class="mono ${cls}" style="text-align:right">${delta?sign+delta+' zł':'0'}</div>
+    </div>`;
+  }).join('') || '<div style="padding:20px;color:var(--txf);font-size:13px;text-align:center">Brak danych pour cost. Uzupełnij zakładkę POUR_COST w Google Sheets.</div>';
+  T('pourDevTag', devCount+' odchyleń');
+  T('pourTag2', devCount+' odchyleń');
+  T('pourTotVar', (totVar>=0?'+':'')+Math.round(totVar)+' zł');
+  T('pourMaxVar', (maxVar>=0?'+':'')+Math.round(maxVar)+' zł');
+  T('pourMaxName', maxName||'—');
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER — SUPPLIERS
+// ═══════════════════════════════════════════════════════════
+function renderSuppliersFull(inv) {
+  if (!inv) inv = calcDerived(D.inventory||[]);
+  const drift = D.price_drift||[];
+  const ups = drift.filter(d=>d.new_price>d.old_price);
+  const downs = drift.filter(d=>d.new_price<d.old_price);
+  T('supUpCount', ups.length); T('supDownCount', downs.length);
+  T('supChgTag', drift.filter(d=>d.new_price!==d.old_price).length+' zmian');
+  document.getElementById('supDriftList').innerHTML = drift.length?drift.map(d=>{
+    const pct=((d.new_price-d.old_price)/Math.max(d.old_price,1)*100).toFixed(1);
+    const up=d.new_price>d.old_price;
+    const arrow=up?'↑':d.new_price<d.old_price?'↓':'→';
+    return `<div class="drow">
+      <div><div style="font-weight:500;font-size:13px">${d.name}</div><div class="tc">${d.supplier}</div></div>
+      <div style="text-align:right">
+        <div style="font-family:'DM Mono',monospace;font-weight:500;font-size:12px;color:${up?'var(--dg)':'var(--su)'}">${arrow} ${up?'+':''}${pct}%</div>
+        <div class="tc">${d.old_price} → ${d.new_price} zł/bt</div>
+      </div></div>`;
+  }).join('') : '<div style="font-size:13px;color:var(--txf);padding:16px 0">Brak zmian cen w ostatnim tygodniu.</div>';
+  document.getElementById('supAllBody').innerHTML = inv.sort((a,b)=>a.name.localeCompare(b.name,'pl')).map(r=>`
+    <tr><td class="tn">${r.name}</td><td class="tc">${r.supplier}</td>
+    <td class="mono">${r.purchase_price} zł</td>
+    <td class="mono" style="color:${r.mg>=68?'var(--su)':r.mg>=50?'var(--wn)':'var(--dg)'}">${r.mg}%</td></tr>`).join('');
+  T('supNote', ups.length>0 ? ups.map(d=>{const pct=((d.new_price-d.old_price)/d.old_price*100).toFixed(1);return `${d.name} +${pct}% → sprawdź wpływ na marżę.`;}).join(' ') : 'Brak wzrostów cen w ostatnim tygodniu.');
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER — WEEKLY
+// ═══════════════════════════════════════════════════════════
+function renderWeekly(inv) {
+  if (!inv) inv = calcDerived(D.inventory||[]);
+  const m = D.weekly_movers||{up:[],down:[]};
+  document.getElementById('wkUp').innerHTML = (m.up||[]).map(([n,v])=>`<div class="erow eu"><span>${n}</span><span>${v}</span></div>`).join('') || '<div style="color:var(--txf)">Brak danych</div>';
+  document.getElementById('wkDown').innerHTML = (m.down||[]).map(([n,v])=>`<div class="erow ed"><span>${n}</span><span>${v}</span></div>`).join('') || '<div style="color:var(--txf)">Brak danych</div>';
+  const k = D.kpi; const h = calcHealth(k); const [vl] = verdict(h.total);
+  document.getElementById('wkAlerts').innerHTML = `
+    <div class="erow" style="color:var(--dg)">🔴 ${k.urgent_reorders} SKU wymaga zamówienia</div>
+    <div class="erow" style="color:var(--wn);margin-top:4px">🟡 Dead stock: ${fmt(k.dead_stock_value)} zł</div>
+    <div class="erow" style="color:${k.avg_margin>=68?'var(--su)':'var(--wn)'};margin-top:4px">${k.avg_margin>=68?'🟢':'🟡'} Marża: ${k.avg_margin}%</div>
+    <div class="erow" style="color:var(--in);margin-top:4px">ℹ Wynik zdrowia: ${h.total}/100 ${vl}</div>`;
+  const dead = inv.filter(r=>r.dead).slice(0,5);
+  const urg  = inv.filter(r=>r.urgent).slice(0,5);
+  const venue = URL_VENUE||D.venue||'Restauracja';
+  const today = new Date().toLocaleDateString('pl-PL',{day:'2-digit',month:'long',year:'numeric'});
+  document.getElementById('wkEmailPre').textContent =
+`Sommly · Raport tygodniowy · ${venue} · ${today}
+
+WYNIK ZDROWIA: ${h.total}/100 ${vl}
+  Marża: ${h.mg}/100 · Dead stock: ${h.ds}/100 · Zamówienia: ${h.ro}/100
+
+KLUCZOWE WSKAŹNIKI
+  Dead stock:       ${fmt(k.dead_stock_value)} zł (${k.dead_stock_skus} SKU)
+  Wartość piwnicy:  ${fmt(k.cellar_value)} zł
+  Śr. marża:        ${k.avg_margin}%${k.avg_margin>=68?' ✓':'  (cel: 68%)'}
+  Pokrycie mag.:    ${k.stock_coverage_days} dni
+  Pilne zamówienia: ${k.urgent_reorders} SKU
+${dead.length?'\nDEAD STOCK — DO DZIAŁANIA\n'+dead.map(r=>`  • ${r.name} — ${fmt(r.val)} zł (${recAction(r)})`).join('\n'):''}
+${urg.length?'\nPILNE ZAMÓWIENIA\n'+urg.map(r=>`  • ${r.name} — ${fmtDays(r.days)} zapasu`).join('\n'):''}
+
+Sommly · sommly.pl`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER — ACTION LOG
+// ═══════════════════════════════════════════════════════════
+function renderAL() {
+  const al = D.action_log||[];
+  const dotCols=['#2B4A3F','#8B6914','#1C3F6E','#A0321C'];
+  T('alCount', al.length+' wpisów');
+  document.getElementById('alList').innerHTML = al.length ? al.map((e,i)=>`
+    <div class="arow"><div class="adot" style="background:${e.color||dotCols[i%4]}"></div>
+    <div style="flex:1"><strong>${e.sku}</strong> — ${e.action}</div>
+    <div style="color:var(--txf);font-size:11px;flex-shrink:0">${e.date}</div></div>`).join('')
+    : '<div style="font-size:13px;color:var(--txf);padding:16px 0">Brak wpisów. Kliknij + Dodaj wpis, aby zarejestrować działanie na dead stock.</div>';
+}
+
+// Action log form
+function toggleAF(){const f=document.getElementById('aForm');f.style.display=f.style.display==='none'||!f.style.display?'block':'none';if(f.style.display==='block')document.getElementById('afSku').focus();}
+async function submitAL(){
+  const sku=document.getElementById('afSku').value.trim();
+  const action=document.getElementById('afAct').value.trim();
+  if(!sku||!action){alert('Wypełnij oba pola.');return;}
+  const entry={date:'dziś',sku,action,color:'#2B4A3F'};
+  if(apiUrl){
+    try{await fetch(apiUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sku,action,user:'manager'})});await loadData();}
+    catch(e){alert('Błąd zapisu: '+e.message);}
+  } else {
+    D.action_log.unshift(entry);renderAL();
+  }
+  document.getElementById('afSku').value='';document.getElementById('afAct').value='';toggleAF();
+}
+
+// ═══════════════════════════════════════════════════════════
+// HELPER
+// ═══════════════════════════════════════════════════════════
+function T(id,val){const el=document.getElementById(id);if(el)el.textContent=val;}
+
+// ═══════════════════════════════════════════════════════════
+// DATA LOADING
+// ═══════════════════════════════════════════════════════════
+function setBadge(label,cls){
+  const b=document.getElementById('liveBadge');
+  b.className='lbadge '+cls;
+  b.innerHTML='<span class="ldot"></span>'+label;
+}
+
+function renderAll(data) {
+  D = data;
+  if (URL_VENUE) D.venue = URL_VENUE;
+  renderDashboard();
+  // Render current view if not dashboard
+  if (currentView !== 'dashboard') {
+    const inv = calcDerived(D.inventory||[]);
+    const m = {inventory:renderInventory,deadstock:renderDeadStockFull,margins:renderMarginsFull,
+               reorder:renderReorderFull,pour:renderPourFull,suppliers:renderSuppliersFull,
+               weekly:renderWeekly,actionlog:renderAL};
+    if (m[currentView]) m[currentView](currentView==='pour'||currentView==='actionlog' ? undefined : inv);
+  }
+  document.getElementById('dataSourceLbl').textContent = apiUrl ? 'Google Sheets — dane na żywo' : 'Tryb demo';
+  // Show dashboard view
+  document.getElementById('view-loading').classList.remove('active');
+  showView(currentView==='loading'?'dashboard':currentView);
+}
+
+async function loadData() {
+  document.getElementById('refreshBtn').textContent='↻ Wczytywanie...';
+  if (FORCE_DEMO || !URL_API) {
+    await new Promise(r=>setTimeout(r,400));
+    setBadge('DEMO','lb-demo');
+    renderAll(JSON.parse(JSON.stringify(DEMO)));
+    document.getElementById('refreshBtn').textContent='↻ Odśwież';
+    return;
+  }
+  apiUrl = URL_API;
+  document.getElementById('loadMsg').textContent='Łączenie: '+(URL_VENUE||'lokal')+'...';
+  try {
+    const res = await fetch(URL_API);
+    if (!res.ok) throw new Error('HTTP '+res.status);
+    const data = await res.json();
+    setBadge('LIVE','lb-live');
+    renderAll(data);
+  } catch(err) {
+    document.getElementById('view-loading').classList.remove('active');
+    document.getElementById('view-error').classList.add('active');
+    document.getElementById('errMsg').textContent = err.message+'\nURL: '+URL_API;
+    setBadge('BŁĄD','lb-err');
+  }
+  document.getElementById('refreshBtn').textContent='↻ Odśwież';
+}
+
+// Nav: reinvoke renderInventory when filters change (called via oninput/onchange)
+window.renderInventory = () => { if(D) renderInventory(calcDerived(D.inventory||[])); };
+window.renderDeadStockFull = () => { if(D) renderDeadStockFull(calcDerived(D.inventory||[])); };
+window.renderMarginsFull = () => { if(D) renderMarginsFull(calcDerived(D.inventory||[])); };
+
+// Auto-refresh live every 5 min
+setInterval(()=>{ if(apiUrl) loadData(); }, 5*60*1000);
+
+// Boot
+loadData();
+</script>
+</body>
+</html>
