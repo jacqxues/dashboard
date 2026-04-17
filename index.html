@@ -1070,8 +1070,8 @@ window.vInventory = vInventory;
 window.vDeadstock = vDeadstock;
 window.vMargins   = vMargins;
 
-// Auto-refresh every 5 min when live
-setInterval(() => { if (apiUrl && !DEMO_M) reload(); }, 5*60*1000);
+// Auto-refresh every 1 min when live
+setInterval(() => { if (apiUrl && !DEMO_M) reload(); }, 60*1000);
 
 // ═══ DEMO DATA ═══
 const DEMO_DATA = {
