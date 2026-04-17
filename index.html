@@ -1071,7 +1071,14 @@ window.vDeadstock = vDeadstock;
 window.vMargins   = vMargins;
 
 // Auto-refresh every 1 min when live
-setInterval(() => { if (apiUrl && !DEMO_M) reload(); }, 60*1000);
+setInterval(() => { 
+    console.log("Próba odświeżenia danych: " + new Date().toLocaleTimeString());
+    if (apiUrl && !DEMO_M) {
+        reload(); // lub fetchData();
+    } else {
+        console.log("Warunek odświeżenia nie został spełniony (DEMO_M jest true lub brak apiUrl)");
+    }
+}, 60*1000);
 
 // ═══ DEMO DATA ═══
 const DEMO_DATA = {
