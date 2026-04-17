@@ -1070,15 +1070,21 @@ window.vInventory = vInventory;
 window.vDeadstock = vDeadstock;
 window.vMargins   = vMargins;
 
-// Auto-refresh every 2 min when live
-setInterval(() => { 
-    console.log("Próba odświeżenia danych: " + new Date().toLocaleTimeString());
-    if (apiUrl && !DEMO_M) {
-        reload(); // lub fetchData();
-    } else {
-        console.log("Warunek odświeżenia nie został spełniony (DEMO_M jest true lub brak apiUrl)");
+// Ustawienie interwału (2 minuty = 120 000 ms)
+const REFRESH_INTERVAL = 120000; 
+
+setInterval(() => {
+    // Sprawdź, czy użytkownik w ogóle patrzy na stronę
+    if (document.hidden) {
+        console.log("Strona jest w tle - pomijam odświeżanie.");
+        return;
     }
-}, 2*60*1000);
+
+    if (apiUrl && !DEMO_M) {
+        console.log("Automatyczna aktualizacja danych...");
+        reload(); // lub fetchData() - zależnie jak nazwałeś funkcję
+    }
+}, REFRESH_INTERVAL);
 
 // ═══ DEMO DATA ═══
 const DEMO_DATA = {
