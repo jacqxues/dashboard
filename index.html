@@ -1071,20 +1071,18 @@ window.vDeadstock = vDeadstock;
 window.vMargins   = vMargins;
 
 // Ustawienie interwału (2 minuty = 120 000 ms)
-const REFRESH_INTERVAL = 120000; 
-
 setInterval(() => {
-    // Sprawdź, czy użytkownik w ogóle patrzy na stronę
-    if (document.hidden) {
-        console.log("Strona jest w tle - pomijam odświeżanie.");
+    // Jeśli użytkownik nie widzi strony (ma inną kartę lub zminimalizowane okno), nic nie rób
+    if (document.visibilityState !== 'visible') {
+        console.log("Strona w tle – synchronizacja wstrzymana.");
         return;
     }
 
     if (apiUrl && !DEMO_M) {
-        console.log("Automatyczna aktualizacja danych...");
-        reload(); // lub fetchData() - zależnie jak nazwałeś funkcję
+        console.log("Strona aktywna – pobieram nowe dane...");
+        fetchData(); // lub reload()
     }
-}, REFRESH_INTERVAL);
+}, 120000);
 
 // ═══ DEMO DATA ═══
 const DEMO_DATA = {
