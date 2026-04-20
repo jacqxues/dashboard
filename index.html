@@ -541,6 +541,23 @@ nav{padding:16px 10px;flex:1;}
 </div>
 
 <script>
+
+// Dodaj to na początku sekcji <script>, żeby obie nazwy działały:
+const loadData = () => fetchData();
+
+function fetchData() {
+  // Usuwamy stary skrypt, żeby nie zaśmiecać pamięci (ważne przy auto-odświeżaniu!)
+  const oldScript = document.getElementById('api-script');
+  if (oldScript) oldScript.remove();
+
+  const script = document.createElement('script');
+  script.id = 'api-script';
+  // Twój URL (pamiętaj o ?callback=)
+  const baseUrl = "https://script.google.com/macros/s/AKfycbzLNvm-8FnGysH-hzvOSde-UFOadgNbf2Q_wBSmxqpHeyL2WFL_OW1-EIi7DtievPhc1w/exec";
+  script.src = `${baseUrl}?callback=sommlyCallback&ts=${Date.now()}`; // ts= zapobiega buforowaniu przez przeglądarkę
+  document.body.appendChild(script);
+}
+  
 // ═══ CONFIG ═══
 const P       = new URLSearchParams(location.search);
 const U_VENUE = P.get('venue') || null;
@@ -1099,7 +1116,10 @@ window.vInventory = vInventory;
 window.vDeadstock = vDeadstock;
 window.vMargins   = vMargins;
 
-// Ustawienie interwału (2 minuty = 120 000 ms)
+function init() {
+  loadData(); // Pierwsze ładowanie zaraz po otwarciu strony
+  
+  // Ustawienie interwału (2 minuty = 120 000 ms)
 setInterval(() => {
     // Jeśli użytkownik nie widzi strony (ma inną kartę lub zminimalizowane okno), nic nie rób
     if (document.visibilityState !== 'visible') {
