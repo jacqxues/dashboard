@@ -117,6 +117,7 @@ nav{padding:16px 10px;flex:1;}
 .fbadge{display:inline-block;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:600;}
 .fbtg{background:var(--inl);color:var(--in);}
 .fbottle{background:var(--wnl);color:var(--wn);}
+.fbtg-mixed{background:var(--in);color:var(--sur);}
 .chip{display:inline-flex;font-family:'DM Mono',monospace;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500;white-space:nowrap;}
 .chi-c{background:var(--dgl);color:var(--dg);}
 .chi-w{background:var(--wnl);color:var(--wn);}
@@ -554,7 +555,11 @@ const fmt    = n  => Number(n||0).toLocaleString('pl-PL',{maximumFractionDigits:
 const fmtD   = n  => (Math.round((n||0)*10)/10).toFixed(1);
 const T      = (id,v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
 const H      = (id,v) => { const el=document.getElementById(id); if(el) el.innerHTML=v; };
-const fmtBadge = f => f==='BTG'?'<span class="fbadge fbtg">BTG</span>':'<span class="fbadge fbottle">Butelka</span>';
+const fmtBadge = f => {
+  if (f === 'BTG') return '<span class="fbadge fbtg">BTG</span>';
+  if (f === 'BTG i Butelka') return '<span class="fbadge fbtg-mixed">BTG + But.</span>';
+  return '<span class="fbadge fbottle">Butelka</span>';
+};
 const dayChip  = d => {
   if (d>=999) return '<span class="chip chi-c">Brak ruchu</span>';
   if (d<=6)   return `<span class="chip chi-c">${d} dni</span>`;
@@ -787,16 +792,33 @@ function vInventory() {
 function vDeadstock() {
   const cat = document.getElementById('dsCat')?.value||'';
   const fmtF= document.getElementById('dsFmt')?.value||'';
+  
+  // 1. Filtrowanie pozostaje bez zmian, bo opiera się na wartościach z bazy
   const rows = INV.filter(i=>i.is_dead&&(!cat||i.category===cat)&&(!fmtF||i.format===fmtF))
                   .sort((a,b)=>b.stock_value-a.stock_value);
+  
   const totV = rows.reduce((s,i)=>s+i.stock_value,0);
-  const btg  = rows.filter(i=>i.format==='BTG');
-  const bot  = rows.filter(i=>i.format!=='BTG');
+
+  // 2. KLUCZOWA ZMIANA: Rozdzielenie na 3 kategorie zamiast 2
+  const btg   = rows.filter(i=>i.format==='BTG');
+  const mixed = rows.filter(i=>i.format==='BTG i Butelka'); // Nowa kategoria
+  const bot   = rows.filter(i=>i.format==='Butelka');
+
   T('dsTag',    rows.length+' SKU');
   T('dsTotV',   fmt(totV));
   T('dsTotS',   rows.length+' SKU — zablokowany kapitał');
-  T('dsSplit',  btg.length+' BTG / '+bot.length+' Butelka');
-  T('dsSplitV', fmt(btg.reduce((s,i)=>s+i.stock_value,0))+' zł / '+fmt(bot.reduce((s,i)=>s+i.stock_value,0))+' zł');
+
+  // 3. Aktualizacja pasków podsumowania (Split)
+  // Skracam nazwy w wyświetlaniu, żeby zmieściły się w interfejsie
+  T('dsSplit',  `${btg.length} BTG / ${mixed.length} Mix / ${bot.length} But.`);
+
+  const vBtg   = btg.reduce((s,i)=>s+i.stock_value,0);
+  const vMixed = mixed.reduce((s,i)=>s+i.stock_value,0);
+  const vBot   = bot.reduce((s,i)=>s+i.stock_value,0);
+
+  T('dsSplitV', `${fmt(vBtg)} zł / ${fmt(vMixed)} zł / ${fmt(vBot)} zł`);
+
+  // 4. Renderowanie tabeli (fmtBadge obsłuży nową naklejkę, jeśli dodałeś ją do CSS)
   H('dsBody', rows.map(i=>`
     <tr><td><div class="tn">${i.name}</div></td>
     <td><div class="tc">${i.category}</div></td>
@@ -806,7 +828,9 @@ function vDeadstock() {
     <td class="mono" style="color:${mgColor(i.margin_pct)}">${i.margin_pct}%</td>
     <td style="font-size:11px;color:var(--txm)">${i.rec_action}</td></tr>`).join('')
     || '<tr><td colspan="7" style="text-align:center;color:var(--txf);padding:24px">Brak dead stock ✓</td></tr>');
-  T('dsNote', `${rows.length} SKU · ${fmt(totV)} zł. BTG (${fmt(btg.reduce((s,i)=>s+i.stock_value,0))} zł): aktywacja przez personel i pairing. Butelka (${fmt(bot.reduce((s,i)=>s+i.stock_value,0))} zł): promocja lub zwrot do dostawcy.`);
+
+  // 5. Aktualizacja notatki na dole
+  T('dsNote', `${rows.length} SKU · ${fmt(totV)} zł. BTG (${fmt(vBtg)} zł): pairing. Mix (${fmt(vMixed)} zł): promocja na kieliszki. Butelka (${fmt(vBot)} zł): promocja lub zwrot.`);
 }
 
 // ═══ VIEW — MARGINS ═══
