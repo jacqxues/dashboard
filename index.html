@@ -124,7 +124,8 @@ nav{padding:16px 10px;flex:1;}
 .chi-w{background:var(--wnl);color:var(--wn);}
 .chi-g{background:var(--sul);color:var(--su);}
 .chi-n{background:var(--bg);color:var(--txm);}
-.abc-flag{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;letter-spacing:.02em;margin-right:7px;vertical-align:middle;}
+.abc-flag{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;letter-spacing:.02em;vertical-align:middle;}
+
 .abc-a{background:var(--sul);color:var(--su);}
 .abc-b{background:var(--wnl);color:var(--wn);}
 .abc-c{background:var(--dgl);color:var(--dg);}
@@ -418,7 +419,7 @@ nav{padding:16px 10px;flex:1;}
   <div class="grid g21">
     <div class="panel">
       <div class="phead"><div class="ptit">Dead Stock — top pozycje</div><span class="ptag tg-d" id="dashDsTag">—</span></div>
-      <table class="tbl"><thead><tr><th>Produkt</th><th>Format</th><th>Wartość</th><th>Bez ruchu</th><th>Marża</th><th>Zalecana akcja</th></tr></thead>
+      <table class="tbl"><thead><tr><th>Produkt</th><th>Segment</th><th>Format</th><th>Wartość</th><th>Bez ruchu</th><th>Marża</th><th>Zalecana akcja</th></tr></thead>
       <tbody id="dashDsBody"></tbody></table>
       <div class="note"><span>◈</span><span id="dashDsNote">—</span></div>
     </div>
@@ -466,7 +467,7 @@ nav{padding:16px 10px;flex:1;}
   <div class="panel"><div class="tscroll">
     <table class="tbl" style="min-width:860px">
       <thead><tr>
-        <th style="padding-left:16px">Produkt</th><th>Kategoria</th><th>Format</th>
+        <th>Produkt</th><th>Segment</th><th>Format</th>
         <th>C.zakupu</th><th>C.sprzedaży</th><th>Marża</th>
         <th>Stan</th><th>7 dni</th><th>Dni zapasu</th><th>Dostawca</th>
       </tr></thead>
@@ -495,7 +496,7 @@ nav{padding:16px 10px;flex:1;}
     </select>
   </div>
   <div class="panel">
-    <table class="tbl"><thead><tr><th>Produkt</th><th>Kategoria</th><th>Format</th><th>Wartość</th><th>Bez ruchu</th><th>Marża</th><th>Zalecana akcja</th></tr></thead>
+    <table class="tbl"><thead><tr><th>Produkt</th><th>Segment</th><th>Format</th><th>Wartość</th><th>Bez ruchu</th><th>Marża</th><th>Zalecana akcja</th></tr></thead>
     <tbody id="dsBody"></tbody></table>
   </div>
   <div class="note" style="margin-top:12px"><span>◈</span><span id="dsNote">—</span></div>
@@ -727,7 +728,6 @@ function applyABCFlags(rows, target) {
 }
 function abcFlag(i) {
   const group = i.matrix_group || '';
-  // Colour class: Stars/Puzzles = A (green), Plowhorses = B (amber), Dogs = C (red)
   const c = group === 'Stars' || group === 'Puzzles' ? 'a'
           : group === 'Plowhorses' ? 'b'
           : group === 'Dogs' ? 'c'
@@ -735,6 +735,18 @@ function abcFlag(i) {
   const icon  = group === 'Stars' ? '★' : group === 'Plowhorses' ? '⬤' : group === 'Puzzles' ? '◆' : group === 'Dogs' ? '●' : (i.abc_icon||'◆');
   const label = matrixLabel(group) || i.abc_label || '—';
   return `<span class="abc-flag abc-${c}">${icon} ${label}</span>`;
+}
+// Vertical column cell — used in table <td> for the dedicated matrix column
+function abcColCell(i) {
+  const group = i.matrix_group || '';
+  const c = group === 'Stars' || group === 'Puzzles' ? 'a'
+          : group === 'Plowhorses' ? 'b'
+          : group === 'Dogs' ? 'c'
+          : (i.abc_class||'B').toLowerCase();
+  const icon  = group === 'Stars' ? '★' : group === 'Plowhorses' ? '⬤' : group === 'Puzzles' ? '◆' : group === 'Dogs' ? '●' : '◆';
+  const plMap = { Stars:'Gwiazdy', Plowhorses:'Konie rob.', Puzzles:'Zagadki', Dogs:'Psy' };
+  const label = plMap[group] || group || '—';
+  return `<td><span class="abc-flag abc-${c}">${icon} ${label}</span></td>`;
 }
 
 function verdict(s) {
@@ -846,6 +858,12 @@ function computeKPIs() {
            deadSkus: deadItems.length };
 }
 
+function getISOWeekFromDate(d) {
+  const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay() || 7));
+  const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+  return Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
+}
 function median(values) {
   if (!values.length) return null;
   const sorted = [...values].sort((a,b)=>a-b);
@@ -879,12 +897,12 @@ function computeAbcPortfolio() {
   return { ok:true, salesMedian, marginMedian, groups };
 }
 
-// Central source of truth: matrix_group → display label
+// Central source of truth: matrix_group → Polish display label
 function matrixLabel(group) {
-  if (group === 'Stars')      return 'Stars';
-  if (group === 'Plowhorses') return 'Plowhorses';
-  if (group === 'Puzzles')    return 'Puzzles';
-  if (group === 'Dogs')       return 'Dogs';
+  if (group === 'Stars')      return 'Gwiazdy';
+  if (group === 'Plowhorses') return 'Konie rob.';
+  if (group === 'Puzzles')    return 'Zagadki';
+  if (group === 'Dogs')       return 'Psy';
   return group || '—';
 }
 function matrixAction(group) {
@@ -1074,7 +1092,8 @@ function renderDashboard() {
   const dead = INV.filter(i=>i.is_dead).sort((a,b)=>b.stock_value-a.stock_value);
   T('dashDsTag', dead.length+' SKU · '+fmt(dead.reduce((s,i)=>s+i.stock_value,0))+' zł');
   H('dashDsBody', dead.slice(0,5).map(i=>`
-    <tr><td><div class="tn">${abcFlag(i)}${i.name}</div><div class="tc">${i.category}</div></td>
+    <tr><td><div class="tn">${i.name}</div><div class="tc">${i.category}</div></td>
+    ${abcColCell(i)}
     <td>${fmtBadge(i.format)}</td>
     <td class="mono">${fmt(i.stock_value)} zł</td>
     <td>${dayChip(i.days_cover)}</td>
@@ -1114,12 +1133,19 @@ function renderDashboard() {
   if (snapsForTrend.length >= 2) {
     const sorted = [...snapsForTrend].sort((a,b) => new Date(a.date) - new Date(b.date)).slice(-8);
     tData  = sorted.map(snap => {
+      // FIX: use stock_value-weighted margin, guard against empty/zero-price items
       const snapINV = INV.map(item => {
         const r = snap.rows.find(r => r.sku === item.name);
-        return r ? { ...item, sell_price: item.sell_price, buy: item.buy,
-          margin_pct: item.sell_price>0 ? Math.round((item.sell_price-item.buy)/item.sell_price*1000)/10 : 0 } : item;
-      }).filter(i => i.sell_price > 0);
-      return snapINV.length ? Math.round(snapINV.reduce((s,i)=>s+i.margin_pct,0)/snapINV.length*10)/10 : avgMargin;
+        const qty   = r ? Number(r.qty)   : item.qty;
+        const sales = r ? Number(r.sales) : item.sales;
+        return item.sell_price > 0 && item.buy > 0
+          ? { ...item, qty, sales, stock_value: Math.round(item.buy * qty),
+              margin_pct: Math.round((item.sell_price - item.buy) / item.sell_price * 1000) / 10 }
+          : null;
+      }).filter(Boolean);
+      const totalV = snapINV.reduce((s,i) => s + i.stock_value, 0);
+      if (!snapINV.length || totalV === 0) return avgMargin;
+      return Math.round(snapINV.reduce((s,i) => s + i.margin_pct * i.stock_value, 0) / totalV * 10) / 10;
     });
     labels = sorted.map(s => {
       const d = new Date(s.date);
@@ -1128,9 +1154,9 @@ function renderDashboard() {
   } else {
     const trend = (D.margin_trend||[]).filter(v=>!isNaN(v)&&v>0);
     tData  = trend.length ? trend : Array(8).fill(avgMargin);
-    labels = tData.map((_,i)=>'W-'+(tData.length-1-i)||'Bież.');
+    // FIX: parentheses required — 'W-0'||'Bież.' always returns 'W-0' (truthy string)
+    labels = tData.map((_, i) => { const n = tData.length - 1 - i; return n === 0 ? 'Bież.' : 'W-' + n; });
   }
-  function getISOWeekFromDate(d){const date=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));date.setUTCDate(date.getUTCDate()+4-(date.getUTCDay()||7));const y=new Date(Date.UTC(date.getUTCFullYear(),0,1));return Math.ceil((((date-y)/86400000)+1)/7);}
   if (mgChart) mgChart.destroy();
   mgChart = new Chart(document.getElementById('mgChart').getContext('2d'),{
     type:'line',
@@ -1165,8 +1191,8 @@ function vInventory() {
   T('invCount', rows.length+' SKU');
   T('invSub', rows.length+' produktów · filtr: '+(cat||'wszystkie')+(fmtF?' · '+fmtF:''));
   H('invBody', rows.map(i=>`
-    <tr><td style="padding-left:16px"><div class="tn">${abcFlag(i)}${i.name}</div>${i.notes?`<div class="tc">${i.notes}</div>`:''}</td>
-    <td><div class="tc">${i.category}</div></td>
+    <tr><td><div class="tn">${i.name}</div><div class="tc">${i.category}</div>${i.notes?`<div class="tc" style="font-style:italic">${i.notes}</div>`:''}</td>
+    ${abcColCell(i)}
     <td>${fmtBadge(i.format)}</td>
     <td class="mono">${i.buy} zł</td>
     <td class="mono">${i.sell_price} zł</td>
@@ -1210,8 +1236,8 @@ function vDeadstock() {
 
   // 4. Renderowanie tabeli (fmtBadge obsłuży nową naklejkę, jeśli dodałeś ją do CSS)
   H('dsBody', rows.map(i=>`
-    <tr><td><div class="tn">${abcFlag(i)}${i.name}</div></td>
-    <td><div class="tc">${i.category}</div></td>
+    <tr><td><div class="tn">${i.name}</div><div class="tc">${i.category}</div></td>
+    ${abcColCell(i)}
     <td>${fmtBadge(i.format)}</td>
     <td class="mono">${fmt(i.stock_value)} zł</td>
     <td>${dayChip(i.days_cover)}</td>
@@ -1232,10 +1258,11 @@ function vMargins() {
   const avg  = rows.length ? Math.round(rows.reduce((s,i)=>s+i.margin_pct,0)/rows.length*10)/10 : 0;
   T('mgAvg', avg); T('mgAvgS', rows.length+' SKU z ceną sprzedaży');
   if (rows[0]) { T('mgBest', rows[0].margin_pct+'%'); T('mgBestN', rows[0].name+' · '+rows[0].format); }
-  H('mgList', rows.map((i)=>`
-    <div class="mrow"><div style="flex:1"><div style="font-weight:500;font-size:13px">${i.name}</div><div class="tc">${i.category} · ${i.format}</div></div>
+  H('mgList', rows.map((i)=>{
+    return `
+    <div class="mrow"><div style="flex:1"><div style="font-weight:500;font-size:13px">${abcFlag(i)} ${i.name}</div><div class="tc">${i.category} · ${i.format}</div></div>
     <div class="mbar"><div class="mfill" style="width:${Math.min(i.margin_pct,100)}%;background:${mgColor(i.margin_pct)}"></div></div>
-    <div class="mono" style="font-weight:500;min-width:40px;text-align:right;color:${mgColor(i.margin_pct)}">${i.margin_pct}%</div></div>`).join(''));
+    <div class="mono" style="font-weight:500;min-width:40px;text-align:right;color:${mgColor(i.margin_pct)}">${i.margin_pct}%</div></div>`;}).join(''));
   const low = INV.filter(i=>i.sell_price>0&&i.margin_pct<target&&(!cat||i.category===cat)).sort((a,b)=>a.margin_pct-b.margin_pct);
   T('mgLowTag', low.length+' poniżej celu');
   H('mgLow', low.map(i=>`
@@ -1929,31 +1956,36 @@ async function submitQE() {
   btn.disabled = true;
 
   if (apiUrl) {
-    // FIX: GET+JSONP replaces broken no-cors POST
+    // FIX: batch rows into chunks of 10 to stay under Apps Script URL length limit (~2048 chars)
     try {
-      const cbName = 'qeCb_' + Date.now();
-      const params = new URLSearchParams({
-        type:     'snapshot',
-        data:     encodeURIComponent(JSON.stringify(payload)),
-        callback: cbName,
-      });
-      await new Promise((resolve, reject) => {
-        const script = document.createElement('script');
-        const timer  = setTimeout(() => {
-          delete window[cbName];
-          if (document.body.contains(script)) document.body.removeChild(script);
-          reject(new Error('Timeout'));
-        }, 25000);
-        window[cbName] = (res) => {
-          clearTimeout(timer); delete window[cbName];
-          if (document.body.contains(script)) document.body.removeChild(script);
-          if (res && res.status === 'ok') resolve(res);
-          else reject(new Error(res && res.message ? res.message : 'Błąd serwera'));
-        };
-        script.onerror = () => { clearTimeout(timer); delete window[cbName]; reject(new Error('Błąd skryptu')); };
-        script.src = apiUrl + '?' + params.toString();
-        document.body.appendChild(script);
-      });
+      const CHUNK = 10;
+      for (let i = 0; i < rows.length; i += CHUNK) {
+        const chunk   = rows.slice(i, i + CHUNK);
+        const partial = { type: 'snapshot', date: snapshotDate, rows: chunk };
+        const cbName  = 'qeCb_' + Date.now() + '_' + i;
+        const params  = new URLSearchParams({
+          type:     'snapshot',
+          data:     encodeURIComponent(JSON.stringify(partial)),
+          callback: cbName,
+        });
+        await new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          const timer  = setTimeout(() => {
+            delete window[cbName];
+            if (document.body.contains(script)) document.body.removeChild(script);
+            reject(new Error('Timeout — Apps Script nie odpowiedział. Sprawdź URL i uprawnienia Web App.'));
+          }, 20000);
+          window[cbName] = (res) => {
+            clearTimeout(timer); delete window[cbName];
+            if (document.body.contains(script)) document.body.removeChild(script);
+            if (res && res.status === 'ok') resolve(res);
+            else reject(new Error(res && res.message ? res.message : 'Błąd serwera'));
+          };
+          script.onerror = () => { clearTimeout(timer); delete window[cbName]; reject(new Error('Błąd ładowania skryptu')); };
+          script.src = apiUrl + '?' + params.toString();
+          document.body.appendChild(script);
+        });
+      }
       // Apply changes locally — no full reload needed
       rows.forEach(r => {
         const item = INV.find(i => i.name === r.sku);
@@ -1972,11 +2004,22 @@ async function submitQE() {
       });
       if (!D.snapshots) D.snapshots = [];
       D.snapshots.push({ date: snapshotDate, rows });
+      // Update margin_trend locally with current weighted margin so chart refreshes immediately
+      const sellable = INV.filter(i => i.sell_price > 0 && i.buy > 0);
+      const totV = sellable.reduce((s, i) => s + i.stock_value, 0);
+      if (totV > 0) {
+        const newMg = Math.round(sellable.reduce((s,i) => s + i.margin_pct * i.stock_value, 0) / totV * 10) / 10;
+        if (!D.margin_trend) D.margin_trend = [];
+        D.margin_trend = [...D.margin_trend, newMg].slice(-12);
+      }
       // FIX: save confirmation
       const summary = rows.map(r => `• ${r.sku}: ${r.qty} szt. | sprzedaż ${r.sales}`).join('\n');
       alert(`Zapisano ${rows.length} zmian:\n\n${summary}`);
       closeQE();
+      // Re-render immediately with local data, then fetch fresh from server
       renderAll(D);
+      // FIX: auto-reload from server after local render
+      try { await reload(); } catch(_e) {}
     } catch(e) {
       alert('Błąd zapisu: ' + e.message);
     }
