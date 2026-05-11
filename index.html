@@ -744,7 +744,7 @@ function abcColCell(i) {
           : group === 'Dogs' ? 'c'
           : (i.abc_class||'B').toLowerCase();
   const icon  = group === 'Stars' ? '★' : group === 'Plowhorses' ? '⬤' : group === 'Puzzles' ? '◆' : group === 'Dogs' ? '●' : '◆';
-  const plMap = { Stars:'Gwiazdy', Plowhorses:'Konie rob.', Puzzles:'Zagadki', Dogs:'Psy' };
+  const plMap = { Stars:'Gwiazdy', Plowhorses:'Konie Poc.', Puzzles:'Zagadki', Dogs:'Psy' };
   const label = plMap[group] || group || '—';
   return `<td><span class="abc-flag abc-${c}">${icon} ${label}</span></td>`;
 }
@@ -900,7 +900,7 @@ function computeAbcPortfolio() {
 // Central source of truth: matrix_group → Polish display label
 function matrixLabel(group) {
   if (group === 'Stars')      return 'Gwiazdy';
-  if (group === 'Plowhorses') return 'Konie rob.';
+  if (group === 'Plowhorses') return 'Konie Poc.';
   if (group === 'Puzzles')    return 'Zagadki';
   if (group === 'Dogs')       return 'Psy';
   return group || '—';
