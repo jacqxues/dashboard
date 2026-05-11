@@ -283,14 +283,14 @@ nav{padding:16px 10px;flex:1;}
     <div class="ni" data-view="inventory"><span class="ni-ico">⬡</span><span>Cellar Inventory</span><span class="nb" id="nb-inv">—</span></div>
     <div class="nl">Intelligence</div>
     <div class="ni" data-view="deadstock"><span class="ni-ico">△</span><span>Dead Stock</span><span class="nb" id="nb-ds">—</span></div>
-    <div class="ni" data-view="margins"><span class="ni-ico">◎</span><span>Margin Analysis</span></div>
+    <div class="ni" data-view="margins"><span class="ni-ico">◎</span><span>Analiza Marży</span></div>
     <div class="ni" data-view="reorder"><span class="ni-ico">↻</span><span>Reorder Watch</span><span class="nb" id="nb-ro">—</span></div>
     <div class="ni" data-view="pour"><span class="ni-ico">⌇</span><span>Pour Cost</span></div>
     <div class="ni" data-view="matrix"><span class="ni-ico">◍</span><span>Macierz Portfela</span></div>
-    <div class="ni" data-view="suppliers"><span class="ni-ico">↗</span><span>Supplier Prices</span></div>
+    <div class="ni" data-view="suppliers"><span class="ni-ico">↗</span><span>Ceny Dostawców</span></div>
     <div class="nl">Venue</div>
     <div class="ni" data-view="benchmarking"><span class="ni-ico">⊞</span><span>Benchmarking</span></div>
-    <div class="ni" data-view="weekly"><span class="ni-ico">✉</span><span>Weekly Report</span></div>
+    <div class="ni" data-view="weekly"><span class="ni-ico">✉</span><span>Tygodniowy Raport</span></div>
     <div class="ni" data-view="actionlog"><span class="ni-ico">✎</span><span>Action Log</span></div>
   </nav>
   <div class="sb-foot" style="font-size:11px;color:rgba(255,255,255,.35);padding:14px">
@@ -378,7 +378,7 @@ nav{padding:16px 10px;flex:1;}
       <div class="abc-head">
         <div class="abc-title">
           <svg class="abc-icon" viewBox="0 0 24 24"><path d="M12 3l2.6 5.3L20 9l-4 3.9.9 5.5L12 15.8 7.1 18.4 8 12.9 4 9l5.4-.7z"/></svg>
-          <span>Stars</span>
+          <span>Gwiazdy</span>
         </div>
       </div>
       <div class="abc-hint">Utrzymaj ekspozycję i rekomendacje kelnerskie.</div>
@@ -388,7 +388,7 @@ nav{padding:16px 10px;flex:1;}
       <div class="abc-head">
         <div class="abc-title">
           <svg class="abc-icon" viewBox="0 0 24 24"><path d="M3 12h18"/><path d="M7 8v8"/><path d="M17 8v8"/></svg>
-          <span>Plowhorses</span>
+          <span>Konie Pociągowe</span>
         </div>
       </div>
       <div class="abc-hint">Wysoki wolumen, niska marża - testuj korektę ceny.</div>
@@ -398,7 +398,7 @@ nav{padding:16px 10px;flex:1;}
       <div class="abc-head">
         <div class="abc-title">
           <svg class="abc-icon" viewBox="0 0 24 24"><path d="M12 2v20"/><path d="M5 9l7-7 7 7"/><path d="M19 15l-7 7-7-7"/></svg>
-          <span>Puzzles</span>
+          <span>Zagadki</span>
         </div>
       </div>
       <div class="abc-hint">Wymaga promocji przez personel i lepszego placementu.</div>
@@ -408,7 +408,7 @@ nav{padding:16px 10px;flex:1;}
       <div class="abc-head">
         <div class="abc-title">
           <svg class="abc-icon" viewBox="0 0 24 24"><path d="M3 3l18 18"/><path d="M7 7c2-2 8-2 10 0s2 8 0 10-8 2-10 0-2-8 0-10z"/></svg>
-          <span>Dogs</span>
+          <span>Psy</span>
         </div>
       </div>
       <div class="abc-hint">Rozważ rotację karty, promocję lub wycofanie SKU.</div>
@@ -505,7 +505,7 @@ nav{padding:16px 10px;flex:1;}
 <!-- ── MARGINS ── -->
 <div class="view" id="view-margins">
   <div class="ph">
-    <div><div class="pt">Margin Analysis</div><div class="ps">Marże brutto po SKU i kategorii</div></div>
+    <div><div class="pt">Analiza Marży</div><div class="ps">Marże brutto po SKU i kategorii</div></div>
     <div class="hact"><span class="ptag tg-g" id="mgTargetTag">Cel: 68%</span></div>
   </div>
   <div class="grid g2" style="margin-bottom:14px">
@@ -591,10 +591,10 @@ nav{padding:16px 10px;flex:1;}
     <div class="phead"><div class="ptit">Macierz 2x2 (oś X: sprzedaż, oś Y: marża)</div><span class="ptag tg-w" id="mxMed">—</span></div>
     <div class="mx-wrap"><canvas id="matrixChart" role="img" aria-label="Macierz portfela win"></canvas></div>
     <div class="mx-grid">
-      <div class="mx-card mx-puzzles"><h4>Puzzles</h4><p>Niska sprzedaż, wysoka marża. Wymaga aktywnej rekomendacji przez personel.</p></div>
-      <div class="mx-card mx-stars"><h4>Stars</h4><p>Wysoka sprzedaż i wysoka marża. Utrzymuj widoczność i dostępność.</p></div>
-      <div class="mx-card mx-dogs"><h4>Dogs</h4><p>Niska sprzedaż i niska marża. Kandydaci do rotacji lub wycofania.</p></div>
-      <div class="mx-card mx-plow"><h4>Plowhorses</h4><p>Wysoka sprzedaż, niższa marża. Rozważ korektę ceny lub upsell.</p></div>
+      <div class="mx-card mx-puzzles"><h4>Zagadki</h4><p>Niska sprzedaż, wysoka marża. Wymaga aktywnej rekomendacji przez personel.</p></div>
+      <div class="mx-card mx-stars"><h4>Gwiazdy</h4><p>Wysoka sprzedaż i wysoka marża. Utrzymuj widoczność i dostępność.</p></div>
+      <div class="mx-card mx-dogs"><h4>Psy</h4><p>Niska sprzedaż i niska marża. Kandydaci do rotacji lub wycofania.</p></div>
+      <div class="mx-card mx-plow"><h4>Konie Pociągowe</h4><p>Wysoka sprzedaż, niższa marża. Rozważ korektę ceny lub upsell.</p></div>
     </div>
   </div>
 </div>
