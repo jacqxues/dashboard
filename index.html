@@ -124,6 +124,55 @@ nav{padding:16px 10px;flex:1;}
 .chi-w{background:var(--wnl);color:var(--wn);}
 .chi-g{background:var(--sul);color:var(--su);}
 .chi-n{background:var(--bg);color:var(--txm);}
+
+/* ── Rotation velocity chip ─────────────────────────────────────────────── */
+.rot-chip{display:inline-flex;align-items:center;font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;white-space:nowrap;}
+.rot-fast{background:#E8F5EE;color:#1A6640;}
+.rot-mid {background:var(--wnl);color:var(--wn);}
+.rot-slow{background:var(--dgl);color:var(--dg);}
+.rot-zero{background:var(--bg);color:var(--txm);}
+
+/* ── Status badge (Action Log) ──────────────────────────────────────────── */
+.stat-badge{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;letter-spacing:.03em;}
+.stat-pending{background:var(--wnl);color:var(--wn);}
+.stat-done   {background:var(--sul);color:var(--su);}
+.stat-ignored{background:var(--bg); color:var(--txm);}
+.stat-btn{font-size:10px;padding:2px 8px;border-radius:8px;border:1px solid var(--bd);background:var(--sur);color:var(--txm);cursor:pointer;font-family:'Outfit',sans-serif;transition:all .12s;}
+.stat-btn:hover{border-color:var(--ac);color:var(--ac);}
+
+/* ── Briefing view ──────────────────────────────────────────────────────── */
+.br-list{display:flex;flex-direction:column;gap:10px;}
+.br-task{background:var(--sur);border:1px solid var(--bd);border-radius:var(--r);padding:16px 18px;display:flex;align-items:flex-start;gap:14px;transition:box-shadow .15s;}
+.br-task:hover{box-shadow:0 2px 10px rgba(0,0,0,.06);}
+.br-task.br-done{opacity:.45;}
+.br-task.br-ignored{opacity:.3;}
+.br-num{flex-shrink:0;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:var(--ac);color:#fff;margin-top:2px;}
+.br-num.pri-1{background:var(--dg);}
+.br-num.pri-2{background:#7B3FA0;}
+.br-num.pri-3{background:var(--wn);}
+.br-num.pri-4{background:var(--in);}
+.br-num.pri-5{background:var(--su);}
+.br-body{flex:1;min-width:0;}
+.br-hl{font-weight:600;font-size:14px;margin-bottom:4px;}
+.br-det{font-size:12px;color:var(--txm);margin-bottom:5px;line-height:1.55;}
+.br-cta{font-size:11px;color:var(--in);font-style:italic;}
+.br-right{flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:6px;}
+.br-impact{font-family:'DM Mono',monospace;font-size:12px;font-weight:500;color:var(--su);}
+.br-type{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600;}
+.br-reorder    {background:var(--dgl);color:var(--dg);}
+.br-dead_dog   {background:#F1EAF8;color:#5C2D91;}
+.br-dead_promo {background:var(--wnl);color:var(--wn);}
+.br-pricing    {background:var(--inl);color:var(--in);}
+.br-promote    {background:var(--sul);color:var(--su);}
+.br-drift_alert{background:#FFF3CD;color:#856404;}
+.br-actions{display:flex;gap:6px;margin-top:8px;}
+.br-done-btn{padding:4px 12px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;border:none;background:var(--sul);color:var(--su);font-family:'Outfit',sans-serif;transition:all .13s;}
+.br-done-btn:hover{background:var(--su);color:#fff;}
+.br-ign-btn{padding:4px 12px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--bd);background:var(--sur);color:var(--txm);font-family:'Outfit',sans-serif;transition:all .13s;}
+.br-ign-btn:hover{border-color:var(--txm);}
+.br-empty{text-align:center;padding:40px 20px;color:var(--txf);font-size:14px;}
+.br-summary{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+.br-sum-card{background:var(--sur);border:1px solid var(--bd);border-radius:var(--rs);padding:12px 16px;flex:1;min-width:110px;}
 .abc-flag{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;letter-spacing:.02em;vertical-align:middle;}
 
 .abc-a{background:var(--sul);color:var(--su);}
@@ -158,7 +207,9 @@ nav{padding:16px 10px;flex:1;}
 .refill{height:100%;border-radius:2px;}
 .drow{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--bg);font-size:13px;}
 .drow:last-child{border-bottom:none;}
-.arow{display:flex;gap:9px;padding:7px 0;border-bottom:1px solid var(--bg);font-size:12px;}
+.arow{display:flex;gap:9px;padding:7px 0;border-bottom:1px solid var(--bg);font-size:12px;align-items:flex-start;}
+.arow.al-done{opacity:.5;}
+.arow.al-ignored{opacity:.3;text-decoration:line-through;}
 .arow:last-child{border-bottom:none;}
 .adot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:3px;}
 .catrow{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--bg);}
@@ -280,6 +331,7 @@ nav{padding:16px 10px;flex:1;}
   <nav>
     <div class="nl">Overview</div>
     <div class="ni active" data-view="dashboard"><span class="ni-ico">◈</span><span>Dashboard</span></div>
+    <div class="ni" data-view="briefing"><span class="ni-ico">★</span><span>Weekly Briefing</span><span class="nb" id="nb-br">—</span></div>
     <div class="ni" data-view="inventory"><span class="ni-ico">⬡</span><span>Cellar Inventory</span><span class="nb" id="nb-inv">—</span></div>
     <div class="nl">Intelligence</div>
     <div class="ni" data-view="deadstock"><span class="ni-ico">△</span><span>Dead Stock</span><span class="nb" id="nb-ds">—</span></div>
@@ -431,7 +483,10 @@ nav{padding:16px 10px;flex:1;}
 
   <div class="grid g21">
     <div class="panel">
-      <div class="phead"><div class="ptit">Trend marży brutto</div><span class="ptag tg-w">Cel: <span id="trendTarget">68</span>%</span></div>
+      <div class="phead">
+        <div class="ptit">Trend marży brutto</div>
+        <span class="ptag tg-w" id="trendTarget" style="cursor:pointer" title="Kliknij aby uruchomić audyt trendu" onclick="runMarginTrendAudit()">Cel: <span id="trendTargetVal">68</span>% · audyt</span>
+      </div>
       <div class="chwrap"><canvas id="mgChart" role="img" aria-label="Trend marży">Trend.</canvas></div>
     </div>
     <div class="panel">
@@ -439,6 +494,36 @@ nav{padding:16px 10px;flex:1;}
       <div id="dashCats"></div>
     </div>
   </div>
+</div>
+
+<!-- ── BRIEFING ── -->
+<div class="view" id="view-briefing">
+  <div class="ph">
+    <div>
+      <div class="pt">Weekly Briefing</div>
+      <div class="ps" id="brSub">Zadania wygenerowane automatycznie na podstawie aktualnych danych</div>
+    </div>
+    <div class="hact">
+      <span class="ptag tg-w" id="brTag">—</span>
+      <button class="btn btn-o" onclick="reload()">↻ Odśwież</button>
+    </div>
+  </div>
+
+  <!-- Summary KPI strip -->
+  <div class="br-summary">
+    <div class="br-sum-card kd"><div class="klbl">Dead Stock</div><div class="kval" style="font-size:16px"><span id="brDs">—</span> zł</div></div>
+    <div class="br-sum-card kw"><div class="klbl">Pilne zamówienia</div><div class="kval" style="font-size:16px" id="brRo">—</div></div>
+    <div class="br-sum-card kg"><div class="klbl">Śr. marża</div><div class="kval" style="font-size:16px"><span id="brMg">—</span>%</div></div>
+    <div class="br-sum-card"  ><div class="klbl">Wynik zdrowia</div><div class="kval" style="font-size:16px"><span id="brHl">—</span>/100</div></div>
+  </div>
+
+  <!-- Drift alerts banner (ukryty gdy brak alertów) -->
+  <div id="brDriftBanner" style="display:none;background:var(--wnl);border:1px solid var(--gd);border-radius:var(--rs);padding:11px 16px;margin-bottom:14px;font-size:13px;color:var(--wn);">
+    <strong>⚠️ Alert cenowy:</strong> <span id="brDriftText">—</span>
+  </div>
+
+  <!-- Task list -->
+  <div id="brList" class="br-list"></div>
 </div>
 
 <!-- ── INVENTORY ── -->
@@ -469,7 +554,7 @@ nav{padding:16px 10px;flex:1;}
       <thead><tr>
         <th>Produkt</th><th>Segment</th><th>Format</th>
         <th>C.zakupu</th><th>C.sprzedaży</th><th>Marża</th>
-        <th>Stan</th><th>7 dni</th><th>Dni zapasu</th><th>Dostawca</th>
+        <th>Stan</th><th>7 dni</th><th>Dni zapasu</th><th>Rotacja</th><th>Dostawca</th>
       </tr></thead>
       <tbody id="invBody"></tbody>
     </table>
@@ -666,6 +751,15 @@ nav{padding:16px 10px;flex:1;}
     <input id="afAct" type="text" placeholder="Co zrobiono? (np. Promocja happy hour, zwrot do dostawcy…)">
     <div class="formrow"><button class="sbtn" onclick="submitAL()">Zapisz</button><button class="cbtn" onclick="toggleAF()">Anuluj</button></div>
   </div>
+  <div class="panel" style="margin-bottom:14px">
+    <div class="phead">
+      <div class="ptit">Raport Skuteczności</div>
+      <span class="ptag tg-g">Performance Driver</span>
+    </div>
+    <div id="perfReport">
+      <div class="br-empty" style="padding:16px 0">Ładowanie raportu skuteczności…</div>
+    </div>
+  </div>
   <div class="panel">
     <div class="phead"><div class="ptit">Wszystkie wpisy</div><span class="ptag tg-i" id="alCount">—</span></div>
     <div id="alList"></div>
@@ -697,6 +791,10 @@ const fmt    = n  => Number(n||0).toLocaleString('pl-PL',{maximumFractionDigits:
 const fmtD   = n  => (Math.round((n||0)*10)/10).toFixed(1);
 const T      = (id,v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
 const H      = (id,v) => { const el=document.getElementById(id); if(el) el.innerHTML=v; };
+// S1 FIX: funkcja escapowania HTML — chroni przed XSS gdy nazwy SKU zawierają
+// znaki specjalne lub złośliwy kod wstrzyknięty przez dane z arkusza.
+const esc = s => String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const fmtBadge = f => {
   if (f === 'BTG') return '<span class="fbadge fbtg">BTG</span>';
   if (f === 'BTG i Butelka') return '<span class="fbadge fbtg-mixed">BTG + But.</span>';
@@ -733,7 +831,8 @@ function abcFlag(i) {
           : group === 'Dogs' ? 'c'
           : (i.abc_class||'B').toLowerCase();
   const icon  = group === 'Stars' ? '★' : group === 'Plowhorses' ? '⬤' : group === 'Puzzles' ? '◆' : group === 'Dogs' ? '●' : (i.abc_icon||'◆');
-  const label = matrixLabel(group) || i.abc_label || '—';
+  // Używa matrixLabel() — tylko wartości słownikowe, bezpieczne bez esc()
+  const label = matrixLabel(group) || '—';
   return `<span class="abc-flag abc-${c}">${icon} ${label}</span>`;
 }
 // Vertical column cell — used in table <td> for the dedicated matrix column
@@ -744,8 +843,8 @@ function abcColCell(i) {
           : group === 'Dogs' ? 'c'
           : (i.abc_class||'B').toLowerCase();
   const icon  = group === 'Stars' ? '★' : group === 'Plowhorses' ? '⬤' : group === 'Puzzles' ? '◆' : group === 'Dogs' ? '●' : '◆';
-  const plMap = { Stars:'Gwiazdy', Plowhorses:'Konie Poc.', Puzzles:'Zagadki', Dogs:'Psy' };
-  const label = plMap[group] || group || '—';
+  // Używa matrixLabel() — tylko dozwolone wartości słownikowe, nie dane użytkownika
+  const label = matrixLabel(group);
   return `<td><span class="abc-flag abc-${c}">${icon} ${label}</span></td>`;
 }
 
@@ -810,6 +909,8 @@ function showView(id) {
   curView = id;
   if (!D) return;
   const renders = {
+    dashboard:    renderDashboard,
+    briefing:     vBriefing,
     inventory:    vInventory,
     deadstock:    vDeadstock,
     margins:      vMargins,
@@ -835,19 +936,29 @@ function computeKPIs() {
   const cellarValue = INV.reduce((s,i) => s + i.stock_value, 0);
   const urgentItems = INV.filter(i => i.is_urgent);
   const sellableINV = INV.filter(i => i.sell_price > 0);
-  const avgMargin   = sellableINV.length
-    ? Math.round(sellableINV.reduce((s,i) => s + i.margin_pct, 0) / sellableINV.length * 10) / 10
+
+  // S2 FIX: ważona średnia marży (wagi = wartość magazynowa) — zgodna z backendem.
+  // Poprzednio: zwykła arytmetyczna → inna liczba niż w arkuszu kpi_summary.
+  const sellTotalVal = sellableINV.reduce((s,i) => s + i.stock_value, 0);
+  const avgMargin    = sellTotalVal > 0
+    ? Math.round(sellableINV.reduce((s,i) => s + i.margin_pct * i.stock_value, 0) / sellTotalVal * 10) / 10
     : (D.kpi?.avg_margin || 0);
+
   const covItems = INV.filter(i => i.sales > 0);
   const avgCov   = covItems.length
     ? Math.round(covItems.reduce((s,i) => s + i.days_cover, 0) / covItems.length)
     : (D.kpi?.stock_coverage_days || 0);
 
-  // Health scores (transparent formulas)
-  const marginScore    = Math.min(100, Math.round(avgMargin / target * 100));
+  // S3 FIX: wzory health score ujednolicone z backendem (calcHealth w Code.gs).
+  // marginScore: skaluje od 30% do target% (nie od 0%), zgodnie z backendem.
+  // reorderScore: 100 - urgent*10 (nie proporcja do całości).
+  const mgRange        = target - 30;
+  const marginScore    = mgRange > 0
+    ? Math.max(0, Math.min(100, Math.round((avgMargin - 30) / mgRange * 100)))
+    : (avgMargin > 30 ? 100 : 0);
   const deadStockPct   = cellarValue > 0 ? deadValue / cellarValue * 100 : 0;
   const deadStockScore = Math.max(0, Math.round(100 - deadStockPct * 2));
-  const reorderScore   = INV.length > 0 ? Math.max(0, Math.round(100 - urgentItems.length / INV.length * 200)) : 100;
+  const reorderScore   = Math.max(0, Math.min(100, Math.round(100 - urgentItems.length * 10)));
   const wMg_ = (D && D.thresholds && D.thresholds.weight_margin)  ? Number(D.thresholds.weight_margin)  : 0.4;
   const wDs_ = (D && D.thresholds && D.thresholds.weight_dead)    ? Number(D.thresholds.weight_dead)    : 0.3;
   const wRo_ = (D && D.thresholds && D.thresholds.weight_reorder) ? Number(D.thresholds.weight_reorder) : 0.3;
@@ -864,6 +975,68 @@ function getISOWeekFromDate(d) {
   const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
   return Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
 }
+
+// Jedno źródło danych wykresu trendu marży — zgodne z backendem (margin_trend_series)
+function computeMarginTrendChartData(avgMargin) {
+  if (D.margin_trend_series && D.margin_trend_series.length > 0) {
+    const series = D.margin_trend_series.slice(-12);
+    return {
+      tData:  series.map(p => p.value),
+      labels: series.map(p => p.label || p.date),
+    };
+  }
+  const trend = (D.margin_trend || []).filter(v => !isNaN(v) && v > 0);
+  if (trend.length > 0) {
+    return {
+      tData:  trend,
+      labels: trend.map((_, i) => { const n = trend.length - 1 - i; return n === 0 ? 'Bież.' : 'W-' + n; }),
+    };
+  }
+  return {
+    tData:  Array(8).fill(avgMargin),
+    labels: Array(8).fill(0).map((_, i) => (i === 7 ? 'Bież.' : 'W-' + (7 - i))),
+  };
+}
+
+function upsertLocalMarginTrendPoint(dateStr, value) {
+  const point = {
+    date:  dateStr,
+    value: value,
+    label: 'W' + getISOWeekFromDate(new Date(dateStr)),
+  };
+  D.margin_trend_series = [...(D.margin_trend_series || []), point]
+    .filter((p, i, arr) => arr.findIndex(x => x.date === p.date) === i)
+    .sort((a, b) => new Date(a.date) - new Date(b.date))
+    .slice(-12);
+  D.margin_trend = D.margin_trend_series.map(p => p.value);
+}
+
+async function runMarginTrendAudit() {
+  if (!apiUrl) {
+    const sellable = INV.filter(i => i.sell_price > 0 && i.buy > 0);
+    const totV = sellable.reduce((s, i) => s + i.stock_value, 0);
+    const kpiMg = totV > 0
+      ? Math.round(sellable.reduce((s, i) => s + i.margin_pct * i.stock_value, 0) / totV * 10) / 10
+      : 0;
+    const last = (D.margin_trend_series || []).slice(-1)[0];
+    alert('Audyt trendu (demo)\n\nKPI marża: ' + kpiMg + '%\nOstatni punkt: '
+      + (last ? last.value + '% (' + last.date + ')' : 'brak')
+      + '\n\nW trybie live uruchom endpoint ?type=margin_audit');
+    return;
+  }
+  try {
+    const sep = apiUrl.includes('?') ? '&' : '?';
+    const audit = await loadJsonpSecondary(apiUrl + sep + 'type=margin_audit');
+    console.log('Margin trend audit:', audit);
+    alert((audit.ok ? '✓ ' : '⚠ ') + (audit.message || 'Audyt zakończony')
+      + '\n\nKPI: ' + audit.current_kpi_margin + '%'
+      + '\nPunkty trendu: ' + audit.trend_points
+      + (audit.last_trend_point ? '\nOstatni: ' + audit.last_trend_point.value + '% (' + audit.last_trend_point.date + ')' : ''));
+  } catch (e) {
+    alert('Audyt niedostępny: ' + e.message);
+  }
+}
+window.runMarginTrendAudit = runMarginTrendAudit;
 function median(values) {
   if (!values.length) return null;
   const sorted = [...values].sort((a,b)=>a-b);
@@ -906,11 +1079,106 @@ function matrixLabel(group) {
   return group || '—';
 }
 function matrixAction(group) {
-  if (group === 'Stars') return 'Utrzymaj ekspozycje i rekomendacje kelnerskie';
-  if (group === 'Plowhorses') return 'Wysoki wolumen, niska marza - testuj korekte ceny';
-  if (group === 'Puzzles') return 'Wymaga promocji przez personel i lepszego placementu';
-  if (group === 'Dogs') return 'Rozwaz rotacje karty, promocje lub wycofanie SKU';
+  // S5 FIX: przywrócono poprawne polskie znaki diakrytyczne
+  if (group === 'Stars')      return 'Utrzymaj ekspozycję i rekomendacje kelnerskie';
+  if (group === 'Plowhorses') return 'Wysoki wolumen, niska marża — testuj korektę ceny';
+  if (group === 'Puzzles')    return 'Wymaga promocji przez personel i lepszego placementu';
+  if (group === 'Dogs')       return 'Rozważ rotację karty, promocję lub wycofanie SKU';
   return 'Monitoruj pozycje w macierzy portfela';
+}
+
+// ─── Rotation velocity chip ──────────────────────────────────────────────────
+// score=0–100 (% magazynu sprzedanego w tygodniu)
+function rotChip(score, label) {
+  const s = Number(score||0);
+  const cls = s >= 70 ? 'rot-fast'
+            : s >= 30 ? 'rot-mid'
+            : s >  0  ? 'rot-slow'
+            : 'rot-zero';
+  const lbl = label || (s >= 70 ? 'Szybka' : s >= 30 ? 'Średnia' : s > 0 ? 'Wolna' : 'Brak ruchu');
+  return `<span class="rot-chip ${cls}">${lbl}</span>`;
+}
+
+// ─── Action status badge ──────────────────────────────────────────────────────
+function statusBadge(status) {
+  const s = status || 'Pending';
+  const cls = s === 'Done' ? 'stat-done' : s === 'Ignored' ? 'stat-ignored' : 'stat-pending';
+  const lbl = s === 'Done' ? '✓ Wykonano' : s === 'Ignored' ? '— Zignorowano' : '⏳ Oczekuje';
+  return `<span class="stat-badge ${cls}">${lbl}</span>`;
+}
+
+// ─── Update action log entry status via JSONP ────────────────────────────────
+async function updateActionStatus(entryId, newStatus, rowEl, ignoreReason) {
+  if (!entryId) return;
+  // Optimistic UI update
+  if (rowEl) {
+    const badgeEl = rowEl.querySelector('.stat-badge');
+    if (badgeEl) badgeEl.outerHTML = statusBadge(newStatus);
+    const actBtns = rowEl.querySelector('.al-btns');
+    if (actBtns) actBtns.style.display = 'none';
+    rowEl.classList.toggle('al-done',    newStatus === 'Done');
+    rowEl.classList.toggle('al-ignored', newStatus === 'Ignored');
+  }
+  // Persist to backend
+  if (!apiUrl) {
+    const entry = (D.action_log||[]).find(e => e.id === entryId);
+    if (entry) entry.status = newStatus;
+    return;
+  }
+  try {
+    const cbName = 'stCb_' + Date.now();
+    const params = new URLSearchParams({ type:'action_status', id: entryId, status: newStatus, callback: cbName });
+    if (ignoreReason) params.set('ignore_reason', String(ignoreReason).slice(0, 200));
+    await new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      const timer  = setTimeout(() => { delete window[cbName]; reject(new Error('Timeout')); }, 10000);
+      window[cbName] = (res) => {
+        clearTimeout(timer); delete window[cbName];
+        if (document.body.contains(script)) document.body.removeChild(script);
+        if (res && res.status === 'ok') resolve(res); else reject(new Error('Błąd'));
+      };
+      script.onerror = () => { clearTimeout(timer); delete window[cbName]; reject(new Error('Błąd skryptu')); };
+      script.src = apiUrl + '?' + params.toString();
+      document.body.appendChild(script);
+    });
+    const entry = (D.action_log||[]).find(e => e.id === entryId);
+    if (entry) entry.status = newStatus;
+    invalidateImpactCacheLocal();
+  } catch(err) {
+    console.warn('updateActionStatus error:', err);
+  }
+}
+
+async function promptIgnore(entryId, rowEl) {
+  const reason = prompt('Powód pominięcia (np. brak miejsca na ekspozycję):', 'Brak miejsca na ekspozycję');
+  if (reason === null) return;
+  await updateActionStatus(entryId, 'Ignored', rowEl, reason);
+}
+
+async function ensureActionLogEntry(entryId, sku, action) {
+  if ((D.action_log || []).some(e => e.id === entryId)) return;
+  const cbName = 'alUpsert_' + Date.now();
+  const params = new URLSearchParams({
+    type: 'action_log', id: entryId, sku, action, user: 'manager', callback: cbName,
+  });
+  await new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    const timer  = setTimeout(() => { delete window[cbName]; reject(new Error('Timeout')); }, 10000);
+    window[cbName] = (res) => {
+      clearTimeout(timer); delete window[cbName];
+      if (document.body.contains(script)) document.body.removeChild(script);
+      if (res && res.status === 'ok') resolve(res); else reject(new Error('Błąd'));
+    };
+    script.onerror = () => { clearTimeout(timer); delete window[cbName]; reject(new Error('Błąd skryptu')); };
+    script.src = apiUrl + '?' + params.toString();
+    document.body.appendChild(script);
+  });
+  D.action_log = D.action_log || [];
+  D.action_log.unshift({ id: entryId, date: 'teraz', sku, action, user: 'manager', status: 'Pending' });
+}
+
+function invalidateImpactCacheLocal() {
+  D.performance_impact = null;
 }
 
 function applyMatrixActions(rows) {
@@ -940,7 +1208,7 @@ function renderAbcMatrix() {
   const list = (arr) => {
     const top = arr.slice(0,3);
     if (!top.length) return '<div class="abc-item"><span class="abc-item-name">Brak pozycji</span><span class="abc-item-meta">—</span></div>';
-    return top.map(i => `<div class="abc-item"><span class="abc-item-name">${i.name}</span><span class="abc-item-meta">${fmtD(i.margin_pct)}% / ${fmt(i.sales)} szt.</span></div>`).join('');
+    return top.map(i => `<div class="abc-item"><span class="abc-item-name">${esc(i.name)}</span><span class="abc-item-meta">${fmtD(i.margin_pct)}% / ${fmt(i.sales)} szt.</span></div>`).join('');
   };
 
   H('abc-stars', list(m.groups.stars));
@@ -1006,6 +1274,9 @@ function renderDashboard() {
     const sorted = [...snaps].sort((a,b) => new Date(b.date) - new Date(a.date));
     // Rebuild INV for previous snapshot
     const prevRows = sorted[1].rows;
+    // S4 FIX: dynamiczne progi z D.thresholds zamiast hardkodowanych 21 / 10
+    const wowDd = (D && D.thresholds) ? Number(D.thresholds.dead_days   || 21) : 21;
+    const wowUd = (D && D.thresholds) ? Number(D.thresholds.urgent_days || 10) : 10;
     const prevINV = INV.map(item => {
       const snap = prevRows.find(r => r.sku === item.name);
       if (!snap) return item;
@@ -1014,7 +1285,7 @@ function renderDashboard() {
       const days  = daily>0 ? Math.round(qty/daily) : 999;
       return { ...item, qty, sales, days_cover: days,
                stock_value: Math.round(item.buy*qty),
-               is_dead: sales===0||days>21, is_urgent: days<=10 };
+               is_dead: sales===0||days>wowDd, is_urgent: days<=wowUd };
     });
     const prevSellable = prevINV.filter(i=>i.sell_price>0);
     const prevDeadV    = prevINV.filter(i=>i.is_dead).reduce((s,i)=>s+i.stock_value,0);
@@ -1026,7 +1297,7 @@ function renderDashboard() {
                  urgentCount: prevUrgent, deadSkus: prevINV.filter(i=>i.is_dead).length };
   }
 
-  T('kMgT', target); T('trendTarget', target);
+  T('kMgT', target); T('trendTargetVal', target);
   // Dynamic weight labels
   if (D.thresholds) {
     T('wMg', Math.round((D.thresholds.weight_margin||0.4)*100));
@@ -1086,19 +1357,22 @@ function renderDashboard() {
   T('nb-inv', INV.length);
   T('nb-ds',  deadSkus);
   T('nb-ro',  urgentItems.length);
+  // Briefing badge — show pending task count
+  const brPending = ((D && D.briefing && D.briefing.tasks) || []).length;
+  T('nb-br', brPending || 0);
   renderAbcMatrix();
 
   // Dead stock top 5
   const dead = INV.filter(i=>i.is_dead).sort((a,b)=>b.stock_value-a.stock_value);
   T('dashDsTag', dead.length+' SKU · '+fmt(dead.reduce((s,i)=>s+i.stock_value,0))+' zł');
   H('dashDsBody', dead.slice(0,5).map(i=>`
-    <tr><td><div class="tn">${i.name}</div><div class="tc">${i.category}</div></td>
+    <tr><td><div class="tn">${esc(i.name)}</div><div class="tc">${esc(i.category)}</div></td>
     ${abcColCell(i)}
     <td>${fmtBadge(i.format)}</td>
     <td class="mono">${fmt(i.stock_value)} zł</td>
     <td>${dayChip(i.days_cover)}</td>
     <td class="mono" style="color:${mgColor(i.margin_pct)}">${i.margin_pct}%</td>
-    <td style="font-size:11px;color:var(--txm)">${i.rec_action}</td></tr>`).join('')
+    <td style="font-size:11px;color:var(--txm)">${esc(i.rec_action)}</td></tr>`).join('')
     || '<tr><td colspan="6" style="text-align:center;color:var(--txf);padding:20px">Brak dead stock ✓</td></tr>');
   const btgV = dead.filter(i=>i.format==='BTG').reduce((s,i)=>s+i.stock_value,0);
   const botV = dead.filter(i=>i.format!=='BTG').reduce((s,i)=>s+i.stock_value,0);
@@ -1111,7 +1385,7 @@ function renderDashboard() {
     const p=Math.min(100,Math.round((14-Math.min(i.days_cover,14))/14*100));
     const c=i.days_cover<=6?'var(--dg)':i.days_cover<=10?'var(--gd)':'var(--su)';
     return `<div class="rerow">
-      <div><div style="font-size:13px;font-weight:500">${i.name}</div><div class="tc">${i.format} · ${i.qty} szt.</div></div>
+      <div><div style="font-size:13px;font-weight:500">${esc(i.name)}</div><div class="tc">${esc(i.format)} · ${i.qty} szt.</div></div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
         ${dayChip(i.days_cover)}
         <div class="rebar"><div class="refill" style="width:${p}%;background:${c}"></div></div>
@@ -1127,38 +1401,14 @@ function renderDashboard() {
     <div class="mono" style="color:var(--txm)">${fmt(c.value)} zł</div>
     <div class="mono" style="font-weight:500;min-width:32px;text-align:right">${catTot?Math.round((c.value||0)/catTot*100):0}%</div></div>`).join(''));
 
-  // Margin trend — use snapshot history if available, else fallback to API data
-  let tData, labels;
-  const snapsForTrend = D.snapshots || [];
-  if (snapsForTrend.length >= 2) {
-    const sorted = [...snapsForTrend].sort((a,b) => new Date(a.date) - new Date(b.date)).slice(-8);
-    tData  = sorted.map(snap => {
-      // FIX: use stock_value-weighted margin, guard against empty/zero-price items
-      const snapINV = INV.map(item => {
-        const r = snap.rows.find(r => r.sku === item.name);
-        const qty   = r ? Number(r.qty)   : item.qty;
-        const sales = r ? Number(r.sales) : item.sales;
-        return item.sell_price > 0 && item.buy > 0
-          ? { ...item, qty, sales, stock_value: Math.round(item.buy * qty),
-              margin_pct: Math.round((item.sell_price - item.buy) / item.sell_price * 1000) / 10 }
-          : null;
-      }).filter(Boolean);
-      const totalV = snapINV.reduce((s,i) => s + i.stock_value, 0);
-      if (!snapINV.length || totalV === 0) return avgMargin;
-      return Math.round(snapINV.reduce((s,i) => s + i.margin_pct * i.stock_value, 0) / totalV * 10) / 10;
-    });
-    labels = sorted.map(s => {
-      const d = new Date(s.date);
-      return 'W' + getISOWeekFromDate(d);
-    });
-  } else {
-    const trend = (D.margin_trend||[]).filter(v=>!isNaN(v)&&v>0);
-    tData  = trend.length ? trend : Array(8).fill(avgMargin);
-    // FIX: parentheses required — 'W-0'||'Bież.' always returns 'W-0' (truthy string)
-    labels = tData.map((_, i) => { const n = tData.length - 1 - i; return n === 0 ? 'Bież.' : 'W-' + n; });
-  }
+  // Margin trend — margin_trend_series z backendu (sync przy każdym Quick Entry)
+  const chartTrend = computeMarginTrendChartData(avgMargin);
+  const tData  = chartTrend.tData;
+  const labels = chartTrend.labels;
   if (mgChart) mgChart.destroy();
-  mgChart = new Chart(document.getElementById('mgChart').getContext('2d'),{
+  const mgCanvas = document.getElementById('mgChart');
+  if (typeof Chart === 'undefined' || !mgCanvas) return;
+  mgChart = new Chart(mgCanvas.getContext('2d'),{
     type:'line',
     data:{labels,datasets:[
       {label:'Marża',data:tData,borderColor:'#2B4A3F',backgroundColor:'rgba(43,74,63,.07)',fill:true,tension:.4,borderWidth:2,pointBackgroundColor:'#2B4A3F',pointRadius:4,pointBorderColor:'#fff',pointBorderWidth:2},
@@ -1173,6 +1423,140 @@ function renderDashboard() {
 }
 
 // ═══ VIEW — INVENTORY ═══
+// ═══ VIEW — BRIEFING ═══
+function vBriefing() {
+  const br = D && D.briefing;
+  if (!br) {
+    H('brList','<div class="br-empty">Brak danych briefingu — odśwież stronę.</div>');
+    return;
+  }
+  const tasks  = br.tasks  || [];
+  const summ   = br.summary || {};
+
+  // Summary KPI strip
+  T('brDs', fmt(summ.dead_stock_zl || 0));
+  T('brRo', summ.urgent_reorders   || 0);
+  T('brMg', summ.avg_margin        || 0);
+  T('brHl', summ.health            || 0);
+  T('brTag', tasks.length + ' zadań');
+
+  // Drift alerts banner
+  const alerts = (D.drift_alerts||[]).filter(a=>a.alert);
+  const driftBanner = document.getElementById('brDriftBanner');
+  if (alerts.length > 0 && driftBanner) {
+    driftBanner.style.display = 'block';
+    const msgs = alerts.map(a =>
+      `${esc(a.name)}: cena wzrosła ${a.old_price}→${a.new_price} zł, marża teraz ${a.current_margin}% (cel ${a.margin_target}%)`
+    ).join(' · ');
+    H('brDriftText', msgs);
+  } else if (driftBanner) {
+    driftBanner.style.display = 'none';
+  }
+
+  // Task type labels (Polish)
+  const TYPE_LABEL = {
+    reorder:    'Zamówienie',
+    dead_dog:   'Wycofanie',
+    dead_promo: 'Promocja',
+    pricing:    'Korekta ceny',
+    promote:    'Ekspozycja',
+    drift_alert:'Alert cenowy',
+  };
+  const TYPE_ICON = {
+    reorder:    '📦',
+    dead_dog:   '🗑',
+    dead_promo: '📣',
+    pricing:    '💰',
+    promote:    '⭐',
+    drift_alert:'⚠️',
+  };
+
+  if (tasks.length === 0) {
+    H('brList','<div class="br-empty">🎉 Brak pilnych zadań — portfel w dobrej kondycji!</div>');
+    return;
+  }
+
+  // Get current statuses from action_log (tasks z briefingu mogą być w logu)
+  const alMap = {};
+  (D.action_log||[]).forEach(e => { if (e.id) alMap[e.id] = e.status; });
+
+  H('brList', tasks.map((t, idx) => {
+    const typeLabel = TYPE_LABEL[t.type] || t.type;
+    const icon      = TYPE_ICON[t.type]  || '▸';
+    const impact    = t.impact_zl > 0 ? `<div class="br-impact">+${fmt(t.impact_zl)} zł</div>` : '';
+    const typeClass = 'br-' + (t.type || 'promote');
+    const priClass  = 'pri-' + Math.min(t.priority||1, 5);
+    const taskId    = esc(t.id||'');
+    // Determine current status (from log or default Pending)
+    const curStatus = alMap[t.id] || 'Pending';
+    const doneClass = curStatus === 'Done' ? ' br-done' : curStatus === 'Ignored' ? ' br-ignored' : '';
+
+    return `<div class="br-task${doneClass}" id="brt-${taskId}">
+      <div class="br-num ${priClass}">${idx+1}</div>
+      <div class="br-body">
+        <div class="br-hl">${icon} ${esc(t.headline)}</div>
+        <div class="br-det">${esc(t.detail)}</div>
+        <div class="br-cta">→ ${esc(t.cta)}</div>
+        <div class="br-actions">
+          <button class="br-done-btn" data-task-id="${taskId}" data-sku="${esc(t.sku)}" data-headline="${esc(t.headline)}" data-type="${esc(t.type||'')}" onclick="markBrTask(this,'Done')">✓ Wykonano</button>
+          <button class="br-ign-btn"  data-task-id="${taskId}" data-sku="${esc(t.sku)}" data-headline="${esc(t.headline)}" data-type="${esc(t.type||'')}" onclick="markBrTask(this,'Ignored')">Ignoruj</button>
+          ${statusBadge(curStatus)}
+        </div>
+      </div>
+      <div class="br-right">
+        <span class="br-type ${typeClass}">${typeLabel}</span>
+        ${impact}
+        <div style="font-size:10px;color:var(--txf)">SKU: ${esc(t.sku)}</div>
+      </div>
+    </div>`;
+  }).join(''));
+}
+
+// Oznacza zadanie z briefingu jako Done/Ignored — spójne id z action_log + snapshot Before
+async function markBrTask(btn, status) {
+  const taskId   = btn.dataset.taskId;
+  const sku      = btn.dataset.sku;
+  const headline = btn.dataset.headline || sku;
+  const taskType = btn.dataset.type || 'task';
+  const rowEl    = document.getElementById('brt-' + taskId);
+  const act      = '[briefing:' + taskType + '] ' + headline;
+
+  if (apiUrl && taskId && sku) {
+    try {
+      await ensureActionLogEntry(taskId, sku, act);
+      if (status === 'Ignored') {
+        const reason = prompt('Powód pominięcia (np. brak miejsca na ekspozycji):', 'Brak miejsca na ekspozycję');
+        if (reason === null) return;
+        await updateActionStatus(taskId, status, rowEl, reason);
+      } else {
+        await updateActionStatus(taskId, status, rowEl);
+      }
+    } catch (err) {
+      console.warn('markBrTask error:', err);
+      return;
+    }
+  } else if (taskId) {
+    const entry = (D.action_log || []).find(e => e.id === taskId);
+    if (entry) entry.status = status;
+    else {
+      D.action_log = D.action_log || [];
+      D.action_log.unshift({ id: taskId, date: 'dziś', sku, action: act, user: 'manager', status });
+    }
+  }
+
+  if (rowEl) {
+    rowEl.classList.toggle('br-done',    status === 'Done');
+    rowEl.classList.toggle('br-ignored', status === 'Ignored');
+    const badgeEl = rowEl.querySelector('.stat-badge');
+    if (badgeEl) badgeEl.outerHTML = statusBadge(status);
+    const btns = rowEl.querySelector('.br-actions');
+    if (btns) {
+      btns.querySelectorAll('.br-done-btn, .br-ign-btn').forEach(b => b.style.display = 'none');
+    }
+  }
+  if (status === 'Done') setTimeout(loadPerformanceImpact, 500);
+}
+
 function vInventory() {
   const q   = (document.getElementById('invQ')?.value||'').toLowerCase();
   const cat = document.getElementById('invCat')?.value||'';
@@ -1191,7 +1575,7 @@ function vInventory() {
   T('invCount', rows.length+' SKU');
   T('invSub', rows.length+' produktów · filtr: '+(cat||'wszystkie')+(fmtF?' · '+fmtF:''));
   H('invBody', rows.map(i=>`
-    <tr><td><div class="tn">${i.name}</div><div class="tc">${i.category}</div>${i.notes?`<div class="tc" style="font-style:italic">${i.notes}</div>`:''}</td>
+    <tr><td><div class="tn">${esc(i.name)}</div><div class="tc">${esc(i.category)}</div>${i.notes?`<div class="tc" style="font-style:italic">${esc(i.notes)}</div>`:''}</td>
     ${abcColCell(i)}
     <td>${fmtBadge(i.format)}</td>
     <td class="mono">${i.buy} zł</td>
@@ -1200,8 +1584,9 @@ function vInventory() {
     <td class="mono">${i.qty}</td>
     <td class="mono">${i.sales}</td>
     <td>${dayChip(i.days_cover)}</td>
-    <td style="font-size:12px;color:var(--txm)">${i.supplier}</td></tr>`).join('')
-    || '<tr><td colspan="10" style="text-align:center;color:var(--txf);padding:24px">Brak wyników dla wybranych filtrów</td></tr>');
+    <td>${rotChip(i.rotation_score, i.velocity_label)}</td>
+    <td style="font-size:12px;color:var(--txm)">${esc(i.supplier)}</td></tr>`).join('')
+    || '<tr><td colspan="11" style="text-align:center;color:var(--txf);padding:24px">Brak wyników dla wybranych filtrów</td></tr>');
 }
 
 // ═══ VIEW — DEAD STOCK ═══
@@ -1236,13 +1621,13 @@ function vDeadstock() {
 
   // 4. Renderowanie tabeli (fmtBadge obsłuży nową naklejkę, jeśli dodałeś ją do CSS)
   H('dsBody', rows.map(i=>`
-    <tr><td><div class="tn">${i.name}</div><div class="tc">${i.category}</div></td>
+    <tr><td><div class="tn">${esc(i.name)}</div><div class="tc">${esc(i.category)}</div></td>
     ${abcColCell(i)}
     <td>${fmtBadge(i.format)}</td>
     <td class="mono">${fmt(i.stock_value)} zł</td>
     <td>${dayChip(i.days_cover)}</td>
     <td class="mono" style="color:${mgColor(i.margin_pct)}">${i.margin_pct}%</td>
-    <td style="font-size:11px;color:var(--txm)">${i.rec_action}</td></tr>`).join('')
+    <td style="font-size:11px;color:var(--txm)">${esc(i.rec_action)}</td></tr>`).join('')
     || '<tr><td colspan="7" style="text-align:center;color:var(--txf);padding:24px">Brak dead stock ✓</td></tr>');
 
   // 5. Aktualizacja notatki na dole
@@ -1260,13 +1645,13 @@ function vMargins() {
   if (rows[0]) { T('mgBest', rows[0].margin_pct+'%'); T('mgBestN', rows[0].name+' · '+rows[0].format); }
   H('mgList', rows.map((i)=>{
     return `
-    <div class="mrow"><div style="flex:1"><div style="font-weight:500;font-size:13px">${abcFlag(i)} ${i.name}</div><div class="tc">${i.category} · ${i.format}</div></div>
+    <div class="mrow"><div style="flex:1"><div style="font-weight:500;font-size:13px">${abcFlag(i)} ${esc(i.name)}</div><div class="tc">${esc(i.category)} · ${esc(i.format)}</div></div>
     <div class="mbar"><div class="mfill" style="width:${Math.min(i.margin_pct,100)}%;background:${mgColor(i.margin_pct)}"></div></div>
     <div class="mono" style="font-weight:500;min-width:40px;text-align:right;color:${mgColor(i.margin_pct)}">${i.margin_pct}%</div></div>`;}).join(''));
   const low = INV.filter(i=>i.sell_price>0&&i.margin_pct<target&&(!cat||i.category===cat)).sort((a,b)=>a.margin_pct-b.margin_pct);
   T('mgLowTag', low.length+' poniżej celu');
   H('mgLow', low.map(i=>`
-    <div class="mrow"><div style="flex:1"><div style="font-weight:500;font-size:13px">${i.name}</div><div class="tc">${i.category}</div></div>
+    <div class="mrow"><div style="flex:1"><div style="font-weight:500;font-size:13px">${esc(i.name)}</div><div class="tc">${esc(i.category)}</div></div>
     <div class="mono" style="color:var(--dg);font-weight:500">${i.margin_pct}%</div>
     <div style="font-size:11px;color:var(--txm);margin-left:6px">cel:${target}%</div></div>`).join('')
     || '<div style="font-size:13px;color:var(--txf);padding:12px 0">Wszystkie marże powyżej celu ✓</div>');
@@ -1275,15 +1660,18 @@ function vMargins() {
 
 // ═══ VIEW — REORDER ═══
 function vReorder() {
-  const urg  = INV.filter(i=>i.days_cover<=10).sort((a,b)=>a.days_cover-b.days_cover);
-  const soon = INV.filter(i=>i.days_cover>10&&i.days_cover<=21).sort((a,b)=>a.days_cover-b.days_cover);
+  // S4 FIX: progi z D.thresholds (z config arkusza), nie hardkodowane wartości
+  const urgDays_r  = (D && D.thresholds) ? Number(D.thresholds.urgent_days || 10) : 10;
+  const deadDays_r = (D && D.thresholds) ? Number(D.thresholds.dead_days   || 21) : 21;
+  const urg  = INV.filter(i=>i.days_cover<=urgDays_r).sort((a,b)=>a.days_cover-b.days_cover);
+  const soon = INV.filter(i=>i.days_cover>urgDays_r&&i.days_cover<=deadDays_r).sort((a,b)=>a.days_cover-b.days_cover);
   T('roUC',urg.length); T('roSC',soon.length);
   T('roUrgTag',urg.length+' pilne'); T('roUrgTag2',urg.length+' pilne'); T('roSoonTag',soon.length+' wkrótce');
   const mkR = i => {
-    const p=Math.min(100,Math.round((21-Math.min(i.days_cover,21))/21*100));
-    const c=i.days_cover<=6?'var(--dg)':i.days_cover<=10?'var(--gd)':'var(--su)';
+    const p=Math.min(100,Math.round((deadDays_r-Math.min(i.days_cover,deadDays_r))/deadDays_r*100));
+    const c=i.days_cover<=Math.floor(urgDays_r*0.6)?'var(--dg)':i.days_cover<=urgDays_r?'var(--gd)':'var(--su)';
     return `<div class="rerow">
-      <div><div style="font-size:13px;font-weight:500">${i.name}</div><div class="tc">${i.format} · ${i.qty} szt. · min ${i.min_level}</div></div>
+      <div><div style="font-size:13px;font-weight:500">${esc(i.name)}</div><div class="tc">${esc(i.format)} · ${i.qty} szt. · min ${i.min_level}</div></div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
         ${dayChip(i.days_cover)}
         <div class="rebar"><div class="refill" style="width:${p}%;background:${c}"></div></div>
@@ -1291,9 +1679,9 @@ function vReorder() {
   };
   H('roUrg',  urg.map(mkR).join('')  || '<div style="color:var(--txf);font-size:13px;padding:12px 0">Brak pilnych zamówień ✓</div>');
   H('roSoon', soon.map(mkR).join('') || '<div style="color:var(--txf);font-size:13px;padding:12px 0">Brak wkrótce ✓</div>');
-  const stChip = i => i.days_cover<=6?'<span class="chip chi-c">Krytyczny</span>':i.days_cover<=10?'<span class="chip chi-w">Pilny</span>':i.days_cover<=21?'<span class="chip chi-g">Wkrótce</span>':'<span class="chip chi-n">OK</span>';
+  const stChip = i => i.days_cover<=Math.floor(urgDays_r*0.6)?'<span class="chip chi-c">Krytyczny</span>':i.days_cover<=urgDays_r?'<span class="chip chi-w">Pilny</span>':i.days_cover<=deadDays_r?'<span class="chip chi-g">Wkrótce</span>':'<span class="chip chi-n">OK</span>';
   H('roAll', [...INV].sort((a,b)=>a.days_cover-b.days_cover).map(i=>`
-    <tr><td class="tn">${i.name}</td><td class="tc">${i.category}</td>
+    <tr><td class="tn">${esc(i.name)}</td><td class="tc">${esc(i.category)}</td>
     <td class="mono">${i.qty}</td><td class="mono">${i.sales}/tydz.</td>
     <td>${dayChip(i.days_cover)}</td><td class="mono">${i.min_level}</td>
     <td>${stChip(i)}</td></tr>`).join(''));
@@ -1309,7 +1697,7 @@ function vPour() {
     tot+=d; if(Math.abs(d)>Math.abs(maxV)){maxV=d;maxN=String(p.name||'');}
     const cls=d>1?'pos-bad':d<-1?'pos-ok':'';
     return `<div class="prow pgrid">
-      <div><div style="font-weight:500">${p.name}</div><div class="tc">${p.sub||''}</div></div>
+      <div><div style="font-weight:500">${esc(p.name)}</div><div class="tc">${esc(p.sub||'')}</div></div>
       <div class="mono" style="text-align:right">${th} zł</div>
       <div class="mono" style="text-align:right">${ac} zł</div>
       <div class="mono ${cls}" style="text-align:right">${d?(d>0?'+':'')+d+' zł':'—'}</div></div>`;
@@ -1400,6 +1788,8 @@ function vMatrix() {
     }
   };
 
+  if (typeof Chart === 'undefined') return;
+
   mxChart = new Chart(canvas.getContext('2d'), {
     type:'bubble',
     data:{ datasets:[{
@@ -1455,16 +1845,16 @@ function vSuppliers() {
     const pct=d.old_price?((d.new_price-d.old_price)/d.old_price*100).toFixed(1):'0';
     const up2=Number(d.new_price)>Number(d.old_price);
     return `<div class="drow">
-      <div><div style="font-weight:500;font-size:13px">${d.name}</div><div class="tc">${d.supplier}</div></div>
+      <div><div style="font-weight:500;font-size:13px">${esc(d.name)}</div><div class="tc">${esc(d.supplier)}</div></div>
       <div style="text-align:right">
         <div style="font-family:'DM Mono',monospace;font-weight:500;font-size:12px;color:${up2?'var(--dg)':'var(--su)'}">${up2?'↑':'↓'} ${up2?'+':''}${pct}%</div>
         <div class="tc">${d.old_price} → ${d.new_price} zł/bt</div></div></div>`;
   }).join('') : '<div style="font-size:13px;color:var(--txf);padding:16px 0">Brak zmian cen w ostatnim tygodniu.<br>Dane pojawią się po pierwszym uruchomieniu <strong>weeklyUpdate()</strong> z Apps Script.</div>');
   H('supAll', [...INV].sort((a,b)=>a.name.localeCompare(b.name,'pl')).map(i=>`
-    <tr><td class="tn">${i.name}</td><td class="tc">${i.supplier}</td>
+    <tr><td class="tn">${esc(i.name)}</td><td class="tc">${esc(i.supplier)}</td>
     <td class="mono">${i.buy} zł</td>
     <td class="mono" style="color:${mgColor(i.margin_pct)}">${i.margin_pct}%</td></tr>`).join(''));
-  T('supNote', ups.length ? ups.map(d=>{const p=d.old_price?((d.new_price-d.old_price)/d.old_price*100).toFixed(1):'?';return `${d.name} +${p}%`;}).join(' · ')+' — sprawdź wpływ na marżę.' : 'Brak wzrostów cen w ostatnim tygodniu.');
+  T('supNote', ups.length ? ups.map(d=>{const p=d.old_price?((d.new_price-d.old_price)/d.old_price*100).toFixed(1):'?';return `${esc(d.name)} +${p}%`;}).join(' · ')+' — sprawdź wpływ na marżę.' : 'Brak wzrostów cen w ostatnim tygodniu.');
 }
 
 // ═══ VIEW — BENCHMARKING ═══
@@ -1510,14 +1900,53 @@ Sommly · sommly.pl`);
 
 // ═══ VIEW — ACTION LOG ═══
 function vActionLog() {
-  const al=D.action_log||[];
-  const dc=['#2B4A3F','#8B6914','#1C3F6E','#A0321C'];
-  T('alCount', al.length+' wpisów');
-  H('alList', al.length ? al.map((e,i)=>`
-    <div class="arow"><div class="adot" style="background:${e.color||dc[i%4]}"></div>
-    <div style="flex:1"><strong>${e.sku}</strong> — ${e.action}</div>
-    <div style="color:var(--txf);font-size:11px;flex-shrink:0">${e.date}</div></div>`).join('')
-    : '<div style="font-size:13px;color:var(--txf);padding:16px 0">Brak wpisów.</div>');
+  const al = D.action_log || [];
+  T('alCount', al.length + ' wpisów');
+
+  const impactMap = {};
+  (D.performance_impact?.entries || []).forEach(e => { if (e.id) impactMap[e.id] = e; });
+
+  if (!al.length) {
+    H('alList', '<div style="font-size:13px;color:var(--txf);padding:16px 0">Brak wpisów.</div>');
+    return;
+  }
+
+  H('alList', al.map((e) => {
+    const isDrift  = e.action && e.action.includes('[drift_alert]');
+    const dotColor = e.status === 'Done'    ? 'var(--su)'
+                   : e.status === 'Ignored' ? 'var(--txf)'
+                   : isDrift               ? 'var(--gd)'
+                   : e.color || 'var(--ac)';
+    const rowClass = e.status === 'Done'    ? 'al-done'
+                   : e.status === 'Ignored' ? 'al-ignored' : '';
+    const hasBtns  = e.id && e.status === 'Pending';
+    const entryId  = esc(e.id || '');
+    const impact   = impactMap[e.id];
+    const impactHtml = impact
+      ? `<div class="br-impact" style="margin-top:6px;font-size:12px">${esc(impact.message)}</div>`
+      : (e.status === 'Done' ? '<div style="font-size:11px;color:var(--txf);margin-top:4px">Pomiar impactu po min. 14 dniach</div>' : '');
+
+    return `<div class="arow ${rowClass}" id="al-${entryId}">
+      <div class="adot" style="background:${dotColor}"></div>
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap">
+          <strong>${esc(e.sku)}</strong>
+          ${statusBadge(e.status || 'Done')}
+          ${isDrift ? '<span class="stat-badge" style="background:#FFF3CD;color:#856404">⚠️ Alert cenowy</span>' : ''}
+        </div>
+        <div style="color:var(--txm);font-size:12px;margin-top:2px">${esc(e.action)}</div>
+        ${impactHtml}
+        ${hasBtns ? `<div class="al-btns" style="display:flex;gap:6px;margin-top:6px">
+          <button class="stat-btn" onclick="updateActionStatus('${entryId}','Done',document.getElementById('al-${entryId}'))">✓ Wykonano</button>
+          <button class="stat-btn" onclick="promptIgnore('${entryId}',document.getElementById('al-${entryId}'))">Ignoruj</button>
+        </div>` : ''}
+      </div>
+      <div style="color:var(--txf);font-size:11px;flex-shrink:0;text-align:right">
+        ${esc(e.date)}<br>
+        <span style="font-size:10px">${esc(e.user||'manager')}</span>
+      </div>
+    </div>`;
+  }).join(''));
 }
 
 // ═══ TRIGGER STATUS CHECK ═══
@@ -1564,13 +1993,13 @@ function openPCModal() {
   tbody.innerHTML = INV.map(i => {
     const ex = existing[i.name] || {};
     return '<tr>' +
-      '<td style="font-weight:500;font-size:12px">' + i.name + '</td>' +
-      '<td><input class="qe-inp" data-sku="' + i.name + '" data-field="sub" type="text" ' +
-        'style="width:100px;text-align:left" value="' + (ex.sub||'') + '" placeholder="np. kieliszek"></td>' +
-      '<td><input class="qe-inp" data-sku="' + i.name + '" data-field="theoretical" type="number" ' +
-        'min="0" step="0.01" value="' + (ex.theoretical||'') + '" placeholder="0"></td>' +
-      '<td><input class="qe-inp" data-sku="' + i.name + '" data-field="actual" type="number" ' +
-        'min="0" step="0.01" value="' + (ex.actual||'') + '" placeholder="0"></td>' +
+      '<td style="font-weight:500;font-size:12px">' + esc(i.name) + '</td>' +
+      '<td><input class="qe-inp" data-sku="' + esc(i.name) + '" data-field="sub" type="text" ' +
+        'style="width:100px;text-align:left" value="' + esc(ex.sub||'') + '" placeholder="np. kieliszek"></td>' +
+      '<td><input class="qe-inp" data-sku="' + esc(i.name) + '" data-field="theoretical" type="number" ' +
+        'min="0" step="0.01" value="' + (Number(ex.theoretical)||'') + '" placeholder="0"></td>' +
+      '<td><input class="qe-inp" data-sku="' + esc(i.name) + '" data-field="actual" type="number" ' +
+        'min="0" step="0.01" value="' + (Number(ex.actual)||'') + '" placeholder="0"></td>' +
       '</tr>';
   }).join('');
   document.getElementById('pcOverlay').classList.add('open');
@@ -1677,27 +2106,133 @@ async function submitAL(){
 
 // ═══ RENDER ALL ═══
 function renderAll(data) {
-  D   = data;
-  INV = applyMatrixActions(applyABCFlags(derive(D.inventory||[]), Number(D.kpi?.margin_target || 68)));
-  if (U_VENUE) D.venue = U_VENUE;
+  try {
+    D   = data;
+    INV = applyMatrixActions(applyABCFlags(derive(D.inventory||[]), Number(D.kpi?.margin_target || 68)));
+    if (U_VENUE) D.venue = U_VENUE;
 
-  renderDashboard();
+    renderDashboard();
 
-  // Immediately re-render whichever view is currently active
-  const renders = { inventory:vInventory, deadstock:vDeadstock, margins:vMargins,
-                    reorder:vReorder, pour:vPour, matrix:vMatrix, suppliers:vSuppliers,
-                    benchmarking:vBenchmarking, weekly:vWeekly, actionlog:vActionLog };
-  if (renders[curView]) renders[curView]();
+    // Immediately re-render whichever view is currently active
+    const renders = { briefing:vBriefing, inventory:vInventory, deadstock:vDeadstock, margins:vMargins,
+                      reorder:vReorder, pour:vPour, matrix:vMatrix, suppliers:vSuppliers,
+                      benchmarking:vBenchmarking, weekly:vWeekly, actionlog:vActionLog };
+    if (renders[curView]) renders[curView]();
 
-  T('srcLbl', apiUrl ? 'Google Sheets — dane na żywo' : 'Tryb demo');
-  // Populate datalist for Action Log SKU field
-  const alDl = document.getElementById('afSkuList');
-  if (alDl) alDl.innerHTML = INV.map(i => `<option value="${i.name}">`).join('');
+    T('srcLbl', apiUrl ? 'Google Sheets — dane na żywo' : 'Tryb demo');
+    const alDl = document.getElementById('afSkuList');
+    if (alDl) alDl.innerHTML = INV.map(i => `<option value="${esc(i.name)}">`).join('');
 
-  // Hide loading, show correct view
-  document.getElementById('view-loading').classList.remove('active');
-  document.getElementById('view-error').classList.remove('active');
-  showView(curView==='loading'?'dashboard':curView);
+    document.getElementById('view-loading').classList.remove('active');
+    document.getElementById('view-error').classList.remove('active');
+    showView(curView==='loading'?'dashboard':curView);
+    setTimeout(loadPerformanceImpact, 0);
+  } catch (err) {
+    console.error('renderAll error:', err);
+    document.getElementById('view-loading')?.classList.remove('active');
+    document.getElementById('view-error')?.classList.add('active');
+    T('errMsg', '\n' + (err.message || String(err)));
+    setBadge('BŁĄD', 'lb-err');
+  }
+}
+
+// ═══ PERFORMANCE IMPACT — Success Loop (async, nie blokuje ładowania) ═══
+function loadJsonpSecondary(url) {
+  return new Promise((resolve, reject) => {
+    const old = document.getElementById('jsonp-perf');
+    if (old) old.remove();
+    const cbName = 'sommlyPerf_' + Date.now();
+    const timer = setTimeout(() => {
+      delete window[cbName];
+      reject(new Error('Timeout'));
+    }, 15000);
+    window[cbName] = (data) => {
+      clearTimeout(timer);
+      delete window[cbName];
+      const s = document.getElementById('jsonp-perf');
+      if (s) s.remove();
+      if (data && data.error) reject(new Error(data.error));
+      else resolve(data);
+    };
+    const sep = url.includes('?') ? '&' : '?';
+    const script = document.createElement('script');
+    script.id = 'jsonp-perf';
+    script.src = url + sep + 'callback=' + cbName + '&t=' + Date.now();
+    script.onerror = () => { clearTimeout(timer); delete window[cbName]; reject(new Error('Load failed')); };
+    document.head.appendChild(script);
+  });
+}
+
+const DEMO_PERFORMANCE = {
+  computed_at: new Date().toISOString(),
+  total_monthly_pln: 1240,
+  measured: 2,
+  pending: 1,
+  entries: [
+    {
+      id: 'demo1', sku: 'Pinot Grigio Alois Lageder', monthly_delta_pln: 890,
+      message: 'Dzięki tej zmianie zarobiłeś +890 PLN miesięcznie',
+      margin_delta_pp: 4.2, sales_delta_weekly: 2, days_since: 21, confidence: 'high',
+    },
+    {
+      id: 'demo2', sku: 'Vermentino di Sardegna', monthly_delta_pln: 350,
+      message: 'Dzięki tej zmianie zarobiłeś +350 PLN miesięcznie',
+      margin_delta_pp: 0, sales_delta_weekly: 3, days_since: 18, confidence: 'medium',
+    },
+  ],
+};
+
+async function loadPerformanceImpact() {
+  const panel = document.getElementById('perfReport');
+  if (!panel) return;
+
+  if (!apiUrl) {
+    if (D) D.performance_impact = DEMO_PERFORMANCE;
+    renderPerformanceReport(DEMO_PERFORMANCE);
+    return;
+  }
+
+  try {
+    const sep  = apiUrl.includes('?') ? '&' : '?';
+    const data = await loadJsonpSecondary(apiUrl + sep + 'type=performance_impact');
+    D.performance_impact = data;
+    renderPerformanceReport(data);
+  } catch (err) {
+    console.warn('Performance impact load failed:', err);
+    panel.innerHTML = '<div class="br-empty" style="padding:16px 0">Raport skuteczności niedostępny — odśwież stronę.</div>';
+  }
+}
+
+function renderPerformanceReport(perf) {
+  const panel = document.getElementById('perfReport');
+  if (!panel || !perf) return;
+
+  const total = perf.total_monthly_pln || 0;
+  const head  = (perf.measured > 0 || total !== 0)
+    ? `<div class="kpi kg" style="margin-bottom:14px">
+         <div class="klbl">Łączny Impact (mies.)</div>
+         <div class="kval" style="color:var(--su)">${total >= 0 ? '+' : ''}${fmt(total)} PLN</div>
+         <div class="ksub">${perf.measured || 0} zmierzonych · ${perf.pending || 0} oczekuje (min. 14 dni)</div>
+       </div>`
+    : `<div class="br-empty" style="padding:12px 0;margin-bottom:10px">Brak zmierzonych akcji — oznacz zadania jako „Wykonano” i wróć za 2 tygodnie.</div>`;
+
+  const rows = (perf.entries || []).map(e => `
+    <div class="arow al-done">
+      <div class="adot" style="background:var(--su)"></div>
+      <div style="flex:1">
+        <strong>${esc(e.sku)}</strong>
+        <div style="color:var(--txm);font-size:12px;margin-top:2px">${esc(e.message)}</div>
+        <div style="font-size:11px;color:var(--txf);margin-top:4px">
+          Marża ${((e.margin_delta_pp||0) >= 0 ? '+' : '') + (e.margin_delta_pp||0)}pp ·
+          Sprzedaż ${((e.sales_delta_weekly||0) >= 0 ? '+' : '') + (e.sales_delta_weekly||0)} szt./tydz. ·
+          ${e.days_since} dni · ${e.confidence === 'high' ? 'pewność wysoka' : 'pewność średnia'}
+        </div>
+      </div>
+      <div class="br-impact" style="font-size:14px">${e.monthly_delta_pln >= 0 ? '+' : ''}${fmt(e.monthly_delta_pln)} zł/mies.</div>
+    </div>`).join('');
+
+  panel.innerHTML = head + rows;
+  if (curView === 'actionlog') vActionLog();
 }
 
 // ═══ DATA LOADING — JSONP (solves CORS) ═══
@@ -1806,9 +2341,23 @@ const DEMO_DATA = {
   venue:'La Maddalena', last_updated:new Date().toISOString(),
   kpi:{margin_target:68},
   margin_trend:[58,60,61,59,63,62,64,62],
+  margin_trend_series:[
+    {date:'2026-05-08',value:58,label:'W19'},
+    {date:'2026-05-15',value:60,label:'W20'},
+    {date:'2026-05-22',value:61,label:'W21'},
+    {date:'2026-05-29',value:59,label:'W22'},
+    {date:'2026-06-05',value:63,label:'W23'},
+    {date:'2026-06-12',value:62,label:'W24'},
+    {date:'2026-06-19',value:64,label:'W25'},
+    {date:'2026-06-26',value:62,label:'W26'},
+  ],
   pour_cost:[{name:'Barolo DOCG',sub:'Butelka/kieliszek',theoretical:42,actual:51},{name:'Negroni house',sub:'Cocktail',theoretical:18,actual:22},{name:'Grappa Nonino',sub:'Kieliszek',theoretical:28,actual:25},{name:'Champagne Billecart',sub:'Kieliszek',theoretical:65,actual:67}],
   price_drift:[{name:'Barolo Borgogno 2018',supplier:'Horeca Partner',old_price:218,new_price:236},{name:'Champagne Billecart-S.',supplier:'Wine4You',old_price:290,new_price:305}],
-  action_log:[{date:'10 kwi',sku:'Vermentino di Sardegna',action:'Dodany do menu lunchowego',color:'#2B4A3F'},{date:'8 kwi',sku:'Grappa Nonino',action:'Promocja digestif w piątek',color:'#8B6914'}],
+  action_log:[
+    {id:'demo1',date:'10 kwi',sku:'Vermentino di Sardegna',action:'[briefing:dead_promo] Zrób promocję Vermentino',user:'manager',status:'Done'},
+    {id:'demo2',date:'8 kwi',sku:'Pinot Grigio Alois Lageder',action:'[briefing:pricing] Podnieś cenę Pinot Grigio',user:'manager',status:'Done'},
+    {id:'demo3',date:'5 kwi',sku:'Grappa Nonino',action:'Promocja digestif w piątek',user:'manager',status:'Pending'},
+  ],
   weekly_movers:{up:[['Barolo DOCG BTG','+18 kiel.'],['Champagne Billecart','+9 bt.'],['Negroni house','+24 szt.'],['Pinot Grigio Lageder','+12 kiel.'],['Amaro Montenegro','+7 kiel.']],down:[['Barolo Borgogno 2018','0 szt.'],['Grappa Nonino','0 szt.'],['Vermentino Sardegna','2 kiel.']]},
   inventory:[
     {name:'Barolo DOCG 2019',category:'Wino czerwone',format:'Butelka',purchase_price:180,sell_price:320,stock_qty:12,weekly_sales:3,reorder_level:3,supplier:'Horeca Partner',notes:''},
@@ -1890,10 +2439,10 @@ function openQE() {
   const tb = document.getElementById('qeTbody');
   tb.innerHTML = INV.map(i => `
     <tr>
-      <td><div style="font-weight:500">${i.name}</div><div style="font-size:11px;color:var(--txf)">${i.category} · ${i.format}</div></td>
-      <td><input class="qe-inp" data-sku="${i.name}" data-field="qty" type="number" min="0" step="1"
+      <td><div style="font-weight:500">${esc(i.name)}</div><div style="font-size:11px;color:var(--txf)">${esc(i.category)} · ${esc(i.format)}</div></td>
+      <td><input class="qe-inp" data-sku="${esc(i.name)}" data-field="qty" type="number" min="0" step="1"
         value="${i.qty}" onchange="markChanged(this)" oninput="markChanged(this)"></td>
-      <td><input class="qe-inp" data-sku="${i.name}" data-field="sales" type="number" min="0" step="0.1"
+      <td><input class="qe-inp" data-sku="${esc(i.name)}" data-field="sales" type="number" min="0" step="0.1"
         value="${i.sales}" onchange="markChanged(this)" oninput="markChanged(this)"></td>
     </tr>`).join('');
 
@@ -2004,13 +2553,11 @@ async function submitQE() {
       });
       if (!D.snapshots) D.snapshots = [];
       D.snapshots.push({ date: snapshotDate, rows });
-      // Update margin_trend locally with current weighted margin so chart refreshes immediately
       const sellable = INV.filter(i => i.sell_price > 0 && i.buy > 0);
       const totV = sellable.reduce((s, i) => s + i.stock_value, 0);
       if (totV > 0) {
         const newMg = Math.round(sellable.reduce((s,i) => s + i.margin_pct * i.stock_value, 0) / totV * 10) / 10;
-        if (!D.margin_trend) D.margin_trend = [];
-        D.margin_trend = [...D.margin_trend, newMg].slice(-12);
+        upsertLocalMarginTrendPoint(snapshotDate, newMg);
       }
       // FIX: save confirmation
       const summary = rows.map(r => `• ${r.sku}: ${r.qty} szt. | sprzedaż ${r.sales}`).join('\n');
@@ -2030,20 +2577,29 @@ async function submitQE() {
       if (item) { item.qty = r.qty; item.sales = r.sales; }
     });
     // Rebuild derived fields
+    // S4 FIX: dynamiczne progi z D.thresholds zamiast hardkodowanych 21 / 10
+    const qeDd = (D && D.thresholds) ? Number(D.thresholds.dead_days   || 21) : 21;
+    const qeUd = (D && D.thresholds) ? Number(D.thresholds.urgent_days || 10) : 10;
     INV = INV.map(i => {
       const daily = i.sales/7;
       const days  = daily>0 ? Math.round(i.qty/daily) : 999;
       return { ...i,
         days_cover:    days,
         stock_value:   Math.round(i.buy*i.qty),
-        is_dead:       i.sales===0 || days>21,
-        needs_reorder: i.qty<=i.min_level || days<=10,
-        is_urgent:     days<=10,
+        is_dead:       i.sales===0 || days>qeDd,
+        needs_reorder: i.qty<=i.min_level || days<=qeUd,
+        is_urgent:     days<=qeUd,
       };
     });
     // Save as latest snapshot in D for WoW
     if (!D.snapshots) D.snapshots = [];
     D.snapshots.push({ date: snapshotDate, rows });
+    const sellable = INV.filter(i => i.sell_price > 0 && i.buy > 0);
+    const totV = sellable.reduce((s, i) => s + i.stock_value, 0);
+    if (totV > 0) {
+      const newMg = Math.round(sellable.reduce((s,i) => s + i.margin_pct * i.stock_value, 0) / totV * 10) / 10;
+      upsertLocalMarginTrendPoint(snapshotDate, newMg);
+    }
     closeQE();
     renderAll(D);
   }
