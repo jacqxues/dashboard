@@ -34,6 +34,8 @@ nav{padding:16px 10px;flex:1;}
 .ni:hover{background:rgba(255,255,255,.08);color:#fff;}
 .ni.active{background:rgba(255,255,255,.15);color:#fff;font-weight:500;}
 .ni-ico{width:16px;text-align:center;flex-shrink:0;}
+.ni-off{opacity:.38;}
+.ni-off::after{content:'⊘';font-size:9px;margin-left:auto;opacity:.7;line-height:1;}
 .nb{margin-left:auto;background:var(--gd);color:#fff;font-size:10px;font-weight:600;padding:1px 7px;border-radius:10px;}
 .sb-foot{padding:14px;border-top:1px solid rgba(255,255,255,.1);}
 .period-sel{width:100%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:var(--rs);color:rgba(255,255,255,.85);font-family:'Outfit',sans-serif;font-size:12px;padding:7px 10px;cursor:pointer;outline:none;}
@@ -344,6 +346,8 @@ nav{padding:16px 10px;flex:1;}
     <div class="ni" data-view="benchmarking"><span class="ni-ico">⊞</span><span>Benchmarking</span></div>
     <div class="ni" data-view="weekly"><span class="ni-ico">✉</span><span>Tygodniowy Raport</span></div>
     <div class="ni" data-view="actionlog"><span class="ni-ico">✎</span><span>Action Log</span></div>
+    <div class="nl">Dane</div>
+    <div class="ni" data-view="gopos"><span class="ni-ico">⇥</span><span>Import GoPos</span><span class="nb" id="nb-gp" style="display:none">!</span></div>
   </nav>
   <div class="sb-foot" style="font-size:11px;color:rgba(255,255,255,.35);padding:14px">
     <div id="sbLastUpd">Dane na żywo</div>
@@ -766,6 +770,68 @@ nav{padding:16px 10px;flex:1;}
   </div>
 </div>
 
+<!-- ── GOPOS IMPORT ── -->
+<div class="view" id="view-gopos">
+  <div class="ph">
+    <div><div class="pt">Import GoPos</div><div class="ps" id="gpSub">Wczytaj dane sprzedaży z systemu POS do Sommly</div></div>
+    <div class="hact">
+      <button class="btn btn-o" id="gpPreviewBtn" onclick="runGoPosAction(true)">👁 Podgląd</button>
+      <button class="btn btn-p" id="gpImportBtn" onclick="runGoPosAction(false)">▶ Uruchom import</button>
+    </div>
+  </div>
+
+  <div class="grid g3" style="margin-bottom:14px">
+    <div class="kpi"><div class="klbl">Wiersze do importu</div><div class="kval" id="gpPending">—</div><div class="ksub">Wiersze bez statusu Imported</div></div>
+    <div class="kpi kg"><div class="klbl">SKU zaktualizowane</div><div class="kval" id="gpMapped">—</div><div class="ksub">Zmapowane i przetworzone</div></div>
+    <div class="kpi kd"><div class="klbl">Niezmapowane</div><div class="kval" id="gpUnmapped">—</div><div class="ksub">Wymagają uzupełnienia mapy</div></div>
+  </div>
+
+  <div class="panel" id="gpResultPanel" style="display:none;margin-bottom:14px">
+    <div class="phead"><div class="ptit" id="gpResultTitle">Wynik</div><span id="gpResultTag" class="ptag tg-g"></span></div>
+    <div id="gpResultMsg" style="font-size:13px;margin-bottom:12px;color:var(--txm)"></div>
+    <div id="gpResultTable"></div>
+    <div id="gpUnmappedWarn" style="display:none;background:var(--wnl);border:1px solid var(--gd);border-radius:var(--rs);padding:12px 14px;margin-top:12px;font-size:12px;color:var(--wn)"></div>
+  </div>
+
+  <div class="panel" style="margin-bottom:14px">
+    <div class="phead"><div class="ptit">Jak używać — krok po kroku</div><span class="ptag tg-i">Instrukcja</span></div>
+    <div style="font-size:13px;color:var(--tx);line-height:1.9">
+      <div style="display:grid;gap:14px">
+        <div style="display:flex;gap:14px;align-items:flex-start">
+          <div style="flex-shrink:0;width:24px;height:24px;background:var(--ac);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;margin-top:2px">1</div>
+          <div><strong>Eksport z GoPos</strong><br><span style="color:var(--txm)">GoPos → Raporty → Raport sprzedaży. Zakres: ostatnie 7 dni. Eksportuj jako CSV lub Excel.</span></div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:flex-start">
+          <div style="flex-shrink:0;width:24px;height:24px;background:var(--ac);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;margin-top:2px">2</div>
+          <div><strong>Wklej dane do arkusza</strong><br><span style="color:var(--txm)">Google Sheets → zakładka <strong>gopos_import</strong>. Wklej dane w 4 kolumnach: <code style="font-family:'DM Mono',monospace;font-size:11px;background:var(--sur2);padding:1px 5px;border-radius:4px">data | produkt | ilosc_sprzedana | stan_magazynowy</code>. Kolumnę <code style="font-family:'DM Mono',monospace;font-size:11px;background:var(--sur2);padding:1px 5px;border-radius:4px">stan_magazynowy</code> możesz pominąć — Sommly zachowa aktualny stan.</span></div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:flex-start">
+          <div style="flex-shrink:0;width:24px;height:24px;background:var(--ac);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;margin-top:2px">3</div>
+          <div><strong>Sprawdź product_map</strong><br><span style="color:var(--txm)">Zakładka <strong>product_map</strong> łączy nazwy GoPos z nazwami SKU w Sommly. Kolumna B jest już wypełniona SKU z INVENTORY. Wpisz w kolumnie A dokładną nazwę produktu z GoPos (wielkość liter ignorowana). Jeśli nazwa jest taka sama — nic nie rób.</span></div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:flex-start">
+          <div style="flex-shrink:0;width:24px;height:24px;background:var(--ac);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;margin-top:2px">4</div>
+          <div><strong>Podgląd → Import</strong><br><span style="color:var(--txm)">Kliknij <strong>Podgląd</strong> aby zobaczyć co zostanie zaktualizowane bez zapisu. Następnie kliknij <strong>Uruchom import</strong>. Przetworzone wiersze dostaną status <em>Imported</em> i nie zostaną ponownie zaimportowane.</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="phead"><div class="ptit">Format arkusza gopos_import</div><span class="ptag tg-w">Przykład</span></div>
+    <table class="tbl">
+      <thead><tr><th>data</th><th>produkt</th><th>ilosc_sprzedana</th><th>stan_magazynowy</th><th>status</th></tr></thead>
+      <tbody>
+        <tr><td>28.05.2026</td><td>Barolo DOCG 2019</td><td>6</td><td>33</td><td style="color:var(--su)">Imported</td></tr>
+        <tr><td>28.05.2026</td><td>Belvedere Vodka 0.7L</td><td>10</td><td></td><td style="color:var(--txm)">—</td></tr>
+        <tr><td>28.05.2026</td><td>Żywiec Pils 0,5</td><td>34</td><td>5</td><td style="color:var(--dg)">Error — brak w product_map</td></tr>
+      </tbody>
+    </table>
+    <div class="note" style="margin-top:10px"><span>⌇</span><span>Wiersze z błędem <em>Error — brak w product_map</em> oznaczają, że nazwa produktu z GoPos nie ma odpowiednika w mapowaniu. Dodaj wpis w zakładce <strong>product_map</strong> i powtórz import.</span></div>
+  </div>
+</div>
+
+
 </main>
 </div>
 
@@ -908,6 +974,21 @@ function showView(id) {
   document.querySelector(`.ni[data-view="${id}"]`)?.classList.add('active');
   curView = id;
   if (!D) return;
+  // Feature flag gate — show disabled placeholder if admin turned this view off
+  const _flags = (D && D.features) || {};
+  if (_flags[id] === false) {
+    const _labels = {
+      briefing:'Tygodniowy briefing', deadstock:'Martwy towar', reorder:'Reorder watch',
+      pour:'Pour cost', matrix:'BCG matrix', suppliers:'Dostawcy',
+      benchmarking:'Benchmarking', weekly:'Weekly movers', actionlog:'Action log', gopos:'Import GoPos',
+    };
+    vEl.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:72px 24px;text-align:center">
+      <div style="font-size:40px;opacity:.25;margin-bottom:20px">⊘</div>
+      <div class="pt" style="margin-bottom:10px">${esc(_labels[id]||id)}</div>
+      <div class="ps" style="max-width:380px">Ta funkcja jest wyłączona. Otwórz arkusz <strong>feature_flags</strong> w Google Sheets, zmień wartość w kolumnie <em>enabled</em> na <strong>TRUE</strong> i odśwież dashboard.</div>
+    </div>`;
+    return;
+  }
   const renders = {
     dashboard:    renderDashboard,
     briefing:     vBriefing,
@@ -921,6 +1002,7 @@ function showView(id) {
     benchmarking: vBenchmarking,
     weekly:       vWeekly,
     actionlog:    vActionLog,
+    gopos:        vGopos,
   };
   if (renders[id]) renders[id]();
 }
@@ -2110,13 +2192,14 @@ function renderAll(data) {
     D   = data;
     INV = applyMatrixActions(applyABCFlags(derive(D.inventory||[]), Number(D.kpi?.margin_target || 68)));
     if (U_VENUE) D.venue = U_VENUE;
+    applyFeatureFlags(D.features || {});
 
     renderDashboard();
 
     // Immediately re-render whichever view is currently active
     const renders = { briefing:vBriefing, inventory:vInventory, deadstock:vDeadstock, margins:vMargins,
                       reorder:vReorder, pour:vPour, matrix:vMatrix, suppliers:vSuppliers,
-                      benchmarking:vBenchmarking, weekly:vWeekly, actionlog:vActionLog };
+                      benchmarking:vBenchmarking, weekly:vWeekly, actionlog:vActionLog, gopos:vGopos };
     if (renders[curView]) renders[curView]();
 
     T('srcLbl', apiUrl ? 'Google Sheets — dane na żywo' : 'Tryb demo');
@@ -2339,6 +2422,7 @@ setInterval(() => {
 // ═══ DEMO DATA ═══
 const DEMO_DATA = {
   venue:'La Maddalena', last_updated:new Date().toISOString(),
+  features:{briefing:false,deadstock:true,reorder:true,pour:true,matrix:true,suppliers:true,benchmarking:true,weekly:true,actionlog:true,gopos:true},
   kpi:{margin_target:68},
   margin_trend:[58,60,61,59,63,62,64,62],
   margin_trend_series:[
@@ -2607,6 +2691,152 @@ async function submitQE() {
   btn.textContent = '💾 Zapisz snapshot';
   btn.disabled = false;
 }
+
+// ═══ GOPOS IMPORT ═══
+function vGopos() {
+  // View is static HTML — KPI cards update only after an API call result
+}
+
+async function runGoPosAction(preview) {
+  if (!apiUrl) {
+    alert('Import GoPos działa tylko w trybie live.\nPodaj parametr ?api= w adresie URL dashboardu.');
+    return;
+  }
+
+  const previewBtn = document.getElementById('gpPreviewBtn');
+  const importBtn  = document.getElementById('gpImportBtn');
+  const btn        = preview ? previewBtn : importBtn;
+  const origText   = btn.textContent;
+
+  btn.textContent = '⏳ Przetwarzanie...';
+  btn.disabled = true;
+  previewBtn.disabled = true;
+  importBtn.disabled  = true;
+
+  try {
+    const cbName = 'gpCb_' + Date.now();
+    const params = new URLSearchParams({ type: 'gopos_import', preview: preview ? '1' : '0', callback: cbName });
+
+    const result = await new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      const timer  = setTimeout(() => {
+        delete window[cbName];
+        if (document.body.contains(script)) document.body.removeChild(script);
+        reject(new Error('Timeout — Apps Script nie odpowiedział w 30 s.'));
+      }, 30000);
+      window[cbName] = res => {
+        clearTimeout(timer); delete window[cbName];
+        if (document.body.contains(script)) document.body.removeChild(script);
+        resolve(res);
+      };
+      script.onerror = () => { clearTimeout(timer); delete window[cbName]; reject(new Error('Błąd ładowania skryptu')); };
+      script.src = apiUrl + '?' + params.toString();
+      document.body.appendChild(script);
+    });
+
+    renderGoPosResult(result, preview);
+
+    // After a real successful import, refresh data from server
+    if (!preview && result.status === 'ok' && result.skus_updated > 0) {
+      setTimeout(async () => { try { await reload(); } catch(_) {} }, 1800);
+    }
+  } catch (e) {
+    document.getElementById('gpResultPanel').style.display = '';
+    document.getElementById('gpResultTitle').textContent   = '⚠ Błąd';
+    document.getElementById('gpResultTag').textContent     = '';
+    document.getElementById('gpResultMsg').textContent     = e.message;
+    document.getElementById('gpResultMsg').style.color     = 'var(--dg)';
+    document.getElementById('gpResultTable').innerHTML     = '';
+    document.getElementById('gpUnmappedWarn').style.display = 'none';
+  } finally {
+    btn.textContent = origText;
+    previewBtn.disabled = false;
+    importBtn.disabled  = false;
+  }
+}
+
+function renderGoPosResult(res, preview) {
+  const panel    = document.getElementById('gpResultPanel');
+  const titleEl  = document.getElementById('gpResultTitle');
+  const tagEl    = document.getElementById('gpResultTag');
+  const msgEl    = document.getElementById('gpResultMsg');
+  const tableEl  = document.getElementById('gpResultTable');
+  const warnEl   = document.getElementById('gpUnmappedWarn');
+
+  panel.style.display = '';
+
+  // Update KPI chips
+  T('gpPending',  String(res.pending_rows  || 0));
+  T('gpMapped',   String(res.skus_updated  || 0));
+  T('gpUnmapped', String((res.unmapped || []).length));
+
+  // Show badge for unmapped SKUs in nav
+  const nbGp = document.getElementById('nb-gp');
+  if (nbGp) nbGp.style.display = (res.unmapped || []).length > 0 ? '' : 'none';
+
+  if (res.status === 'error') {
+    titleEl.textContent = '⚠ Błąd importu';
+    tagEl.textContent   = '';
+    tagEl.className     = 'ptag tg-d';
+    msgEl.textContent   = res.message || 'Nieznany błąd';
+    msgEl.style.color   = 'var(--dg)';
+    tableEl.innerHTML   = '';
+    warnEl.style.display = 'none';
+    return;
+  }
+
+  const isDry = res.dry_run;
+  titleEl.textContent = isDry ? '👁 Podgląd — co zostanie zaktualizowane' : '✓ Import zakończony';
+  tagEl.textContent   = isDry ? 'Tryb podglądu' : res.skus_updated + ' SKU zaktualizowane';
+  tagEl.className     = isDry ? 'ptag tg-i' : 'ptag tg-g';
+  msgEl.textContent   = res.message || '';
+  msgEl.style.color   = 'var(--txm)';
+
+  // Sales preview table
+  const rows = res.sales_preview || [];
+  if (rows.length > 0) {
+    tableEl.innerHTML = `<table class="tbl">
+      <thead><tr><th>SKU</th><th style="text-align:right">Sprzedaż 7 dni (szt.)</th><th style="text-align:right">Stan mag.</th></tr></thead>
+      <tbody>${rows.map(r => `<tr>
+        <td>${esc(r.sku)}</td>
+        <td style="text-align:right;font-family:'DM Mono',monospace">${r.sales}</td>
+        <td style="text-align:right;font-family:'DM Mono',monospace;color:var(--txm)">${r.stock !== null && r.stock !== undefined ? r.stock + ' szt.' : '—'}</td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+  } else {
+    tableEl.innerHTML = '';
+  }
+
+  // Unmapped warning
+  const unmapped = res.unmapped || [];
+  if (unmapped.length > 0) {
+    warnEl.style.display = '';
+    warnEl.innerHTML = `<strong>⚠ Produkty bez mapowania (${unmapped.length}):</strong>
+      <ul style="margin:8px 0 0 18px;line-height:1.9">
+        ${unmapped.map(n => `<li>${esc(n)}</li>`).join('')}
+      </ul>
+      <div style="margin-top:8px">Dodaj brakujące wpisy w zakładce <strong>product_map</strong> w Google Sheets (kolumna A = nazwa z GoPos, kolumna B = SKU w Sommly) i powtórz import.</div>`;
+  } else {
+    warnEl.style.display = 'none';
+  }
+}
+
+
+// ═══ FEATURE FLAGS ═══
+// Reads D.features from the API payload and dims nav items for disabled features.
+function applyFeatureFlags(flags) {
+  document.querySelectorAll('.ni[data-view]').forEach(el => {
+    const key = el.dataset.view;
+    if (flags[key] === false) {
+      el.classList.add('ni-off');
+      el.setAttribute('title', 'Wyłączone — zmień w arkuszu feature_flags');
+    } else {
+      el.classList.remove('ni-off');
+      el.removeAttribute('title');
+    }
+  });
+}
+
 </script>
 
 </body>
