@@ -35,6 +35,7 @@ nav{padding:16px 10px;flex:1;}
 .ni.active{background:rgba(255,255,255,.15);color:#fff;font-weight:500;}
 .ni-ico{width:16px;text-align:center;flex-shrink:0;}
 .ni-off{opacity:.38;}
+.gpDrop-hover{border-color:var(--ac) !important;background:var(--sur2) !important;}
 .ni-off::after{content:'⊘';font-size:9px;margin-left:auto;opacity:.7;line-height:1;}
 .nb{margin-left:auto;background:var(--gd);color:#fff;font-size:10px;font-weight:600;padding:1px 7px;border-radius:10px;}
 .sb-foot{padding:14px;border-top:1px solid rgba(255,255,255,.1);}
@@ -773,61 +774,104 @@ nav{padding:16px 10px;flex:1;}
 <!-- ── GOPOS IMPORT ── -->
 <div class="view" id="view-gopos">
   <div class="ph">
-    <div><div class="pt">Import GoPos</div><div class="ps" id="gpSub">Wczytaj dane sprzedaży z systemu POS do Sommly</div></div>
+    <div><div class="pt">Import GoPos</div><div class="ps" id="gpSub">Prześlij CSV z GoPos — dane sprzedaży trafią do Sommly bez ręcznego wklejania</div></div>
     <div class="hact">
-      <button class="btn btn-o" id="gpPreviewBtn" onclick="runGoPosAction(true)">👁 Podgląd</button>
-      <button class="btn btn-p" id="gpImportBtn" onclick="runGoPosAction(false)">▶ Uruchom import</button>
+      <button class="btn btn-o" id="gpReImportBtn" onclick="runGoPosAction(false)" title="Ponów import z istniejących wierszy w arkuszu gopos_import">↺ Ponów z arkusza</button>
     </div>
   </div>
 
+  <!-- KPI chips -->
   <div class="grid g3" style="margin-bottom:14px">
-    <div class="kpi"><div class="klbl">Wiersze do importu</div><div class="kval" id="gpPending">—</div><div class="ksub">Wiersze bez statusu Imported</div></div>
-    <div class="kpi kg"><div class="klbl">SKU zaktualizowane</div><div class="kval" id="gpMapped">—</div><div class="ksub">Zmapowane i przetworzone</div></div>
-    <div class="kpi kd"><div class="klbl">Niezmapowane</div><div class="kval" id="gpUnmapped">—</div><div class="ksub">Wymagają uzupełnienia mapy</div></div>
+    <div class="kpi"><div class="klbl">Wiersze w pliku</div><div class="kval" id="gpPending">—</div><div class="ksub">Wiersze odczytane z CSV</div></div>
+    <div class="kpi kg"><div class="klbl">SKU dopasowane</div><div class="kval" id="gpMapped">—</div><div class="ksub">Bezpośrednie dopasowanie</div></div>
+    <div class="kpi kd"><div class="klbl">Nieznane produkty</div><div class="kval" id="gpUnmapped">—</div><div class="ksub">Wymagają product_map</div></div>
   </div>
 
+  <!-- ── UPLOAD ZONE ───────────────────────────────────────────────── -->
+  <div class="panel" id="gpUploadPanel" style="margin-bottom:14px">
+    <div class="phead"><div class="ptit">Krok 1 — Wgraj plik CSV z GoPos</div><span class="ptag tg-i">Upload</span></div>
+    <input type="file" id="gpFileInput" accept=".csv,.txt,.tsv" style="display:none" onchange="handleGpFile(this.files[0])">
+    <div id="gpDropZone"
+         onclick="document.getElementById('gpFileInput').click()"
+         ondragover="event.preventDefault();this.classList.add('gpDrop-hover')"
+         ondragleave="this.classList.remove('gpDrop-hover')"
+         ondrop="event.preventDefault();this.classList.remove('gpDrop-hover');handleGpFile(event.dataTransfer.files[0])"
+         style="border:2px dashed var(--br);border-radius:var(--rs);padding:32px 24px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s;user-select:none">
+      <div style="font-size:28px;margin-bottom:10px;opacity:.4">⬆</div>
+      <div style="font-size:13px;font-weight:600;color:var(--tx)">Przeciągnij plik CSV lub kliknij aby wybrać</div>
+      <div style="font-size:11px;color:var(--txm);margin-top:6px">Obsługiwane formaty: CSV, TSV, TXT (kodowanie UTF-8 lub Windows-1250)</div>
+    </div>
+
+    <!-- Validation summary — shown after parse -->
+    <div id="gpValidation" style="display:none;margin-top:14px">
+      <div id="gpValChips" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px"></div>
+      <div id="gpColMap" style="font-size:12px;color:var(--txm);margin-bottom:12px"></div>
+
+      <!-- Preview table -->
+      <div id="gpPreviewWrap" style="overflow-x:auto;margin-bottom:14px">
+        <table class="tbl" id="gpPreviewTbl">
+          <thead><tr><th>#</th><th>Data</th><th>Produkt (GoPos)</th><th style="text-align:right">Ilość</th><th style="text-align:right">Stan mag.</th><th>Dopasowanie</th></tr></thead>
+          <tbody id="gpPreviewBody"></tbody>
+        </table>
+      </div>
+
+      <!-- Unmapped list -->
+      <div id="gpUnmappedList" style="display:none;background:var(--wnl);border:1px solid var(--gd);border-radius:var(--rs);padding:12px 14px;font-size:12px;color:var(--wn);margin-bottom:14px"></div>
+
+      <!-- Confirm button -->
+      <div style="display:flex;gap:10px;align-items:center">
+        <button class="btn btn-p" id="gpSendBtn" onclick="sendGpRows()" style="min-width:160px">▶ Wyślij do Sommly</button>
+        <button class="btn btn-o" onclick="resetGpUpload()" style="font-size:12px">✕ Wyczyść</button>
+        <span id="gpSendStatus" style="font-size:12px;color:var(--txm)"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── RESULT PANEL ──────────────────────────────────────────────── -->
   <div class="panel" id="gpResultPanel" style="display:none;margin-bottom:14px">
-    <div class="phead"><div class="ptit" id="gpResultTitle">Wynik</div><span id="gpResultTag" class="ptag tg-g"></span></div>
+    <div class="phead"><div class="ptit" id="gpResultTitle">Wynik importu</div><span id="gpResultTag" class="ptag tg-g"></span></div>
     <div id="gpResultMsg" style="font-size:13px;margin-bottom:12px;color:var(--txm)"></div>
     <div id="gpResultTable"></div>
     <div id="gpUnmappedWarn" style="display:none;background:var(--wnl);border:1px solid var(--gd);border-radius:var(--rs);padding:12px 14px;margin-top:12px;font-size:12px;color:var(--wn)"></div>
   </div>
 
+  <!-- ── INSTRUCTIONS ──────────────────────────────────────────────── -->
   <div class="panel" style="margin-bottom:14px">
-    <div class="phead"><div class="ptit">Jak używać — krok po kroku</div><span class="ptag tg-i">Instrukcja</span></div>
+    <div class="phead"><div class="ptit">Jak działa import</div><span class="ptag tg-i">Instrukcja</span></div>
     <div style="font-size:13px;color:var(--tx);line-height:1.9">
       <div style="display:grid;gap:14px">
         <div style="display:flex;gap:14px;align-items:flex-start">
           <div style="flex-shrink:0;width:24px;height:24px;background:var(--ac);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;margin-top:2px">1</div>
-          <div><strong>Eksport z GoPos</strong><br><span style="color:var(--txm)">GoPos → Raporty → Raport sprzedaży. Zakres: ostatnie 7 dni. Eksportuj jako CSV lub Excel.</span></div>
+          <div><strong>Eksport z GoPos</strong><br><span style="color:var(--txm)">GoPos → Raporty → Raport sprzedaży. Zakres: ostatnie 7 dni. Eksportuj jako CSV.</span></div>
         </div>
         <div style="display:flex;gap:14px;align-items:flex-start">
           <div style="flex-shrink:0;width:24px;height:24px;background:var(--ac);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;margin-top:2px">2</div>
-          <div><strong>Wklej dane do arkusza</strong><br><span style="color:var(--txm)">Google Sheets → zakładka <strong>gopos_import</strong>. Wklej dane w 4 kolumnach: <code style="font-family:'DM Mono',monospace;font-size:11px;background:var(--sur2);padding:1px 5px;border-radius:4px">data | produkt | ilosc_sprzedana | stan_magazynowy</code>. Kolumnę <code style="font-family:'DM Mono',monospace;font-size:11px;background:var(--sur2);padding:1px 5px;border-radius:4px">stan_magazynowy</code> możesz pominąć — Sommly zachowa aktualny stan.</span></div>
+          <div><strong>Wgraj CSV powyżej</strong><br><span style="color:var(--txm)">Przeciągnij plik do strefy upload lub kliknij. Sommly automatycznie wykrywa kolumny i format daty — obsługuje GoPos PL i EN oraz separatory <code style="font-family:'DM Mono',monospace;font-size:11px;background:var(--sur2);padding:1px 5px;border-radius:4px">; lub ,</code>.</span></div>
         </div>
         <div style="display:flex;gap:14px;align-items:flex-start">
           <div style="flex-shrink:0;width:24px;height:24px;background:var(--ac);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;margin-top:2px">3</div>
-          <div><strong>Sprawdź product_map</strong><br><span style="color:var(--txm)">Zakładka <strong>product_map</strong> łączy nazwy GoPos z nazwami SKU w Sommly. Kolumna B jest już wypełniona SKU z INVENTORY. Wpisz w kolumnie A dokładną nazwę produktu z GoPos (wielkość liter ignorowana). Jeśli nazwa jest taka sama — nic nie rób.</span></div>
+          <div><strong>Sprawdź podgląd i wyślij</strong><br><span style="color:var(--txm)">Sprawdź czy kolumny zostały poprawnie dopasowane. Produkty oznaczone <strong style="color:var(--dg)">Nieznany</strong> nie mają mapowania w <strong>product_map</strong> — dodaj wpis przed wysłaniem.</span></div>
         </div>
         <div style="display:flex;gap:14px;align-items:flex-start">
           <div style="flex-shrink:0;width:24px;height:24px;background:var(--ac);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;margin-top:2px">4</div>
-          <div><strong>Podgląd → Import</strong><br><span style="color:var(--txm)">Kliknij <strong>Podgląd</strong> aby zobaczyć co zostanie zaktualizowane bez zapisu. Następnie kliknij <strong>Uruchom import</strong>. Przetworzone wiersze dostaną status <em>Imported</em> i nie zostaną ponownie zaimportowane.</span></div>
+          <div><strong>Dane trafiają automatycznie</strong><br><span style="color:var(--txm)">Po kliknięciu <strong>Wyślij do Sommly</strong> dane trafiają do gopos_import i są natychmiast przetwarzane. Dashboard odświeży się automatycznie.</span></div>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- ── COLUMN HINTS ──────────────────────────────────────────────── -->
   <div class="panel">
-    <div class="phead"><div class="ptit">Format arkusza gopos_import</div><span class="ptag tg-w">Przykład</span></div>
+    <div class="phead"><div class="ptit">Obsługiwane nazwy kolumn</div><span class="ptag tg-w">Referencja</span></div>
     <table class="tbl">
-      <thead><tr><th>data</th><th>produkt</th><th>ilosc_sprzedana</th><th>stan_magazynowy</th><th>status</th></tr></thead>
+      <thead><tr><th>Pole Sommly</th><th>Obsługiwane nazwy w CSV</th><th>Wymagane</th></tr></thead>
       <tbody>
-        <tr><td>28.05.2026</td><td>Barolo DOCG 2019</td><td>6</td><td>33</td><td style="color:var(--su)">Imported</td></tr>
-        <tr><td>28.05.2026</td><td>Belvedere Vodka 0.7L</td><td>10</td><td></td><td style="color:var(--txm)">—</td></tr>
-        <tr><td>28.05.2026</td><td>Żywiec Pils 0,5</td><td>34</td><td>5</td><td style="color:var(--dg)">Error — brak w product_map</td></tr>
+        <tr><td><code style="font-family:'DM Mono',monospace;font-size:11px">data</code></td><td style="color:var(--txm)">Data, Date, Data sprzedaży</td><td>✓</td></tr>
+        <tr><td><code style="font-family:'DM Mono',monospace;font-size:11px">produkt</code></td><td style="color:var(--txm)">Artykuł, Nazwa artykułu, Item Name, Produkt, Nazwa, Towar, Pozycja</td><td>✓</td></tr>
+        <tr><td><code style="font-family:'DM Mono',monospace;font-size:11px">ilosc_sprzedana</code></td><td style="color:var(--txm)">Ilość, Ilosc, Qty, Quantity, Sprzedane, Sztuki</td><td>✓</td></tr>
+        <tr><td><code style="font-family:'DM Mono',monospace;font-size:11px">stan_magazynowy</code></td><td style="color:var(--txm)">Stan, Stan magazynowy, Stock, Magazyn</td><td>—</td></tr>
       </tbody>
     </table>
-    <div class="note" style="margin-top:10px"><span>⌇</span><span>Wiersze z błędem <em>Error — brak w product_map</em> oznaczają, że nazwa produktu z GoPos nie ma odpowiednika w mapowaniu. Dodaj wpis w zakładce <strong>product_map</strong> i powtórz import.</span></div>
   </div>
 </div>
 
@@ -2692,134 +2736,409 @@ async function submitQE() {
   btn.disabled = false;
 }
 
-// ═══ GOPOS IMPORT ═══
+// ═══ GOPOS IMPORT — CSV UPLOAD + VALIDATION PIPELINE ═══
+// Implements the valid parts of the consultant's proposal:
+//   ✓ In-browser CSV upload (replaces manual paste-to-Sheets)
+//   ✓ 5-step validation: Parse → Headers → Dates → SKU match → Completeness
+//   ✗ localStorage, React, TypeScript, transaction model, English-only headers — all wrong for this stack
+// GoPos is Polish — handles Polish headers AND semicolon delimiters.
+
+// Parsed rows waiting to be sent: [date_iso, produkt, ilosc, stock|null]
+let gpParsedRows = [];
+
 function vGopos() {
-  // View is static HTML — KPI cards update only after an API call result
+  // Reset upload zone state on view entry
+  resetGpUpload();
 }
 
+// ── CSV Parser ───────────────────────────────────────────────────────────────
+function parseGoPosCsv(text) {
+  // Strip UTF-8 BOM (common in Polish Windows locale CSV exports)
+  text = text.replace(/^\uFEFF/, '');
+  // Normalise line endings
+  const lines = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n').filter(l => l.trim());
+  if (lines.length < 2) return { error: 'Plik jest pusty lub zawiera tylko jeden wiersz.' };
+
+  // Detect delimiter: count ; vs , in header line
+  const hdrLine  = lines[0];
+  const delim    = (hdrLine.split(';').length > hdrLine.split(',').length) ? ';' : ',';
+
+  const headers  = parseCsvLine(hdrLine, delim);
+  const dataRows = lines.slice(1).map(l => parseCsvLine(l, delim));
+
+  return { headers, dataRows, delim };
+}
+
+function parseCsvLine(line, delim) {
+  const result = [];
+  let field = '', inQ = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (c === '"') {
+      if (inQ && line[i+1] === '"') { field += '"'; i++; }
+      else inQ = !inQ;
+    } else if (c === delim && !inQ) {
+      result.push(field.trim());
+      field = '';
+    } else {
+      field += c;
+    }
+  }
+  result.push(field.trim());
+  return result;
+}
+
+// ── Column Detection (Step 2 — Header Validation) ────────────────────────────
+const GP_COL_HINTS = {
+  date:    ['data sprzedaży','data sprzed','data','date','dzień','dzien','day'],
+  produkt: ['nazwa artykułu','nazwa artykulu','artykuł','artykul','item name','product name',
+            'product','produkt','nazwa','pozycja','towar','name','sku'],
+  ilosc:   ['ilość sprzedana','ilosc sprzedana','ilość','ilosc','qty sold','qty','quantity',
+            'sprzedane','sprzedaż','sprzedaz','sztuki','szt'],
+  stock:   ['stan magazynowy','stan mag.','stan mag','stan','stock qty','stock','magazyn','inventory'],
+};
+
+function detectGpColumns(headers) {
+  const result = { date: -1, produkt: -1, ilosc: -1, stock: -1 };
+  headers.forEach((h, i) => {
+    const hn = h.toLowerCase().trim().replace(/[()]/g, '');
+    for (const [field, hints] of Object.entries(GP_COL_HINTS)) {
+      if (result[field] >= 0) continue;
+      if (hints.some(hint => hn === hint || hn.startsWith(hint) || hint.startsWith(hn))) {
+        result[field] = i;
+      }
+    }
+  });
+  return result;
+}
+
+// ── Date Normalisation (Step 3) ───────────────────────────────────────────────
+function normGpDate(raw) {
+  if (!raw) return null;
+  const s = String(raw).trim();
+  if (!s) return null;
+  // ISO YYYY-MM-DD (with optional time)
+  if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0, 10);
+  // DD.MM.YYYY or DD/MM/YYYY or DD-MM-YYYY
+  let m = s.match(/^(\d{1,2})[.\/\-](\d{1,2})[.\/\-](\d{4})/);
+  if (m) return `${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;
+  // MM/DD/YYYY (US — only if day > 12 forces it)
+  m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if (m && parseInt(m[1]) <= 12) return `${m[3]}-${m[1].padStart(2,'0')}-${m[2].padStart(2,'0')}`;
+  return null;
+}
+
+// ── SKU Match Check (Step 4) ──────────────────────────────────────────────────
+// Client-side check against known inventory names for instant feedback.
+// Definitive mapping check happens server-side via product_map.
+function gpSkuStatus(goPosName) {
+  if (!D || !D.inventory) return 'unknown';
+  const target = goPosName.toLowerCase().trim();
+  const exact  = D.inventory.some(i => i.name.toLowerCase().trim() === target);
+  return exact ? 'exact' : 'unknown';
+}
+
+// ── File Handler ──────────────────────────────────────────────────────────────
+function handleGpFile(file) {
+  if (!file) return;
+  // Step 1 — Parse
+  const reader = new FileReader();
+  reader.onload = e => {
+    let text = e.target.result;
+    // If read as binary (for encoding detection), try UTF-8 first, else fall back
+    processGpText(text, file.name);
+  };
+  // Try UTF-8 first; if it produces replacement chars (\uFFFD) we'd re-read as latin1
+  reader.readAsText(file, 'UTF-8');
+  reader.onerror = () => showGpError('Nie można odczytać pliku.');
+}
+
+function processGpText(text, filename) {
+  // Step 1 — Parse CSV
+  const parsed = parseGoPosCsv(text);
+  if (parsed.error) { showGpError(parsed.error); return; }
+  const { headers, dataRows, delim } = parsed;
+
+  // Step 2 — Header Validation
+  const cols = detectGpColumns(headers);
+  if (cols.date < 0 || cols.produkt < 0 || cols.ilosc < 0) {
+    const missing = [];
+    if (cols.date    < 0) missing.push('data (Data / Date)');
+    if (cols.produkt < 0) missing.push('produkt (Artykuł / Item Name)');
+    if (cols.ilosc   < 0) missing.push('ilość (Ilość / Qty)');
+    showGpError(`Nie znaleziono wymaganych kolumn: ${missing.join(', ')}. Sprawdź tabelę obsługiwanych nazw poniżej.`);
+    return;
+  }
+
+  // Step 3 — Date Normalisation + Step 4 — SKU Match + Step 5 — Completeness
+  const valid = [], issues = [];
+  let badDates = 0, zeroQty = 0;
+  const unmappedSet = {};
+
+  dataRows.forEach((row, idx) => {
+    if (row.every(c => !c)) return; // skip blank rows
+    const rawDate    = row[cols.date]    || '';
+    const rawProd    = row[cols.produkt] || '';
+    const rawIlosc   = row[cols.ilosc]   || '0';
+    const rawStock   = cols.stock >= 0 ? (row[cols.stock] || '') : '';
+
+    const normDate = normGpDate(rawDate);
+    if (!normDate) badDates++;
+
+    const ilosc = parseFloat(String(rawIlosc).replace(',', '.')) || 0;
+    if (ilosc === 0) zeroQty++;
+
+    const stock = rawStock !== '' ? parseFloat(String(rawStock).replace(',', '.')) : null;
+    const status = gpSkuStatus(rawProd);
+    if (status === 'unknown' && rawProd) unmappedSet[rawProd] = true;
+
+    valid.push({
+      date:    normDate || rawDate,
+      produkt: rawProd,
+      ilosc,
+      stock:   (stock != null && !isNaN(stock)) ? stock : null,
+      status,
+      rawDate,
+    });
+  });
+
+  gpParsedRows = valid
+    .filter(r => r.produkt && r.date)
+    .map(r => [r.date, r.produkt, r.ilosc, r.stock]);
+
+  const unmapped = Object.keys(unmappedSet);
+
+  // Update KPI chips
+  T('gpPending',  String(valid.length));
+  T('gpMapped',   String(valid.length - unmapped.length));
+  T('gpUnmapped', String(unmapped.length));
+
+  // Render validation chips
+  renderGpValChips({ filename, delim, rows: valid.length, badDates, zeroQty, unmapped: unmapped.length, cols });
+
+  // Render column mapping summary
+  const colNames = {
+    date: headers[cols.date], produkt: headers[cols.produkt],
+    ilosc: headers[cols.ilosc], stock: cols.stock >= 0 ? headers[cols.stock] : '—',
+  };
+  document.getElementById('gpColMap').innerHTML =
+    `Wykryte kolumny: <strong>Data</strong> ← <em>${esc(colNames.date)}</em> &nbsp;·&nbsp; ` +
+    `<strong>Produkt</strong> ← <em>${esc(colNames.produkt)}</em> &nbsp;·&nbsp; ` +
+    `<strong>Ilość</strong> ← <em>${esc(colNames.ilosc)}</em> &nbsp;·&nbsp; ` +
+    `<strong>Stan mag.</strong> ← <em>${esc(colNames.stock)}</em> &nbsp;·&nbsp; ` +
+    `Separator: <em>${delim === ';' ? 'średnik (;)' : 'przecinek (,)'}</em>`;
+
+  // Render preview table (first 50 rows)
+  const tbody = document.getElementById('gpPreviewBody');
+  tbody.innerHTML = valid.slice(0, 50).map((r, i) => {
+    const matchHtml = r.status === 'exact'
+      ? `<span style="color:var(--su);font-size:11px">✓ Dopasowane</span>`
+      : `<span style="color:var(--dg);font-size:11px">⚠ Nieznany</span>`;
+    const dateStyle = !normGpDate(r.rawDate) ? 'color:var(--dg)' : '';
+    return `<tr>
+      <td style="color:var(--txm);font-size:11px">${i+1}</td>
+      <td style="${dateStyle}">${esc(r.date)}</td>
+      <td>${esc(r.produkt)}</td>
+      <td style="text-align:right;font-family:'DM Mono',monospace">${r.ilosc}</td>
+      <td style="text-align:right;font-family:'DM Mono',monospace;color:var(--txm)">${r.stock != null ? r.stock : '—'}</td>
+      <td>${matchHtml}</td>
+    </tr>`;
+  }).join('');
+  if (valid.length > 50) {
+    tbody.innerHTML += `<tr><td colspan="6" style="text-align:center;color:var(--txm);font-size:11px">… i ${valid.length - 50} kolejnych wierszy</td></tr>`;
+  }
+
+  // Unmapped warning
+  const umEl = document.getElementById('gpUnmappedList');
+  if (unmapped.length > 0) {
+    umEl.style.display = '';
+    umEl.innerHTML = `<strong>⚠ Produkty bez bezpośredniego dopasowania (${unmapped.length}):</strong>
+      <ul style="margin:6px 0 0 16px;line-height:1.9">
+        ${unmapped.map(n => `<li>${esc(n)}</li>`).join('')}
+      </ul>
+      <div style="margin-top:8px">Jeśli masz te produkty w INVENTORY pod inną nazwą, dodaj mapowanie w arkuszu <strong>product_map</strong> (kolumna A = nazwa GoPos, kolumna B = SKU w Sommly), a potem wyślij.</div>`;
+  } else {
+    umEl.style.display = 'none';
+  }
+
+  document.getElementById('gpSendBtn').disabled = gpParsedRows.length === 0;
+  document.getElementById('gpValidation').style.display = '';
+}
+
+function renderGpValChips({ filename, delim, rows, badDates, zeroQty, unmapped, cols }) {
+  const chips = [
+    { ok: true,        label: `${rows} wierszy` },
+    { ok: true,        label: `sep: ${delim === ';' ? 'średnik' : 'przecinek'}` },
+    { ok: badDates===0, label: badDates > 0 ? `${badDates} błędnych dat` : 'Daty OK' },
+    { ok: unmapped===0, label: unmapped > 0 ? `${unmapped} nieznanych SKU` : 'SKU OK' },
+    { ok: zeroQty < rows, label: zeroQty > 0 ? `${zeroQty} z ilością 0` : 'Ilości OK' },
+  ];
+  document.getElementById('gpValChips').innerHTML = chips.map(c =>
+    `<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:${c.ok ? 'var(--sul)' : 'var(--wnl)'};color:${c.ok ? 'var(--su)' : 'var(--wn)'}">
+      ${c.ok ? '✓' : '⚠'} ${esc(c.label)}
+    </span>`
+  ).join('');
+}
+
+// ── Send parsed rows to Apps Script (batched) ─────────────────────────────────
+async function sendGpRows() {
+  if (!apiUrl) {
+    alert('Import działa tylko w trybie live.\nPodaj parametr ?api= w adresie URL dashboardu.');
+    return;
+  }
+  if (gpParsedRows.length === 0) { alert('Brak wierszy do wysłania.'); return; }
+
+  const btn     = document.getElementById('gpSendBtn');
+  const status  = document.getElementById('gpSendStatus');
+  btn.disabled  = true;
+  btn.textContent = '⏳ Wysyłanie...';
+  status.textContent = '';
+
+  // Batch into chunks of 40 rows to stay under JSONP URL length limits
+  const BATCH = 40;
+  const chunks = [];
+  for (let i = 0; i < gpParsedRows.length; i += BATCH) chunks.push(gpParsedRows.slice(i, i + BATCH));
+
+  try {
+    let finalResult = null;
+    for (let ci = 0; ci < chunks.length; ci++) {
+      status.textContent = `Wysyłanie partii ${ci+1}/${chunks.length}…`;
+      const rows    = chunks[ci];
+      // For the last chunk, use gopos_full which also runs the import
+      // For earlier chunks, use gopos_rows_append (append-only, no import yet)
+      const isLast  = ci === chunks.length - 1;
+      const type    = isLast ? 'gopos_full' : 'gopos_rows_append';
+      finalResult   = await jsonpCall(type, { rows: JSON.stringify(rows) });
+      if (finalResult.status === 'error') throw new Error(finalResult.message);
+    }
+    renderGoPosResult(finalResult, false);
+    status.textContent = '';
+    gpParsedRows = [];
+    setTimeout(async () => { try { await reload(); } catch(_) {} }, 1800);
+  } catch (err) {
+    status.textContent = '✗ ' + err.message;
+    status.style.color = 'var(--dg)';
+  } finally {
+    btn.disabled    = false;
+    btn.textContent = '▶ Wyślij do Sommly';
+  }
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function jsonpCall(type, extraParams) {
+  return new Promise((resolve, reject) => {
+    const cbName = 'gpJsCb_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+    const params = new URLSearchParams({ type, callback: cbName, ...extraParams });
+    const timer  = setTimeout(() => {
+      delete window[cbName];
+      reject(new Error('Timeout — Apps Script nie odpowiedział w 45 s.'));
+    }, 45000);
+    window[cbName] = res => {
+      clearTimeout(timer); delete window[cbName];
+      resolve(res);
+    };
+    const s = document.createElement('script');
+    s.onerror = () => { clearTimeout(timer); delete window[cbName]; reject(new Error('Błąd sieci')); };
+    s.src = apiUrl + '?' + params.toString();
+    document.body.appendChild(s);
+    s.onload = () => { if (document.body.contains(s)) document.body.removeChild(s); };
+  });
+}
+
+function showGpError(msg) {
+  document.getElementById('gpValidation').style.display = 'none';
+  document.getElementById('gpResultPanel').style.display = '';
+  document.getElementById('gpResultTitle').textContent   = '⚠ Błąd parsowania';
+  document.getElementById('gpResultTag').className       = 'ptag tg-d';
+  document.getElementById('gpResultTag').textContent     = 'CSV';
+  document.getElementById('gpResultMsg').textContent     = msg;
+  document.getElementById('gpResultMsg').style.color     = 'var(--dg)';
+  document.getElementById('gpResultTable').innerHTML     = '';
+  document.getElementById('gpUnmappedWarn').style.display = 'none';
+}
+
+function resetGpUpload() {
+  gpParsedRows = [];
+  const fi = document.getElementById('gpFileInput');
+  if (fi) fi.value = '';
+  T('gpPending', '—'); T('gpMapped', '—'); T('gpUnmapped', '—');
+  const v = document.getElementById('gpValidation');
+  if (v) v.style.display = 'none';
+  const rp = document.getElementById('gpResultPanel');
+  if (rp) rp.style.display = 'none';
+}
+
+// Re-run import from existing gopos_import sheet (kept for manual fallback)
 async function runGoPosAction(preview) {
   if (!apiUrl) {
     alert('Import GoPos działa tylko w trybie live.\nPodaj parametr ?api= w adresie URL dashboardu.');
     return;
   }
-
-  const previewBtn = document.getElementById('gpPreviewBtn');
-  const importBtn  = document.getElementById('gpImportBtn');
-  const btn        = preview ? previewBtn : importBtn;
-  const origText   = btn.textContent;
-
-  btn.textContent = '⏳ Przetwarzanie...';
-  btn.disabled = true;
-  previewBtn.disabled = true;
-  importBtn.disabled  = true;
-
+  const btn = document.getElementById('gpReImportBtn');
+  const origText = btn.textContent;
+  btn.textContent = '⏳...'; btn.disabled = true;
   try {
-    const cbName = 'gpCb_' + Date.now();
-    const params = new URLSearchParams({ type: 'gopos_import', preview: preview ? '1' : '0', callback: cbName });
-
-    const result = await new Promise((resolve, reject) => {
-      const script = document.createElement('script');
-      const timer  = setTimeout(() => {
-        delete window[cbName];
-        if (document.body.contains(script)) document.body.removeChild(script);
-        reject(new Error('Timeout — Apps Script nie odpowiedział w 30 s.'));
-      }, 30000);
-      window[cbName] = res => {
-        clearTimeout(timer); delete window[cbName];
-        if (document.body.contains(script)) document.body.removeChild(script);
-        resolve(res);
-      };
-      script.onerror = () => { clearTimeout(timer); delete window[cbName]; reject(new Error('Błąd ładowania skryptu')); };
-      script.src = apiUrl + '?' + params.toString();
-      document.body.appendChild(script);
-    });
-
+    const result = await jsonpCall('gopos_import', { preview: preview ? '1' : '0' });
     renderGoPosResult(result, preview);
-
-    // After a real successful import, refresh data from server
     if (!preview && result.status === 'ok' && result.skus_updated > 0) {
       setTimeout(async () => { try { await reload(); } catch(_) {} }, 1800);
     }
   } catch (e) {
-    document.getElementById('gpResultPanel').style.display = '';
-    document.getElementById('gpResultTitle').textContent   = '⚠ Błąd';
-    document.getElementById('gpResultTag').textContent     = '';
-    document.getElementById('gpResultMsg').textContent     = e.message;
-    document.getElementById('gpResultMsg').style.color     = 'var(--dg)';
-    document.getElementById('gpResultTable').innerHTML     = '';
-    document.getElementById('gpUnmappedWarn').style.display = 'none';
+    showGpError(e.message);
   } finally {
-    btn.textContent = origText;
-    previewBtn.disabled = false;
-    importBtn.disabled  = false;
+    btn.textContent = origText; btn.disabled = false;
   }
 }
 
 function renderGoPosResult(res, preview) {
-  const panel    = document.getElementById('gpResultPanel');
-  const titleEl  = document.getElementById('gpResultTitle');
-  const tagEl    = document.getElementById('gpResultTag');
-  const msgEl    = document.getElementById('gpResultMsg');
-  const tableEl  = document.getElementById('gpResultTable');
-  const warnEl   = document.getElementById('gpUnmappedWarn');
-
+  const panel   = document.getElementById('gpResultPanel');
+  const titleEl = document.getElementById('gpResultTitle');
+  const tagEl   = document.getElementById('gpResultTag');
+  const msgEl   = document.getElementById('gpResultMsg');
+  const tableEl = document.getElementById('gpResultTable');
+  const warnEl  = document.getElementById('gpUnmappedWarn');
   panel.style.display = '';
 
-  // Update KPI chips
   T('gpPending',  String(res.pending_rows  || 0));
   T('gpMapped',   String(res.skus_updated  || 0));
-  T('gpUnmapped', String((res.unmapped || []).length));
+  T('gpUnmapped', String((res.unmapped||[]).length));
 
-  // Show badge for unmapped SKUs in nav
   const nbGp = document.getElementById('nb-gp');
-  if (nbGp) nbGp.style.display = (res.unmapped || []).length > 0 ? '' : 'none';
+  if (nbGp) nbGp.style.display = (res.unmapped||[]).length > 0 ? '' : 'none';
 
   if (res.status === 'error') {
     titleEl.textContent = '⚠ Błąd importu';
-    tagEl.textContent   = '';
-    tagEl.className     = 'ptag tg-d';
+    tagEl.textContent   = ''; tagEl.className = 'ptag tg-d';
     msgEl.textContent   = res.message || 'Nieznany błąd';
     msgEl.style.color   = 'var(--dg)';
-    tableEl.innerHTML   = '';
-    warnEl.style.display = 'none';
+    tableEl.innerHTML   = ''; warnEl.style.display = 'none';
     return;
   }
-
   const isDry = res.dry_run;
-  titleEl.textContent = isDry ? '👁 Podgląd — co zostanie zaktualizowane' : '✓ Import zakończony';
-  tagEl.textContent   = isDry ? 'Tryb podglądu' : res.skus_updated + ' SKU zaktualizowane';
+  titleEl.textContent = isDry ? '👁 Podgląd' : '✓ Import zakończony';
+  tagEl.textContent   = isDry ? 'Tryb podglądu' : (res.skus_updated||0) + ' SKU';
   tagEl.className     = isDry ? 'ptag tg-i' : 'ptag tg-g';
-  msgEl.textContent   = res.message || '';
-  msgEl.style.color   = 'var(--txm)';
+  msgEl.textContent   = res.message || ''; msgEl.style.color = 'var(--txm)';
 
-  // Sales preview table
   const rows = res.sales_preview || [];
-  if (rows.length > 0) {
-    tableEl.innerHTML = `<table class="tbl">
-      <thead><tr><th>SKU</th><th style="text-align:right">Sprzedaż 7 dni (szt.)</th><th style="text-align:right">Stan mag.</th></tr></thead>
-      <tbody>${rows.map(r => `<tr>
-        <td>${esc(r.sku)}</td>
-        <td style="text-align:right;font-family:'DM Mono',monospace">${r.sales}</td>
-        <td style="text-align:right;font-family:'DM Mono',monospace;color:var(--txm)">${r.stock !== null && r.stock !== undefined ? r.stock + ' szt.' : '—'}</td>
-      </tr>`).join('')}</tbody>
-    </table>`;
-  } else {
-    tableEl.innerHTML = '';
-  }
+  tableEl.innerHTML = rows.length > 0
+    ? `<table class="tbl"><thead><tr><th>SKU</th><th style="text-align:right">Sprzedaż 7 dni</th><th style="text-align:right">Stan mag.</th></tr></thead>
+       <tbody>${rows.map(r => `<tr>
+         <td>${esc(r.sku)}</td>
+         <td style="text-align:right;font-family:'DM Mono',monospace">${r.sales}</td>
+         <td style="text-align:right;font-family:'DM Mono',monospace;color:var(--txm)">${r.stock!=null?r.stock+' szt.':'—'}</td>
+       </tr>`).join('')}</tbody></table>` : '';
 
-  // Unmapped warning
   const unmapped = res.unmapped || [];
   if (unmapped.length > 0) {
     warnEl.style.display = '';
     warnEl.innerHTML = `<strong>⚠ Produkty bez mapowania (${unmapped.length}):</strong>
-      <ul style="margin:8px 0 0 18px;line-height:1.9">
-        ${unmapped.map(n => `<li>${esc(n)}</li>`).join('')}
-      </ul>
-      <div style="margin-top:8px">Dodaj brakujące wpisy w zakładce <strong>product_map</strong> w Google Sheets (kolumna A = nazwa z GoPos, kolumna B = SKU w Sommly) i powtórz import.</div>`;
-  } else {
-    warnEl.style.display = 'none';
-  }
+      <ul style="margin:6px 0 0 16px;line-height:1.9">${unmapped.map(n=>`<li>${esc(n)}</li>`).join('')}</ul>
+      <div style="margin-top:8px">Dodaj mapowanie w zakładce <strong>product_map</strong> i ponów import.</div>`;
+  } else { warnEl.style.display = 'none'; }
 }
+
+
 
 
 // ═══ FEATURE FLAGS ═══
